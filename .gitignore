@@ -1,0 +1,56 @@
+# Node.js
+node_modules/
+npm-debug.log*
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Nuxt build files
+.nuxt/
+.output/
+dist/
+build/
+
+# Nuxt static hosting (Netlify/Vercel/etc)
+.vercel/
+.netlify/
+
+# Local environment files
+.env
+.env.*.local
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# Editor/IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Mac system files
+.DS_Store
+
+# OS-specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Tests and coverage
+coverage/
+.nyc_output/
+
+# Optional: lock file if you're using only one package manager
+# Uncomment the one you're using and ignore the others
+# yarn.lock
+# package-lock.json
+# pnpm-lock.yaml
+
+# Optional: Nuxt telemetry data
+.nuxtrc

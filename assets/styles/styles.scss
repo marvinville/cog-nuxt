@@ -1,0 +1,86 @@
+// Write your overrides
+.swal2-actions {
+  color: white;
+}
+
+// PDF EXPORT
+.pnw-table {
+  border: none;
+  border-collapse: collapse;
+  font-size: normal;
+}
+
+.pnw-table th,
+td {
+  padding: 0;
+  border: none;
+  text-align: center;
+}
+
+.font-white {
+  color: white;
+}
+
+.font-blue {
+  color: #1600ff;
+}
+
+.banner {
+  background-color: #1600ff;
+  font-size: larger;
+  text-align: center;
+}
+
+.bg-yellow {
+  background-color: #feff04;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.tbl-collapse {
+  border: none;
+  border-collapse: collapse;
+}
+
+.tbl-collapse th,
+.tbl-collapse td {
+  border: 1px solid #333;
+}
+
+.outer-table {
+  border: none;
+  border-collapse: collapse;
+}
+
+.outer-table .with-border {
+  border: 1px solid #333;
+}
+
+.outer-table .no-slot {
+  block-size: 295px;
+}
+
+.inner-table {
+  border: none;
+  block-size: 100%;
+  border-collapse: collapse;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+td.row-h60 {
+  block-size: 60px;
+}
+
+.practice {
+  font-size: small;
+}
+
+tfoot td {
+  background-color: #063763;
+  font-size: smaller;
+}

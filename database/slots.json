@@ -1,0 +1,41 @@
+[
+  {
+    "id": "1",
+    "satellite_id": "1",
+    "slot_name": "Main Slot",
+    "date_from": "2025-05-11 00:00:00",
+    "date_to": "2025-05-11 23:59:59",
+    "is_sunday_slot": "1",
+    "musicians": "{\"pianists\":[\"Justine\"],\"egs\":[\"Tim\",\"Japeth\"],\"ags\":[\"Cymone\"],\"drummers\":[\"Test\"],\"bassists\":[\"Archie\"],\"others\":[\"Joma\"]}",
+    "created_by": "1",
+    "created_at": "2025-05-08 01:35:51",
+    "updated_by": null,
+    "updated_at": "2025-05-08 01:35:51"
+  },
+  {
+    "id": "2",
+    "satellite_id": "4",
+    "slot_name": "AM",
+    "date_from": "2025-05-18 00:00:00",
+    "date_to": "2025-05-18 23:59:59",
+    "is_sunday_slot": "1",
+    "musicians": "{\"pianists\":[\"Adrinel\"],\"egs\":[\"Tambin\",\"JoshM\"],\"ags\":[\"Dhaeniel\"],\"drummers\":[\"PauloC\"],\"bassists\":[\"Archie\"],\"others\":[\"Joma\"]}",
+    "created_by": "1",
+    "created_at": "2025-05-08 01:35:51",
+    "updated_by": null,
+    "updated_at": "2025-05-08 01:35:51"
+  },
+  {
+    "id": "3",
+    "satellite_id": "4",
+    "slot_name": "PM",
+    "date_from": "2025-05-18 00:00:00",
+    "date_to": "2025-05-18 23:59:59",
+    "is_sunday_slot": "1",
+    "musicians": "{\"pianists\":[\"Owen\"],\"egs\":[\"Eldrin\",\"Eiren\"],\"ags\":[\"Jennie\"],\"drummers\":[\"Ace\"],\"bassists\":[\"JC\"],\"others\":[\"Joma\"]}",
+    "created_by": "1",
+    "created_at": "2025-05-08 01:35:51",
+    "updated_by": null,
+    "updated_at": "2025-05-08 01:35:51"
+  }
+]

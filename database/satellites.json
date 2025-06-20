@@ -1,0 +1,33 @@
+[
+  {
+    "id": "1",
+    "name": "Main",
+    "slots": [
+      "Main Slot",
+      "Mid Slot",
+      "TWS"
+    ]
+  },
+  {
+    "id": "2",
+    "name": "Jabez",
+    "slots": [
+      "Wholeday"
+    ]
+  },
+  {
+    "id": "3",
+    "name": "Silang",
+    "slots": [
+      "Wholeday"
+    ]
+  },
+  {
+    "id": "4",
+    "name": "Trece",
+    "slots": [
+      "AM",
+      "PM"
+    ]
+  }
+]
