@@ -1,12 +1,10 @@
 {
   "semi": false,
   "singleQuote": true,
-  "trailingComma": "es5",
   "tabWidth": 2,
-  "printWidth": 100,
+  "trailingComma": "es5",
   "bracketSpacing": true,
   "arrowParens": "always",
   "endOfLine": "auto",
-  "vueIndentScriptAndStyle": true,
-  "plugins": ["prettier-plugin-tailwindcss"]
+  "vueIndentScriptAndStyle": true
 }

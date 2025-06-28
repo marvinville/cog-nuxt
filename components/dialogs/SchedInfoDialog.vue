@@ -1,24 +1,92 @@
 <script setup lang="ts">
-import ags from '@/database/musicians/ags.json'
-import bassists from '@/database/musicians/bassists.json'
-import drummers from '@/database/musicians/drummers.json'
-import egs from '@/database/musicians/egs.json'
-import fixedBands from '@/database/musicians/fixed-bands.json'
-import pianists from '@/database/musicians/pianists.json'
-import singers from '@/database/singers.json'
-import type { Singer } from '@/types/Person' // adjust path based on your project
+  import ags from '@/database/musicians/ags.json'
+  import bassists from '@/database/musicians/bassists.json'
+  import drummers from '@/database/musicians/drummers.json'
+  import egs from '@/database/musicians/egs.json'
+  import fixedBands from '@/database/musicians/fixed-bands.json'
+  import pianists from '@/database/musicians/pianists.json'
+  import singers from '@/database/singers.json'
+  import type { Singer } from '@/types/Person' // adjust path based on your project
 
-const props = defineProps({
-  formData: {
-    type: Object,
-    required: true,
-    default: () => ({
+  const props = defineProps({
+    formData: {
+      type: Object,
+      required: true,
+      default: () => ({
+        id: 0,
+        satellite_id: 0,
+        slot_name: '',
+        date_from: '',
+        date_to: '',
+        slot_date: '',
+        worship_leader: '',
+        key_vox: [],
+        is_fixed_band: false,
+        pianists: [],
+        egs: [],
+        ags: [],
+        drummers: [],
+        bassists: [],
+        others: [],
+      }),
+    },
+    isDialogVisible: {
+      type: Boolean,
+      required: true,
+    },
+    schedMonth: {
+      required: true,
+    },
+  })
+
+  const emit = defineEmits(['submit', 'update:isDialogVisible'])
+
+  const {
+    bandNamesCompiler,
+    findSatellite,
+    getDaysInMonth,
+    prioritizeByPreferredSatelliteId,
+  } = useSlotHelpers()
+
+  const schedMonth = ref(props.schedMonth)
+  const localFormData = ref({ ...props.formData })
+  const fixedBand = ref()
+  const formRef = ref(null)
+
+  const requiredValidator = (v: any) =>
+    (v !== null &&
+      v !== '' &&
+      v !== undefined &&
+      !(Array.isArray(v) && v.length === 0)) ||
+    'Field is required'
+
+  const onFormSubmit = async () => {
+    const validator = await formRef.value?.validate()
+    if (!validator?.valid) {
+      console.log('Please fill the required fields.')
+      return false
+    }
+    emit('submit', localFormData.value)
+    emit('update:isDialogVisible', false)
+    resetForm()
+  }
+
+  const onFormReset = () => {
+    resetForm()
+    emit('update:isDialogVisible', false)
+  }
+
+  const dialogModelValueUpdate = (val: boolean) => {
+    emit('update:isDialogVisible', val)
+  }
+
+  const resetForm = () => {
+    localFormData.value = {
       id: 0,
-      satellite_id: 0,
+      satellite_id: props.formData.satellite_id,
       slot_name: '',
       date_from: '',
       date_to: '',
-      slot_date: '',
       worship_leader: '',
       key_vox: [],
       is_fixed_band: false,
@@ -28,140 +96,72 @@ const props = defineProps({
       drummers: [],
       bassists: [],
       others: [],
-    }),
-  },
-  isDialogVisible: {
-    type: Boolean,
-    required: true,
-  },
-  schedMonth: {
-    required: true,
-  },
-})
-
-const emit = defineEmits(['submit', 'update:isDialogVisible'])
-
-const {
-  bandNamesCompiler,
-  findSatellite,
-  getDaysInMonth,
-  prioritizeByPreferredSatelliteId,
-} = useSlotHelpers()
-
-const schedMonth = ref(props.schedMonth)
-const localFormData = ref({ ...props.formData })
-const fixedBand = ref()
-const formRef = ref(null)
-
-const requiredValidator = (v: any) =>
-  (v !== null &&
-    v !== '' &&
-    v !== undefined &&
-    !(Array.isArray(v) && v.length === 0)) ||
-  'Field is required'
-
-const onFormSubmit = async () => {
-  const validator = await formRef.value?.validate()
-  if (!validator?.valid) {
-    console.log('Please fill the required fields.')
-    return false
+    }
+    fixedBand.value = null
   }
-  emit('submit', localFormData.value)
-  emit('update:isDialogVisible', false)
-  resetForm()
-}
 
-const onFormReset = () => {
-  resetForm()
-  emit('update:isDialogVisible', false)
-}
-
-const dialogModelValueUpdate = (val: boolean) => {
-  emit('update:isDialogVisible', val)
-}
-
-const resetForm = () => {
-  localFormData.value = {
-    id: 0,
-    satellite_id: props.formData.satellite_id,
-    slot_name: '',
-    date_from: '',
-    date_to: '',
-    worship_leader: '',
-    key_vox: [],
-    is_fixed_band: false,
-    pianists: [],
-    egs: [],
-    ags: [],
-    drummers: [],
-    bassists: [],
-    others: [],
+  const maxSelectionValidator = (value: any[]) => {
+    return value.length <= 6 || 'You can select up to 6 items only'
   }
-  fixedBand.value = null
-}
 
-const maxSelectionValidator = (value: any[]) => {
-  return value.length <= 6 || 'You can select up to 6 items only'
-}
+  const allSingers = ref<Singer[]>(singers)
+  const keyVox = ref<Singer[]>(singers)
 
-const allSingers = ref<Singer[]>(singers)
-const keyVox = ref<Singer[]>(singers)
+  watch(
+    () => props.formData,
+    (newVal) => {
+      localFormData.value = { ...newVal }
 
-watch(
-  () => props.formData,
-  (newVal) => {
-    localFormData.value = { ...newVal }
+      const { satellite_id } = localFormData.value
 
-    const { satellite_id } = localFormData.value
+      // Only set default if no worship leader selected yet
+      if (!localFormData.value.worship_leader && satellite_id) {
+        const defaultWL = singers.find(
+          (s) => s.preferred_satellite_id === satellite_id
+        )
 
-    // Only set default if no worship leader selected yet
-    if (!localFormData.value.worship_leader && satellite_id) {
-      const defaultWL = singers.find(
-        (s) => s.preferred_satellite_id === satellite_id,
-      )
+        if (defaultWL) {
+          localFormData.value.worship_leader = defaultWL.id
+        }
+      }
+    },
+    { deep: true, immediate: true }
+  )
 
-      if (defaultWL) {
-        localFormData.value.worship_leader = defaultWL.id
+  watch(fixedBand, (newVal) => {
+    const band = fixedBands.find((item) => item.id === newVal)
+    if (band) {
+      const { pianists, egs, ags, bassists, drummers, others } = band
+      Object.assign(localFormData.value, {
+        pianists,
+        egs,
+        ags,
+        bassists,
+        drummers,
+        others,
+      })
+    }
+  })
+
+  watch(
+    () => localFormData.value.slot_name,
+    (newVal, oldVal) => {
+      const mainSlots = ['AM', 'PM', 'Main Slot', 'Mid Slot']
+      if (
+        (mainSlots.includes(oldVal) && newVal === 'TWS') ||
+        (oldVal === 'TWS' && mainSlots.includes(newVal))
+      ) {
+        localFormData.value.slot_date = ''
       }
     }
-  },
-  { deep: true, immediate: true },
-)
+  )
 
-watch(fixedBand, (newVal) => {
-  const band = fixedBands.find((item) => item.id === newVal)
-  if (band) {
-    const { pianists, egs, ags, bassists, drummers, others } = band
-    Object.assign(localFormData.value, {
-      pianists,
-      egs,
-      ags,
-      bassists,
-      drummers,
-      others,
-    })
-  }
-})
-
-watch(
-  () => localFormData.value.slot_name,
-  (newVal, oldVal) => {
-    const mainSlots = ['AM', 'PM', 'Main Slot', 'Mid Slot']
-    if (
-      (mainSlots.includes(oldVal) && newVal === 'TWS') ||
-      (oldVal === 'TWS' && mainSlots.includes(newVal))
-    ) {
-      localFormData.value.slot_date = ''
+  watch(
+    () => localFormData.value.worship_leader,
+    (newVal) => {
+      keyVox.value = allSingers.value.filter((elem) => elem.id !== newVal)
     }
-  },
-)
-
-watch(
-  () => localFormData.value.worship_leader,
-  (newVal) => {
-    keyVox.value = allSingers.value.filter((elem) => elem.id !== newVal)
-  },
-)
+  )
 </script>
 
 <template>
@@ -217,7 +217,7 @@ watch(
               />
             </VCol>
 
-                        <!-- 👉 Worship Leader -->
+            <!-- 👉 Worship Leader -->
             <VCol cols="12" md="6">
               <AppSelect
                 v-model="localFormData.worship_leader"

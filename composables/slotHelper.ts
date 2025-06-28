@@ -53,7 +53,9 @@ export const useSlotHelpers = () => {
 
   const mutateData = (schedules = []) => {
     return schedules.map((element) => {
-      const musiciansObj = JSON.parse(element.musicians || '{}')
+      const { worship_leader, key_vox, musicians } = JSON.parse(
+        element.workers || '{}'
+      )
 
       const {
         pianists = [],
@@ -62,7 +64,7 @@ export const useSlotHelpers = () => {
         bassists = [],
         drummers = [],
         others = [],
-      } = musiciansObj
+      } = musicians
 
       return {
         id: element.id,
@@ -72,6 +74,8 @@ export const useSlotHelpers = () => {
         satellite_id: element.satellite_id,
         satellite: findSatellite(element.satellite_id)?.name || '',
         slot_name: element.slot_name,
+        worship_leader,
+        key_vox,
         pianists,
         egs,
         ags,

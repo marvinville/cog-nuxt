@@ -1,36 +1,26 @@
 <script setup lang="ts">
-const { slotData } = defineProps({
-  slotData: {
-    type: Object,
-    required: true,
-    default: () => ({
-      id: 0,
-      date_from: '',
-      date_to: '',
-      slot_name: '',
-      pianists: [],
-      egs: [],
-      ags: [],
-      bassists: [],
-      drummers: [],
-      others: [],
-      satellite_id: 0,
-      satellite: '',
-    }),
-  },
-})
+  const props = defineProps<{
+    slotData: {
+      date_to: string
+      slot_name: string
+      workers: string // JSON string
+    }
+  }>()
 
-const emit = defineEmits(['deleteSlot'])
+  const emit = defineEmits<{
+    (e: 'deleteSlot', payload: typeof props.slotData): void
+  }>()
 
-const { splitMusicians } = useSlotHelpers()
+  const { splitMusicians } = useSlotHelpers()
+  const { $dayjs } = useNuxtApp()
 
-const { $dayjs } = useNuxtApp()
+  // ✅ Parse workers JSON string once
+  const workers = JSON.parse(props.slotData.workers)
+  const { worship_leader, key_vox, musicians } = workers
 
-const localData = ref({ ...slotData })
+  const { pianists, egs, ags, bassists, drummers } = musicians
 
-const setSlotDate = slotDate => {
-  return $dayjs(slotDate).format('MMM D')
-}
+  const formatSlotDate = (date: string) => $dayjs(date).format('MMM D')
 </script>
 
 <template>
@@ -38,7 +28,7 @@ const setSlotDate = slotDate => {
     <slot name="title">
       <div class="d-flex flex-wrap align-center justify-space-between gap-2">
         <span class="text-h4 mb-2 font-weight-medium">{{
-          `${setSlotDate(slotData.date_to)} - ${slotData.slot_name}`
+          `${formatSlotDate(slotData.date_to)} - ${slotData.slot_name}`
         }}</span>
 
         <!-- Action Icons -->
@@ -57,50 +47,51 @@ const setSlotDate = slotDate => {
             variant="text"
             color="primary"
             class="text-right"
-            @click="emit('deleteSlot', localData)"
+            @click="emit('deleteSlot', slotData)"
           />
         </div>
       </div>
     </slot>
-    <!--
-      <h6 class="text-h6 my-1">
+
+    <h6 class="text-h6 my-1">
       Worship Leader:
-      <span class="text-body-1 d-inline-block">Cess </span>
-      </h6>
-    -->
+      <span class="text-body-1 d-inline-block">
+        {{ worship_leader }}
+      </span>
+    </h6>
 
     <h6 class="text-h6 my-1">
       Pianist:
       <span class="text-body-1 d-inline-block">
-        {{ splitMusicians(slotData.pianists) }}
+        {{ splitMusicians(pianists) }}
       </span>
     </h6>
 
     <h6 class="text-h6 my-1">
       EG:
       <span class="text-body-1 d-inline-block">
-        {{ splitMusicians(slotData.egs) }}
+        {{ splitMusicians(egs) }}
       </span>
     </h6>
 
     <h6 class="text-h6 my-1">
       AG:
       <span class="text-body-1 d-inline-block">
-        {{ splitMusicians(slotData.ags) }}
+        {{ splitMusicians(ags) }}
       </span>
     </h6>
 
     <h6 class="text-h6 my-1">
       Bassist:
       <span class="text-body-1 d-inline-block">
-        {{ splitMusicians(slotData.bassists) }}
+        {{ splitMusicians(bassists) }}
       </span>
     </h6>
 
     <h6 class="text-h6 my-1">
       Drummer:
       <span class="text-body-1 d-inline-block">
-        {{ splitMusicians(slotData.drummers) }}
+        {{ splitMusicians(drummers) }}
       </span>
     </h6>
   </VCardText>

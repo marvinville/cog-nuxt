@@ -1,192 +1,196 @@
 <script setup lang="ts">
-import Swal from 'sweetalert2'
-import SchedInfoDialog from '@/components/dialogs/SchedInfoDialog.vue'
-import SlotCard from '@/components/slots/SlotCard.vue'
-import type { SlotForm } from '@/types/SlotForm'
-import singers from '@/database/singers.json'
-const { mutateData } = useSlotHelpers()
-const { $dayjs } = useNuxtApp()
+  import Swal from 'sweetalert2'
+  import SchedInfoDialog from '@/components/dialogs/SchedInfoDialog.vue'
+  import SlotCard from '@/components/slots/SlotCard.vue'
+  import type { SlotForm } from '@/types/SlotForm'
+  import singers from '@/database/singers.json'
+  const { $dayjs } = useNuxtApp()
 
-const schedules = ref([])
-const dataIsReady = ref(false)
+  const schedules = ref([])
+  const dataIsReady = ref(false)
 
-const schedMonth = $dayjs().add(1, 'month')
-const schedMonthTitle = schedMonth.format('MMM YYYY')
+  const schedMonth = $dayjs().add(1, 'month')
+  const schedMonthTitle = schedMonth.format('MMM YYYY')
 
-const isSchedInfoDialogVisible = ref(false)
+  const isSchedInfoDialogVisible = ref(false)
 
-const formData = reactive({
-  id: 0,
-  satellite_id: 0,
-  slot_name: '',
-  date_from: '',
-  date_to: '',
-  worship_leader: '',
-  key_vox: [],
-  is_fixed_band: false,
-  pianists: [],
-  egs: [],
-  ags: [],
-  drummers: [],
-  bassists: [],
-  others: [],
-})
+  const formData = reactive({
+    id: 0,
+    satellite_id: 0,
+    slot_name: '',
+    date_from: '',
+    date_to: '',
+    worship_leader: '',
+    key_vox: [],
+    is_fixed_band: false,
+    pianists: [],
+    egs: [],
+    ags: [],
+    drummers: [],
+    bassists: [],
+    others: [],
+  })
 
-const api = useApi()
+  const api = useApi()
 
-const fetchData = async () => {
-  dataIsReady.value = false
+  const fetchData = async () => {
+    dataIsReady.value = false
 
-  try {
-    const result = await api('/slots')
+    try {
+      const result = await api('/slots')
 
-    schedules.value = mutateData(result)
-  } catch (err) {
-    console.error('API fetch failed:', err)
-  } finally {
-    dataIsReady.value = true
+      schedules.value = result
+    } catch (err) {
+      console.error('API fetch failed:', err)
+    } finally {
+      dataIsReady.value = true
+    }
   }
-}
 
-const saveSlot = async (slot: SlotForm) => {
-  const {
-    satellite_id,
-    pianists,
-    egs,
-    ags,
-    drummers,
-    bassists,
-    others,
-    slot_date,
-    slot_name,
-  } = slot
+  const preparePayload = (slot) => {
+    const {
+      satellite_id,
+      worship_leader,
+      key_vox,
+      pianists,
+      egs,
+      ags,
+      drummers,
+      bassists,
+      others,
+      slot_date,
+      slot_name,
+    } = slot
 
-  try {
-    const response = await api('/slots', {
-      method: 'POST',
-      body: {
-        satellite_id,
-        slot_name,
-        slot_date: slot_date ? $dayjs(slot_date).format('YYYY-MM-DD') : null,
-        musicians: JSON.stringify({
+    const selectedWL = findWL(worship_leader)
+    return {
+      satellite_id,
+      slot_name,
+      slot_date: slot_date ? $dayjs(slot_date).format('YYYY-MM-DD') : null,
+      workers: JSON.stringify({
+        worship_leader: selectedWL?.name,
+        key_vox: selectValues(singers, key_vox).map((elem) => elem.name),
+        musicians: {
           pianists,
           egs,
           ags,
           drummers,
           bassists,
           others,
-        }),
-      },
+        },
+      }),
+    }
+  }
+
+  const saveSlot = async (slot) => {
+    try {
+      const response = await api('/slots', {
+        method: 'POST',
+        body: preparePayload(slot),
+      })
+
+      return response?.id
+    } catch (err) {
+      console.error('Unexpected error while saving slot:', err)
+      return 0
+    }
+  }
+
+  const handleDeleteSlot = async (slot: any) => {
+    const slotDate = $dayjs(slot.date_from).format('MMM DD')
+    const deleteTitle = `${slotDate} - ${slot.slot_name}`
+
+    const confirm = await Swal.fire({
+      title: `Are you sure you want to delete ${deleteTitle}?`,
+      text: 'You won’t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it',
     })
 
-    return response?.id
-  } catch (err) {
-    console.error('Unexpected error while saving slot:', err)
-    return 0
-  }
-}
+    if (!confirm.value) return false
 
-const saveSlot2 = async (slot) => {
-  const {worship_leader, key_vox} = slot
+    try {
+      const response = await api(`/slots/${slot.id}`, { method: 'DELETE' })
 
-  const keyVox = selectValues(singers, key_vox)
+      if (response) {
+        schedules.value = schedules.value.filter((item) => item.id !== slot.id)
+      }
 
-  console.log(slot)
-
-  
-
-}
-
-const handleDeleteSlot = async (slot: any) => {
-  const slotDate = $dayjs(slot.date_from).format('MMM DD')
-  const deleteTitle = `${slotDate} - ${slot.slot_name}`
-
-  const confirm = await Swal.fire({
-    title: `Are you sure you want to delete ${deleteTitle}?`,
-    text: 'You won’t be able to revert this!',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, delete it!',
-    cancelButtonText: 'No, keep it',
-  })
-
-  if (!confirm.value) return false
-
-  try {
-    const response = await api(`/slots/${slot.id}`, { method: 'DELETE' })
-
-    if (response) {
-      schedules.value = schedules.value.filter((item) => item.id !== slot.id)
+      return true
+    } catch (err) {
+      console.error('Failed to delete slot:', err)
+      return false
     }
-
-    return true
-  } catch (err) {
-    console.error('Failed to delete slot:', err)
-    return false
   }
-}
 
-const filterBySatellite = ({
-  satelliteId,
-  data,
-}: {
-  satelliteId: number
-  data: any[]
-}) => {
-  return data.filter((item) => Number(item.satellite_id) === satelliteId)
-}
+  const filterBySatellite = ({
+    satelliteId,
+    data,
+  }: {
+    satelliteId: number
+    data: any[]
+  }) => {
+    return data.filter((item) => Number(item.satellite_id) === satelliteId)
+  }
 
-const addSchedule = (satId: number) => {
-  formData.satellite_id = satId
-  isSchedInfoDialogVisible.value = true
-}
+  const addSchedule = (satId: number) => {
+    formData.satellite_id = satId
+    isSchedInfoDialogVisible.value = true
+  }
 
-const selectValues = (haystack = [], needles = []) => {
+  const selectValues = (data = [], ids = []) => {
+    const selected = []
 
-  const selected = []
+    data.forEach((elem) => {
+      if (ids.includes(elem.id)) {
+        selected.push(elem)
+      }
+    })
 
-  haystack.forEach(elem => {
-    if(needles.includes(elem.id)){
-      selected.push(elem)
-    }
-  })
+    return selected
+  }
 
-  return selected
-}
+  const findWL = (id) => {
+    return singers.find((elem) => elem.id === id)
+  }
 
-const handleSubmit = async (slot: SlotForm) => {
-  dataIsReady.value = false
+  const handleSubmit = async (slot: SlotForm) => {
+    dataIsReady.value = false
 
-  const isSaved = await saveSlot2(slot)
+    const isSaved = await saveSlot(slot)
 
-  return false
+    if (isSaved > 0) {
+      const selectedWL = findWL(slot.worship_leader)
 
-  if (isSaved > 0) {
-    const newSlot = mutateData([
-      {
+      const newSlot = {
         id: isSaved,
-        musicians: JSON.stringify({
-          pianists: slot.pianists,
-          egs: slot.egs,
-          ags: slot.ags,
-          drummers: slot.drummers,
-          bassists: slot.bassists,
-          others: slot.others,
-        }),
         slot_name: slot.slot_name,
         date_from: slot.slot_date,
         date_to: slot.slot_date,
         satellite_id: slot.satellite_id,
-      },
-    ])[0]
+        workers: JSON.stringify({
+          worship_leader: selectedWL?.name,
+          key_vox: selectValues(singers, slot.key_vox).map((elem) => elem.name),
+          musicians: {
+            pianists: slot.pianists,
+            egs: slot.egs,
+            ags: slot.ags,
+            drummers: slot.drummers,
+            bassists: slot.bassists,
+            others: slot.others,
+          },
+        }),
+      }
 
-    schedules.value = [...schedules.value, newSlot]
+      schedules.value.push(newSlot)
+    }
+
+    dataIsReady.value = true
   }
 
-  dataIsReady.value = true
-}
-
-onMounted(fetchData)
+  onMounted(fetchData)
 </script>
 
 <template>
@@ -196,7 +200,6 @@ onMounted(fetchData)
     :sched-month="schedMonth"
     @submit="handleSubmit"
   />
-
   <VCol cols="12">
     <h2 class="text-h2">
       {{ schedMonthTitle }}
