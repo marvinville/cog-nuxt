@@ -1,5 +1,6 @@
 // composables/useSlotHelpers.ts
 import satellites from '@/database/satellites.json'
+import type { Singer } from '@/types/Person' // adjust path based on your project
 
 export const useSlotHelpers = () => {
   const { $dayjs } = useNuxtApp()
@@ -29,11 +30,11 @@ export const useSlotHelpers = () => {
   }
 
   const findSatellite = (id: number) => {
-    return satellites.find(el => el.id == id)
+    return satellites.find((el) => el.id == id)
   }
 
   const bandNamesCompiler = (fixedBands = []) => {
-    return fixedBands.map(item => {
+    return fixedBands.map((item) => {
       const names = [
         ...item.pianists,
         ...item.ags,
@@ -48,12 +49,10 @@ export const useSlotHelpers = () => {
   }
 
   const splitMusicians = (musicians = []) =>
-    musicians.length === 1
-      ? musicians[0]
-      : musicians.join(' & ')
+    musicians.length === 1 ? musicians[0] : musicians.join(' & ')
 
   const mutateData = (schedules = []) => {
-    return schedules.map(element => {
+    return schedules.map((element) => {
       const musiciansObj = JSON.parse(element.musicians || '{}')
 
       const {
@@ -83,6 +82,38 @@ export const useSlotHelpers = () => {
     })
   }
 
+  /**
+   * Reorders an array so items with the matching preferred_satellite_id come first.
+   *
+   * @param {Array} data – Array of objects with `preferred_satellite_id` field.
+   * @param {number} preferredId – The ID to prioritize.
+   * @returns {Array} – New array with matching items first.
+   */
+  const prioritizeByPreferredSatelliteId = ({
+    data,
+    preferredId,
+  }: {
+    data: Singer
+    preferredId: number
+  }) => {
+    const prioritized = []
+    const others = []
+
+    for (const item of data) {
+      if (item.preferred_satellite_id === preferredId) {
+        prioritized.push(item)
+      } else {
+        others.push(item)
+      }
+    }
+
+    return [...prioritized, ...others]
+  }
+
+  const filterWorshipLeader = (data: Singer[]): Singer[] => {
+    return data.filter((elem) => elem.is_worship_leader)
+  }
+
   return {
     getDaysInMonth,
     getWeekOfMonth,
@@ -90,5 +121,7 @@ export const useSlotHelpers = () => {
     mutateData,
     splitMusicians,
     bandNamesCompiler,
+    prioritizeByPreferredSatelliteId,
+    filterWorshipLeader,
   }
 }

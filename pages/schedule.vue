@@ -2,8 +2,8 @@
 import Swal from 'sweetalert2'
 import SchedInfoDialog from '@/components/dialogs/SchedInfoDialog.vue'
 import SlotCard from '@/components/slots/SlotCard.vue'
-import type { SlotForm } from '@/types/Slotform' // adjust path based on your project
-
+import type { SlotForm } from '@/types/SlotForm'
+import singers from '@/database/singers.json'
 const { mutateData } = useSlotHelpers()
 const { $dayjs } = useNuxtApp()
 
@@ -16,10 +16,13 @@ const schedMonthTitle = schedMonth.format('MMM YYYY')
 const isSchedInfoDialogVisible = ref(false)
 
 const formData = reactive({
+  id: 0,
   satellite_id: 0,
   slot_name: '',
   date_from: '',
   date_to: '',
+  worship_leader: '',
+  key_vox: [],
   is_fixed_band: false,
   pianists: [],
   egs: [],
@@ -38,11 +41,9 @@ const fetchData = async () => {
     const result = await api('/slots')
 
     schedules.value = mutateData(result)
-  }
-  catch (err) {
+  } catch (err) {
     console.error('API fetch failed:', err)
-  }
-  finally {
+  } finally {
     dataIsReady.value = true
   }
 }
@@ -67,16 +68,33 @@ const saveSlot = async (slot: SlotForm) => {
         satellite_id,
         slot_name,
         slot_date: slot_date ? $dayjs(slot_date).format('YYYY-MM-DD') : null,
-        musicians: JSON.stringify({ pianists, egs, ags, drummers, bassists, others }),
+        musicians: JSON.stringify({
+          pianists,
+          egs,
+          ags,
+          drummers,
+          bassists,
+          others,
+        }),
       },
     })
 
     return response?.id
-
   } catch (err) {
     console.error('Unexpected error while saving slot:', err)
     return 0
   }
+}
+
+const saveSlot2 = async (slot) => {
+  const {worship_leader, key_vox} = slot
+
+  const keyVox = selectValues(singers, key_vox)
+
+  console.log(slot)
+
+  
+
 }
 
 const handleDeleteSlot = async (slot: any) => {
@@ -92,14 +110,13 @@ const handleDeleteSlot = async (slot: any) => {
     cancelButtonText: 'No, keep it',
   })
 
-  if (!confirm.value)
-    return false
+  if (!confirm.value) return false
 
   try {
     const response = await api(`/slots/${slot.id}`, { method: 'DELETE' })
 
-    if(response){
-      schedules.value = schedules.value.filter(item => item.id !== slot.id)
+    if (response) {
+      schedules.value = schedules.value.filter((item) => item.id !== slot.id)
     }
 
     return true
@@ -109,9 +126,14 @@ const handleDeleteSlot = async (slot: any) => {
   }
 }
 
-
-const filterBySatellite = ({ satelliteId, data }: { satelliteId: number; data: any[] }) => {
-  return data.filter(item => Number(item.satellite_id) === satelliteId)
+const filterBySatellite = ({
+  satelliteId,
+  data,
+}: {
+  satelliteId: number
+  data: any[]
+}) => {
+  return data.filter((item) => Number(item.satellite_id) === satelliteId)
 }
 
 const addSchedule = (satId: number) => {
@@ -119,10 +141,25 @@ const addSchedule = (satId: number) => {
   isSchedInfoDialogVisible.value = true
 }
 
+const selectValues = (haystack = [], needles = []) => {
+
+  const selected = []
+
+  haystack.forEach(elem => {
+    if(needles.includes(elem.id)){
+      selected.push(elem)
+    }
+  })
+
+  return selected
+}
+
 const handleSubmit = async (slot: SlotForm) => {
   dataIsReady.value = false
 
-  const isSaved = await saveSlot(slot)
+  const isSaved = await saveSlot2(slot)
+
+  return false
 
   if (isSaved > 0) {
     const newSlot = mutateData([
@@ -171,26 +208,14 @@ onMounted(fetchData)
     <RouterLink to="/export">
       <VBtn>
         Export
-        <VIcon
-          end
-          icon="tabler-cloud-download"
-        />
+        <VIcon end icon="tabler-cloud-download" />
       </VBtn>
     </RouterLink>
   </VCol>
 
   <VRow v-if="dataIsReady">
-    <VCol
-      v-for="id in [1, 2, 3, 4]"
-      :key="id"
-      cols="12"
-      sm="6"
-      md="3"
-    >
-      <VCol
-        cols="12"
-        class="text-center"
-      >
+    <VCol v-for="id in [1, 2, 3, 4]" :key="id" cols="12" sm="6" md="3">
+      <VCol cols="12" class="text-center">
         <div class="d-flex flex-wrap align-center gap-2 justify-center">
           <h3 class="text-h3">
             {{ ['Main', 'Jabez', 'Silang', 'Trece'][id - 1] }}
@@ -205,20 +230,16 @@ onMounted(fetchData)
         </div>
       </VCol>
 
-      <VCol
-        cols="12"
-        lg="12"
-        md="12"
-      >
+      <VCol cols="12" lg="12" md="12">
         <VCard
-          v-for="item in filterBySatellite({ satelliteId: id, data: schedules })"
+          v-for="item in filterBySatellite({
+            satelliteId: id,
+            data: schedules,
+          })"
           :key="item.index"
           class="mb-2"
         >
-          <SlotCard
-            :slot-data="item"
-            @delete-slot="handleDeleteSlot"
-          />
+          <SlotCard :slot-data="item" @delete-slot="handleDeleteSlot" />
         </VCard>
       </VCol>
     </VCol>
