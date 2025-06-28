@@ -2,6 +2,7 @@
 import Swal from 'sweetalert2'
 import SchedInfoDialog from '@/components/dialogs/SchedInfoDialog.vue'
 import SlotCard from '@/components/slots/SlotCard.vue'
+import type { SlotForm } from '@/types/Slotform' // adjust path based on your project
 
 const { mutateData } = useSlotHelpers()
 const { $dayjs } = useNuxtApp()
@@ -46,7 +47,7 @@ const fetchData = async () => {
   }
 }
 
-const saveSlot = async (formVal: typeof formData) => {
+const saveSlot = async (slot: SlotForm) => {
   const {
     satellite_id,
     pianists,
@@ -57,25 +58,25 @@ const saveSlot = async (formVal: typeof formData) => {
     others,
     slot_date,
     slot_name,
-  } = formVal
+  } = slot
 
-  const { data, error } = await useApi('/slots', {
-    method: 'POST',
-    body: {
-      satellite_id,
-      slot_name,
-      slot_date: slot_date ? $dayjs(slot_date).format('YYYY-MM-DD') : null,
-      musicians: JSON.stringify({ pianists, egs, ags, drummers, bassists, others }),
-    },
-  })
+  try {
+    const response = await api('/slots', {
+      method: 'POST',
+      body: {
+        satellite_id,
+        slot_name,
+        slot_date: slot_date ? $dayjs(slot_date).format('YYYY-MM-DD') : null,
+        musicians: JSON.stringify({ pianists, egs, ags, drummers, bassists, others }),
+      },
+    })
 
-  if (error.value) {
-    console.error('Save failed:', error.value)
+    return response?.id
 
+  } catch (err) {
+    console.error('Unexpected error while saving slot:', err)
     return 0
   }
-
-  return data.value?.id ?? 0
 }
 
 const handleDeleteSlot = async (slot: any) => {
@@ -94,18 +95,20 @@ const handleDeleteSlot = async (slot: any) => {
   if (!confirm.value)
     return false
 
-  const { error } = await useApi(`/slots/${slot.id}`, { method: 'DELETE' })
+  try {
+    const response = await api(`/slots/${slot.id}`, { method: 'DELETE' })
 
-  if (error.value) {
-    console.error('Delete failed:', error.value)
+    if(response){
+      schedules.value = schedules.value.filter(item => item.id !== slot.id)
+    }
 
+    return true
+  } catch (err) {
+    console.error('Failed to delete slot:', err)
     return false
   }
-
-  schedules.value = schedules.value.filter(item => item.id !== slot.id)
-
-  return true
 }
+
 
 const filterBySatellite = ({ satelliteId, data }: { satelliteId: number; data: any[] }) => {
   return data.filter(item => Number(item.satellite_id) === satelliteId)
@@ -116,27 +119,27 @@ const addSchedule = (satId: number) => {
   isSchedInfoDialogVisible.value = true
 }
 
-const handleSubmit = async (data: typeof formData) => {
+const handleSubmit = async (slot: SlotForm) => {
   dataIsReady.value = false
 
-  const isSaved = await saveSlot(data)
+  const isSaved = await saveSlot(slot)
 
   if (isSaved > 0) {
     const newSlot = mutateData([
       {
         id: isSaved,
         musicians: JSON.stringify({
-          pianists: data.pianists,
-          egs: data.egs,
-          ags: data.ags,
-          drummers: data.drummers,
-          bassists: data.bassists,
-          others: data.others,
+          pianists: slot.pianists,
+          egs: slot.egs,
+          ags: slot.ags,
+          drummers: slot.drummers,
+          bassists: slot.bassists,
+          others: slot.others,
         }),
-        slot_name: data.slot_name,
-        date_from: data.slot_date,
-        date_to: data.slot_date,
-        satellite_id: data.satellite_id,
+        slot_name: slot.slot_name,
+        date_from: slot.slot_date,
+        date_to: slot.slot_date,
+        satellite_id: slot.satellite_id,
       },
     ])[0]
 
