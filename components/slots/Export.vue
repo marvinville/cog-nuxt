@@ -51,7 +51,7 @@
     <thead>
       <tr class="banner font-white">
         <th :colspan="colNum" width="100%">
-          CHURCH OF GOD WORLD MISSION PHILIPPINES - DASMARINAS <br />PRAISE AND
+          CHURCH OF GOD WORLD MISSIONS PHILIPPINES - DASMARINAS <br />PRAISE AND
           WORSHIP SCHEDULE FOR
           {{ monthDisplay.toUpperCase() }}
         </th>
@@ -68,6 +68,7 @@
           v-for="(sunday, index) in sundaysInMonth"
           :key="index"
           colspan="2"
+          class="mainTd"
           :width="colWidth"
           valign="top"
         >
@@ -85,6 +86,7 @@
           v-for="(sunday, index) in sundaysInMonth"
           :key="index"
           colspan="2"
+          class="mainTd"
           :width="colWidth"
           valign="top"
         >
@@ -102,6 +104,7 @@
           v-for="(sunday, index) in sundaysInMonth"
           :key="index"
           colspan="2"
+          class="mainTd"
           :width="colWidth"
           valign="top"
         >
@@ -119,6 +122,7 @@
           v-for="(sunday, index) in sundaysInMonth"
           :key="index"
           colspan="2"
+          class="mainTd"
           :width="colWidth"
           valign="top"
         >

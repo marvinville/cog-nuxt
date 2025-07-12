@@ -86,6 +86,7 @@ export const useSlotHelpers = () => {
         md,
         tech_head,
         devotion,
+        remarks: element.remarks,
       }
     })
   }

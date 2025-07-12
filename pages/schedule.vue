@@ -24,6 +24,7 @@
     worship_leader: '',
     key_vox: [],
     is_fixed_band: false,
+    fixed_band_id: null,
     pianists: [],
     egs: [],
     ags: [],
@@ -65,11 +66,13 @@
       drummers,
       bassists,
       others,
+      fixed_band_id,
       slot_date,
       slot_name,
       tech_head,
       md,
       devotion,
+      remarks,
     } = slot
 
     const selectedWL = findWL(worship_leader)
@@ -87,11 +90,14 @@
           pianists,
           egs,
           ags,
-          drummers,
           bassists,
+          drummers,
           others,
         },
+        fixed_band_id,
       }),
+      remarks,
+      created_by: 1,
     }
   }
 
@@ -139,12 +145,25 @@
   }
 
   const handleEditSlot = async (slot: any) => {
-    const { id, satellite_id, slot_name, date_from, date_to, workers } = slot
+    const {
+      id,
+      satellite_id,
+      slot_name,
+      date_from,
+      date_to,
+      workers,
+      remarks,
+    } = slot
 
-    console.log(slot)
-
-    const { worship_leader, key_vox, musicians, md, tech_head, devotion } =
-      JSON.parse(workers || '{}')
+    const {
+      worship_leader,
+      key_vox,
+      musicians,
+      md,
+      tech_head,
+      devotion,
+      fixed_band_id,
+    } = JSON.parse(workers || '{}')
 
     const {
       pianists = [],
@@ -171,9 +190,11 @@
       drummers,
       bassists,
       others,
+      fixed_band_id,
       tech_head,
       md,
       devotion,
+      remarks,
     }
 
     isSchedInfoDialogVisible.value = true
@@ -190,8 +211,7 @@
   }
 
   const addSchedule = (satId: number) => {
-    formData = formDefault
-    formData.satellite_id = satId
+    formData = { ...formDefault, satellite_id: satId }
     isSchedInfoDialogVisible.value = true
   }
 
@@ -236,9 +256,11 @@
             bassists: slot.bassists,
             others: slot.others,
           },
+          fixed_band_id: slot.fixed_band_id,
           tech_head: slot.tech_head,
           md: slot.md,
           devotion: slot.devotion,
+          remarks: slot.remarks,
         }),
       }
 

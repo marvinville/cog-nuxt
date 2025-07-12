@@ -17,7 +17,7 @@
   <table class="outer-table" width="100%">
     <tbody>
       <tr>
-        <td colspan="2" class="with-border">{{ slotDate }}</td>
+        <td colspan="2" class="with-border slot-date">{{ slotDate }}</td>
       </tr>
 
       <tr v-if="slots.length === 0">
@@ -25,7 +25,7 @@
       </tr>
 
       <tr v-else>
-        <td v-for="(slot, key) in slots">
+        <td v-for="(slot, key) in slots" class="slot-table-holder">
           <Slot :slot="slot" />
         </td>
       </tr>

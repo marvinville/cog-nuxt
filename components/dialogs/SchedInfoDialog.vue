@@ -25,6 +25,7 @@
         worship_leader: '',
         key_vox: [],
         is_fixed_band: false,
+        fixed_band_id: null,
         pianists: [],
         egs: [],
         ags: [],
@@ -34,6 +35,7 @@
         tech_head: '',
         md: '',
         devotion: [],
+        remarks: '',
       }),
     },
     isDialogVisible: {
@@ -56,7 +58,6 @@
 
   const schedMonth = ref(props.schedMonth)
   const localFormData = ref({ ...props.formData })
-  const fixedBand = ref()
   const formRef = ref(null)
 
   const requiredValidator = (v: any) =>
@@ -79,7 +80,6 @@
 
   const onFormReset = () => {
     resetForm()
-    emit('update:isDialogVisible', false)
   }
 
   const dialogModelValueUpdate = (val: boolean) => {
@@ -89,13 +89,14 @@
   const resetForm = () => {
     localFormData.value = {
       id: 0,
-      satellite_id: props.formData.satellite_id,
+      satellite_id: 0,
       slot_name: '',
       date_from: '',
       date_to: '',
       worship_leader: '',
       key_vox: [],
       is_fixed_band: false,
+      fixed_band_id: null,
       pianists: [],
       egs: [],
       ags: [],
@@ -105,8 +106,8 @@
       tech_head: '',
       md: '',
       devotion: [],
+      remarks: '',
     }
-    fixedBand.value = null
   }
 
   const maxSelectionValidator = (max: number) => {
@@ -124,10 +125,12 @@
   }
 
   const handleFixedBand = (value: string[]) => {
-    const band = fixedBands.find((b) => b.id === fixedBand.value)
+    const band = fixedBands.find(
+      (b) => b.id === localFormData.value.fixed_band_id
+    )
 
     if (!band) {
-      fixedBand.value = []
+      localFormData.value.fixed_band_id = null
       localFormData.value.is_fixed_band = false
       return
     }
@@ -228,20 +231,23 @@
     { deep: true, immediate: true }
   )
 
-  watch(fixedBand, (newVal) => {
-    const band = fixedBands.find((item) => item.id === newVal)
-    if (band) {
-      const { pianists, egs, ags, bassists, drummers, others } = band
-      Object.assign(localFormData.value, {
-        pianists,
-        egs,
-        ags,
-        bassists,
-        drummers,
-        others,
-      })
+  watch(
+    () => localFormData.value.fixed_band_id,
+    (newVal) => {
+      const band = fixedBands.find((item) => item.id === newVal)
+      if (band) {
+        const { pianists, egs, ags, bassists, drummers, others } = band
+        Object.assign(localFormData.value, {
+          pianists,
+          egs,
+          ags,
+          bassists,
+          drummers,
+          others,
+        })
+      }
     }
-  })
+  )
 
   watch(
     () => localFormData.value.slot_name,
@@ -268,7 +274,7 @@
     (newVal, oldVal) => {
       // if from fixed band to non-fixed band, reset the band members
       if (oldVal === false && newVal === true) {
-        fixedBand.value = []
+        localFormData.value.fixed_band_id = null
         Object.assign(localFormData.value, {
           pianists: [],
           egs: [],
@@ -371,28 +377,32 @@
                 closable-chips
                 chips
                 multiple
+                clearable
               />
             </VCol>
 
-            <!-- 👉 Switch -->
-            <VCol cols="12" md="12">
-              <VSwitch
-                v-model="localFormData.is_fixed_band"
-                density="compact"
-                label="Is Fixed Band?"
-              />
-            </VCol>
+            <!-- Display only on create -->
+            <template v-if="!isViewOnly">
+              <!-- 👉 Switch -->
+              <VCol cols="12" md="12">
+                <VSwitch
+                  v-model="localFormData.is_fixed_band"
+                  density="compact"
+                  label="Is Fixed Band?"
+                />
+              </VCol>
 
-            <!-- 👉 Fixed Bands -->
-            <VCol v-if="localFormData.is_fixed_band" cols="12" md="12">
-              <AppSelect
-                v-model="fixedBand"
-                label="Band"
-                :items="bandNamesCompiler(fixedBands)"
-                item-title="names"
-                item-value="id"
-              />
-            </VCol>
+              <!-- 👉 Fixed Bands -->
+              <VCol v-if="localFormData.is_fixed_band" cols="12" md="12">
+                <AppSelect
+                  v-model="localFormData.fixed_band_id"
+                  label="Band"
+                  :items="bandNamesCompiler(fixedBands)"
+                  item-title="names"
+                  item-value="id"
+                />
+              </VCol>
+            </template>
 
             <!-- 👉 Keyboardist -->
             <VCol cols="12" md="6">
@@ -498,6 +508,7 @@
                 :items="ths"
                 item-title="name"
                 item-value="name"
+                clearable
               />
             </VCol>
 
@@ -509,6 +520,7 @@
                 :items="mds"
                 item-title="name"
                 item-value="name"
+                clearable
               />
             </VCol>
 
@@ -531,8 +543,21 @@
               />
             </VCol>
 
-            <!-- 👉 Blank -->
-            <VCol cols="12" md="6"> &nbsp; </VCol>
+            <!-- 👉 Practice Details -->
+            <VCol cols="12" md="6">
+              <AppTextField
+                v-model="localFormData.remarks"
+                :rules="[
+                  (v) => !!v || 'Required',
+                  (v) => !v || v.length <= 25 || 'Max 25 characters',
+                ]"
+                counter
+                maxlength="25"
+                placeholder="Thu 5-9PM"
+                hint="This field uses maxlength attribute"
+                label="Practice Details"
+              />
+            </VCol>
 
             <!-- 👉 Submit and Cancel -->
             <VCol
@@ -541,7 +566,7 @@
               v-if="!isViewOnly"
             >
               <VBtn color="secondary" variant="tonal" @click="onFormReset"
-                >Cancel</VBtn
+                >Clear</VBtn
               >
               <VBtn type="submit">Submit</VBtn>
             </VCol>

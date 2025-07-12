@@ -14,4 +14,6 @@ export type SlotForm = {
   tech_head: string
   md: string
   devotion: string[]
+  remarks: string
+  fixed_band_id: number | null
 }

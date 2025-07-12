@@ -11,6 +11,7 @@
     tech_head: string
     md: string
     devotion: string[]
+    remarks: string
   }
 
   const props = defineProps<{ slot: Slot }>()
@@ -83,7 +84,7 @@
       </tr>
 
       <tr>
-        <td class="italic font-blue practice">Thu 5PM-9PM at Main Sanc</td>
+        <td class="italic font-blue practice">{{ slot.remarks }}</td>
       </tr>
     </tbody>
   </table>
@@ -98,6 +99,6 @@
   }
 
   .slot-table td {
-    border: 1px solid #333 !important;
+    // border: 1px solid #333 !important;
   }
 </style>
