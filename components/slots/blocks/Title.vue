@@ -1,10 +1,10 @@
 <script setup>
-const props = defineProps({
-  satellite: {
-    type: String,
-    required: true,
-  },
-})
+  const props = defineProps({
+    satellite: {
+      type: String,
+      required: true,
+    },
+  })
 </script>
 <template>
   <table class="tbl-collapse" width="100%">

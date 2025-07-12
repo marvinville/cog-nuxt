@@ -1,22 +1,20 @@
 [
   {
     "id": 1,
-    "pianists": [
-      "Adrinel"
-    ],
-    "egs": [
-      "Tambin",
-      "Iris"
-    ],
-    "ags": [
-      "Jennie"
-    ],
-    "bassists": [
-      "JC"
-    ],
-    "drummers": [
-      "Arjay"
-    ],
+    "pianists": ["Adrinel"],
+    "egs": ["Tambin", "Iris"],
+    "ags": ["Jennie"],
+    "bassists": ["JC"],
+    "drummers": ["Arjay"],
+    "others": ["New Player"]
+  },
+  {
+    "id": 2,
+    "pianists": ["Owen"],
+    "egs": ["Eldrin"],
+    "ags": ["Eiren"],
+    "bassists": ["Carlos"],
+    "drummers": ["PauloC"],
     "others": []
   }
 ]

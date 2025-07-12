@@ -5,7 +5,10 @@
   import egs from '@/database/musicians/egs.json'
   import fixedBands from '@/database/musicians/fixed-bands.json'
   import pianists from '@/database/musicians/pianists.json'
+  import others from '@/database/musicians/others.json'
   import singers from '@/database/singers.json'
+  import ths from '@/database/tech-heads.json'
+  import mds from '@/database/mds.json'
   import type { Singer } from '@/types/Person' // adjust path based on your project
 
   const props = defineProps({
@@ -28,6 +31,9 @@
         drummers: [],
         bassists: [],
         others: [],
+        tech_head: '',
+        md: '',
+        devotion: [],
       }),
     },
     isDialogVisible: {
@@ -96,13 +102,107 @@
       drummers: [],
       bassists: [],
       others: [],
+      tech_head: '',
+      md: '',
+      devotion: [],
     }
     fixedBand.value = null
   }
 
-  const maxSelectionValidator = (value: any[]) => {
-    return value.length <= 6 || 'You can select up to 6 items only'
+  const maxSelectionValidator = (max: number) => {
+    return (value: any[]) => {
+      return value.length <= max || `You can select up to ${max} items only`
+    }
   }
+
+  const checkScheduledNames = (value: string[]) => {
+    const scheduledNames = new Set(compiledNames.value.map((el) => el.name))
+
+    const isValid = value.every((name) => scheduledNames.has(name))
+
+    return isValid || 'One or more names are not scheduled'
+  }
+
+  const handleFixedBand = (value: string[]) => {
+    const band = fixedBands.find((b) => b.id === fixedBand.value)
+
+    if (!band) {
+      fixedBand.value = []
+      localFormData.value.is_fixed_band = false
+      return
+    }
+
+    const {
+      pianists = [],
+      ags = [],
+      egs = [],
+      bassists = [],
+      drummers = [],
+      others = [],
+    } = band
+
+    const fixedBandMembers = new Set([
+      ...pianists,
+      ...ags,
+      ...egs,
+      ...bassists,
+      ...drummers,
+      ...others,
+    ])
+
+    const selectedMusicians = compiledNames.value.filter(
+      (person) => person.role === 'musician'
+    )
+
+    if (selectedMusicians.length !== fixedBandMembers.size) {
+      localFormData.value.is_fixed_band = false
+      return
+    }
+
+    const isPartOfFixedBand = value.every((name) => fixedBandMembers.has(name))
+    localFormData.value.is_fixed_band = isPartOfFixedBand
+  }
+
+  const compiledNames = computed(() => {
+    const selectedPianists = [...localFormData.value.pianists]
+    const selectedEgs = [...localFormData.value.egs]
+    const selectedAgs = [...localFormData.value.ags]
+    const selectedBassists = [...localFormData.value.bassists]
+    const selectedDrummers = [...localFormData.value.drummers]
+    const selectedOthers = [...localFormData.value.others]
+    const arrKeyVox = [...localFormData.value.key_vox]
+
+    const singers = keyVox.value
+      .filter((elem: Singer) => {
+        return arrKeyVox.includes(elem.id)
+      })
+      .map((elem) => {
+        return {
+          role: 'singer',
+          name: elem.name,
+        }
+      })
+
+    const musicians = [
+      ...selectedPianists,
+      ...selectedEgs,
+      ...selectedAgs,
+      ...selectedBassists,
+      ...selectedDrummers,
+      ...selectedOthers,
+    ].map((elem) => {
+      return {
+        role: 'musician',
+        name: elem,
+      }
+    })
+
+    return [...singers, ...musicians]
+  })
+
+  const isViewOnly = computed(() => {
+    return localFormData.value.id > 0
+  })
 
   const allSingers = ref<Singer[]>(singers)
   const keyVox = ref<Singer[]>(singers)
@@ -162,6 +262,24 @@
       keyVox.value = allSingers.value.filter((elem) => elem.id !== newVal)
     }
   )
+
+  watch(
+    () => localFormData.value.is_fixed_band,
+    (newVal, oldVal) => {
+      // if from fixed band to non-fixed band, reset the band members
+      if (oldVal === false && newVal === true) {
+        fixedBand.value = []
+        Object.assign(localFormData.value, {
+          pianists: [],
+          egs: [],
+          ags: [],
+          bassists: [],
+          drummers: [],
+          others: [],
+        })
+      }
+    }
+  )
 </script>
 
 <template>
@@ -183,7 +301,12 @@
         <p class="text-body-1 text-center mb-6">Edit worship slot schedule.</p>
 
         <!-- 👉 Form -->
-        <VForm ref="formRef" class="mt-6" @submit.prevent="onFormSubmit">
+        <VForm
+          ref="formRef"
+          class="mt-6"
+          @submit.prevent="onFormSubmit"
+          :disabled="isViewOnly"
+        >
           <VRow>
             <!-- 👉 Slot Name -->
             <VCol cols="12" md="6">
@@ -244,7 +367,7 @@
                 :items="keyVox"
                 item-title="name"
                 item-value="id"
-                :rules="[requiredValidator, maxSelectionValidator]"
+                :rules="[requiredValidator, maxSelectionValidator(6)]"
                 closable-chips
                 chips
                 multiple
@@ -282,6 +405,8 @@
                 :items="pianists"
                 item-title="name"
                 item-value="name"
+                :rules="[requiredValidator, maxSelectionValidator(2)]"
+                @update:modelValue="handleFixedBand"
               />
             </VCol>
 
@@ -296,6 +421,8 @@
                 :items="egs"
                 item-title="name"
                 item-value="name"
+                :rules="[requiredValidator, maxSelectionValidator(2)]"
+                @update:modelValue="handleFixedBand"
               />
             </VCol>
 
@@ -310,6 +437,8 @@
                 :items="ags"
                 item-title="name"
                 item-value="name"
+                :rules="[requiredValidator, maxSelectionValidator(2)]"
+                @update:modelValue="handleFixedBand"
               />
             </VCol>
 
@@ -324,6 +453,8 @@
                 :items="bassists"
                 item-title="name"
                 item-value="name"
+                :rules="[requiredValidator, maxSelectionValidator(2)]"
+                @update:modelValue="handleFixedBand"
               />
             </VCol>
 
@@ -338,27 +469,77 @@
                 :items="drummers"
                 item-title="name"
                 item-value="name"
+                :rules="[requiredValidator, maxSelectionValidator(2)]"
+                @update:modelValue="handleFixedBand"
               />
             </VCol>
 
             <!-- 👉 Others -->
-            <!--
-              <VCol cols="12" md="6">
+            <VCol cols="12" md="6">
               <AppSelect
-              closable-chips
-              chips
-              multiple
-              label="Others"
-              :items="others"
-              item-title="name"
-              item-value="name"
-              v-model="localFormData.others"
+                v-model="localFormData.others"
+                closable-chips
+                chips
+                multiple
+                label="Others"
+                :items="others"
+                item-title="name"
+                item-value="name"
+                :rules="[maxSelectionValidator(2)]"
+                @update:modelValue="handleFixedBand"
               />
-              </VCol>
-            -->
+            </VCol>
+
+            <!-- 👉 Tech Head -->
+            <VCol cols="12" md="6">
+              <AppSelect
+                v-model="localFormData.tech_head"
+                label="Tech Head"
+                :items="ths"
+                item-title="name"
+                item-value="name"
+              />
+            </VCol>
+
+            <!-- 👉 MD -->
+            <VCol cols="12" md="6">
+              <AppSelect
+                v-model="localFormData.md"
+                label="MD"
+                :items="mds"
+                item-title="name"
+                item-value="name"
+              />
+            </VCol>
+
+            <!-- 👉 Devotion -->
+            <VCol cols="12" md="6">
+              <AppSelect
+                v-model="localFormData.devotion"
+                closable-chips
+                chips
+                multiple
+                label="Devotion"
+                :items="compiledNames"
+                item-title="name"
+                item-value="name"
+                :rules="[
+                  requiredValidator,
+                  maxSelectionValidator(2),
+                  checkScheduledNames,
+                ]"
+              />
+            </VCol>
+
+            <!-- 👉 Blank -->
+            <VCol cols="12" md="6"> &nbsp; </VCol>
 
             <!-- 👉 Submit and Cancel -->
-            <VCol cols="12" class="d-flex flex-wrap justify-center gap-4">
+            <VCol
+              cols="12"
+              class="d-flex flex-wrap justify-center gap-4"
+              v-if="!isViewOnly"
+            >
               <VBtn color="secondary" variant="tonal" @click="onFormReset"
                 >Cancel</VBtn
               >

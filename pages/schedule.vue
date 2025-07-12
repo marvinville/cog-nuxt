@@ -14,10 +14,11 @@
 
   const isSchedInfoDialogVisible = ref(false)
 
-  const formData = reactive({
+  const formDefault = {
     id: 0,
     satellite_id: 0,
     slot_name: '',
+    slot_date: '',
     date_from: '',
     date_to: '',
     worship_leader: '',
@@ -29,7 +30,13 @@
     drummers: [],
     bassists: [],
     others: [],
-  })
+    tech_head: '',
+    md: '',
+    devotion: [],
+    remarks: '',
+  }
+
+  let formData = reactive(formDefault)
 
   const api = useApi()
 
@@ -60,6 +67,9 @@
       others,
       slot_date,
       slot_name,
+      tech_head,
+      md,
+      devotion,
     } = slot
 
     const selectedWL = findWL(worship_leader)
@@ -70,6 +80,9 @@
       workers: JSON.stringify({
         worship_leader: selectedWL?.name,
         key_vox: selectValues(singers, key_vox).map((elem) => elem.name),
+        tech_head,
+        md,
+        devotion,
         musicians: {
           pianists,
           egs,
@@ -125,6 +138,47 @@
     }
   }
 
+  const handleEditSlot = async (slot: any) => {
+    const { id, satellite_id, slot_name, date_from, date_to, workers } = slot
+
+    console.log(slot)
+
+    const { worship_leader, key_vox, musicians, md, tech_head, devotion } =
+      JSON.parse(workers || '{}')
+
+    const {
+      pianists = [],
+      egs = [],
+      ags = [],
+      bassists = [],
+      drummers = [],
+      others = [],
+    } = musicians
+
+    formData = {
+      id,
+      satellite_id,
+      slot_date: $dayjs(date_from).format('MMM D, YYYY'),
+      slot_name,
+      date_from,
+      date_to,
+      worship_leader,
+      key_vox,
+      is_fixed_band: false,
+      pianists,
+      egs,
+      ags,
+      drummers,
+      bassists,
+      others,
+      tech_head,
+      md,
+      devotion,
+    }
+
+    isSchedInfoDialogVisible.value = true
+  }
+
   const filterBySatellite = ({
     satelliteId,
     data,
@@ -136,6 +190,7 @@
   }
 
   const addSchedule = (satId: number) => {
+    formData = formDefault
     formData.satellite_id = satId
     isSchedInfoDialogVisible.value = true
   }
@@ -181,6 +236,9 @@
             bassists: slot.bassists,
             others: slot.others,
           },
+          tech_head: slot.tech_head,
+          md: slot.md,
+          devotion: slot.devotion,
         }),
       }
 
@@ -242,7 +300,11 @@
           :key="item.index"
           class="mb-2"
         >
-          <SlotCard :slot-data="item" @delete-slot="handleDeleteSlot" />
+          <SlotCard
+            :slot-data="item"
+            @delete-slot="handleDeleteSlot"
+            @edit-slot="handleEditSlot"
+          />
         </VCard>
       </VCol>
     </VCol>

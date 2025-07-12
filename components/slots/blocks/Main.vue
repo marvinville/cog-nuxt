@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import Slot from '@/components/slots/blocks/Slot.vue'
+  import Slot from '@/components/slots/blocks/Slot.vue'
 
-const { slotDate, slots } = defineProps({
-  slotDate: {
-    type: String,
-    required: true,
-  },
-  slots: {
-    type: Array,
-    required: true,
-  },
-})
+  const { slotDate, slots } = defineProps({
+    slotDate: {
+      type: String,
+      required: true,
+    },
+    slots: {
+      type: Array,
+      required: true,
+    },
+  })
 </script>
 
 <template>

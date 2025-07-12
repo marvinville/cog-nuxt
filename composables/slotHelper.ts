@@ -39,23 +39,24 @@ export const useSlotHelpers = () => {
         ...item.pianists,
         ...item.ags,
         ...item.egs,
-        ...item.drummers,
         ...item.bassists,
+        ...item.drummers,
         ...item.others,
-      ].join(', ')
+      ]
+        .filter((name) => name?.trim()) // ✅ Remove empty/null/undefined/whitespace
+        .join(', ')
 
       return { ...item, names }
     })
   }
 
-  const splitMusicians = (musicians = []) =>
-    musicians.length === 1 ? musicians[0] : musicians.join(' & ')
+  const splitNames = (names = []) =>
+    names.length === 1 ? names[0] : names.join(' & ')
 
   const mutateData = (schedules = []) => {
     return schedules.map((element) => {
-      const { worship_leader, key_vox, musicians } = JSON.parse(
-        element.workers || '{}'
-      )
+      const { worship_leader, key_vox, musicians, md, tech_head, devotion } =
+        JSON.parse(element.workers || '{}')
 
       const {
         pianists = [],
@@ -82,6 +83,9 @@ export const useSlotHelpers = () => {
         bassists,
         drummers,
         others,
+        md,
+        tech_head,
+        devotion,
       }
     })
   }
@@ -123,7 +127,7 @@ export const useSlotHelpers = () => {
     getWeekOfMonth,
     findSatellite,
     mutateData,
-    splitMusicians,
+    splitNames,
     bandNamesCompiler,
     prioritizeByPreferredSatelliteId,
     filterWorshipLeader,

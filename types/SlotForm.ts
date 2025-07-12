@@ -1,4 +1,5 @@
 export type SlotForm = {
+  id: number
   satellite_id: number | string
   worship_leader: string
   pianists: any[]
@@ -9,4 +10,8 @@ export type SlotForm = {
   others: any[]
   slot_date: string
   slot_name: string
+  key_vox: string[]
+  tech_head: string
+  md: string
+  devotion: string[]
 }
