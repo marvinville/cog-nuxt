@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "name": "Cess",
+    "preferred_satellite_id": 1,
+    "is_worship_leader": true
+  },
+  {
+    "id": 2,
+    "name": "Denize",
+    "preferred_satellite_id": 2,
+    "is_worship_leader": true
+  },
+  {
+    "id": 3,
+    "name": "Jesryll",
+    "preferred_satellite_id": 3,
+    "is_worship_leader": true
+  },
+  {
+    "id": 4,
+    "name": "Maybs",
+    "preferred_satellite_id": 4,
+    "is_worship_leader": true
+  },
+  {
+    "id": 5,
+    "name": "Liam",
+    "preferred_satellite_id": 1,
+    "is_worship_leader": false
+  },
+  {
+    "id": 6,
+    "name": "Ava",
+    "preferred_satellite_id": 2,
+    "is_worship_leader": false
+  },
+  {
+    "id": 7,
+    "name": "Noah",
+    "preferred_satellite_id": 3,
+    "is_worship_leader": false
+  },
+  {
+    "id": 8,
+    "name": "Zoe",
+    "preferred_satellite_id": 4,
+    "is_worship_leader": false
+  },
+  {
+    "id": 9,
+    "name": "Leo",
+    "preferred_satellite_id": 1,
+    "is_worship_leader": false
+  },
+  {
+    "id": 10,
+    "name": "Isla",
+    "preferred_satellite_id": 2,
+    "is_worship_leader": false
+  },
+  {
+    "id": 11,
+    "name": "Finn",
+    "preferred_satellite_id": 3,
+    "is_worship_leader": false
+  },
+  {
+    "id": 12,
+    "name": "Maya",
+    "preferred_satellite_id": 4,
+    "is_worship_leader": false
+  },
+  {
+    "id": 13,
+    "name": "Elio",
+    "preferred_satellite_id": 1,
+    "is_worship_leader": false
+  },
+  {
+    "id": 14,
+    "name": "Nina",
+    "preferred_satellite_id": 2,
+    "is_worship_leader": false
+  }
+]

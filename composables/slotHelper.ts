@@ -1,5 +1,6 @@
 // composables/useSlotHelpers.ts
 import satellites from '@/database/satellites.json'
+import type { Singer } from '@/types/Person' // adjust path based on your project
 
 export const useSlotHelpers = () => {
   const { $dayjs } = useNuxtApp()
@@ -29,32 +30,33 @@ export const useSlotHelpers = () => {
   }
 
   const findSatellite = (id: number) => {
-    return satellites.find(el => el.id == id)
+    return satellites.find((el) => el.id == id)
   }
 
   const bandNamesCompiler = (fixedBands = []) => {
-    return fixedBands.map(item => {
+    return fixedBands.map((item) => {
       const names = [
         ...item.pianists,
         ...item.ags,
         ...item.egs,
-        ...item.drummers,
         ...item.bassists,
+        ...item.drummers,
         ...item.others,
-      ].join(', ')
+      ]
+        .filter((name) => name?.trim()) // ✅ Remove empty/null/undefined/whitespace
+        .join(', ')
 
       return { ...item, names }
     })
   }
 
-  const splitMusicians = (musicians = []) =>
-    musicians.length === 1
-      ? musicians[0]
-      : musicians.join(' & ')
+  const splitNames = (names = []) =>
+    names.length === 1 ? names[0] : names.join(' & ')
 
   const mutateData = (schedules = []) => {
-    return schedules.map(element => {
-      const musiciansObj = JSON.parse(element.musicians || '{}')
+    return schedules.map((element) => {
+      const { worship_leader, key_vox, musicians, md, tech_head, devotion } =
+        JSON.parse(element.workers || '{}')
 
       const {
         pianists = [],
@@ -63,7 +65,7 @@ export const useSlotHelpers = () => {
         bassists = [],
         drummers = [],
         others = [],
-      } = musiciansObj
+      } = musicians
 
       return {
         id: element.id,
@@ -73,14 +75,52 @@ export const useSlotHelpers = () => {
         satellite_id: element.satellite_id,
         satellite: findSatellite(element.satellite_id)?.name || '',
         slot_name: element.slot_name,
+        worship_leader,
+        key_vox,
         pianists,
         egs,
         ags,
         bassists,
         drummers,
         others,
+        md,
+        tech_head,
+        devotion,
+        remarks: element.remarks,
       }
     })
+  }
+
+  /**
+   * Reorders an array so items with the matching preferred_satellite_id come first.
+   *
+   * @param {Array} data – Array of objects with `preferred_satellite_id` field.
+   * @param {number} preferredId – The ID to prioritize.
+   * @returns {Array} – New array with matching items first.
+   */
+  const prioritizeByPreferredSatelliteId = ({
+    data,
+    preferredId,
+  }: {
+    data: Singer
+    preferredId: number
+  }) => {
+    const prioritized = []
+    const others = []
+
+    for (const item of data) {
+      if (item.preferred_satellite_id === preferredId) {
+        prioritized.push(item)
+      } else {
+        others.push(item)
+      }
+    }
+
+    return [...prioritized, ...others]
+  }
+
+  const filterWorshipLeader = (data: Singer[]): Singer[] => {
+    return data.filter((elem) => elem.is_worship_leader)
   }
 
   return {
@@ -88,7 +128,9 @@ export const useSlotHelpers = () => {
     getWeekOfMonth,
     findSatellite,
     mutateData,
-    splitMusicians,
+    splitNames,
     bandNamesCompiler,
+    prioritizeByPreferredSatelliteId,
+    filterWorshipLeader,
   }
 }

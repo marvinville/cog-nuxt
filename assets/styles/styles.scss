@@ -44,18 +44,9 @@ td {
   border-collapse: collapse;
 }
 
-.tbl-collapse th,
-.tbl-collapse td {
-  border: 1px solid #333;
-}
-
 .outer-table {
   border: none;
   border-collapse: collapse;
-}
-
-.outer-table .with-border {
-  border: 1px solid #333;
 }
 
 .outer-table .no-slot {
@@ -72,15 +63,87 @@ td {
   font-weight: bold;
 }
 
-td.row-h60 {
-  block-size: 60px;
-}
-
 .practice {
-  font-size: small;
+  font-size: x-small;
 }
 
 tfoot td {
   background-color: #063763;
   font-size: smaller;
+}
+
+.pdf-content {
+  td.mainTd {
+    border-right: 1px solid #000000;
+  }
+  .tbl-collapse {
+    td {
+      &:last-child {
+        border-bottom: 0;
+      }
+      border: 1px solid #000000;
+    }
+  }
+  .outer-table {
+    td {
+      border-top: 1px solid #000000;
+      border-right: 1px solid #000000;
+      border-left: 0;
+      border-bottom: 0;
+      .slot-table {
+        td {
+          border-right: 0;
+        }
+        td.row-multi-block {
+          border-top: 0 !important;
+          position: relative;
+          top: -1px;
+          block-size: 50.25px;
+        }
+      }
+    }
+    td.slot-table-holder {
+      border-top: 0;
+      &:last-child {
+        border-right: 0 !important;
+      }
+    }
+    td.with-border {
+      block-size: 24.61px;
+      border-right: 0;
+      &.no-slot {
+        border-right: 0 !important;
+      }
+    }
+  }
+  .row-multi-block {
+    .inner-table {
+      td {
+        &:last-child {
+          border-right: 0 !important;
+        }
+        border-right: 1px solid #000000 !important;
+      }
+    }
+  }
+  td.bold.italic {
+    block-size: 24.61px;
+  }
+  td.bold.italic.row-h60 {
+    block-size: 50.6px !important;
+  }
+  .slot-table-holder {
+    td.bold {
+      block-size: 24.61px;
+    }
+    td {
+      block-size: 24.61px;
+      position: relative;
+      top: -0.61px;
+    }
+  }
+
+  td.slot-date {
+    font-weight: bold;
+  }
 }
