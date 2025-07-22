@@ -5,12 +5,26 @@
       required: true,
     },
   })
+  let satelliteColorClass
+
+  switch (props.satellite.toLowerCase()) {
+    case 'tws':
+      satelliteColorClass = 'bg-orange'
+      break
+    case 'empowered':
+      satelliteColorClass = 'bg-blue'
+      break
+    default:
+      satelliteColorClass = 'bg-yellow'
+  }
 </script>
 <template>
   <table class="tbl-collapse" width="100%">
     <tbody>
       <tr>
-        <td class="bold italic bg-yellow">{{ satellite }}</td>
+        <td :class="`bold italic ${satelliteColorClass}`">
+          {{ satellite }}
+        </td>
       </tr>
       <tr>
         <td class="bold italic">WL</td>

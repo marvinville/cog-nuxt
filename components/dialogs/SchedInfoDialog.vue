@@ -89,7 +89,7 @@
   const resetForm = () => {
     localFormData.value = {
       id: 0,
-      satellite_id: 0,
+      satellite_id: props.formData.satellite_id,
       slot_name: '',
       date_from: '',
       date_to: '',

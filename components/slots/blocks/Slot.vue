@@ -97,8 +97,4 @@
     border-collapse: collapse;
     font-size: small;
   }
-
-  .slot-table td {
-    // border: 1px solid #333 !important;
-  }
 </style>

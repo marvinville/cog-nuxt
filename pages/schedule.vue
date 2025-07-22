@@ -216,7 +216,7 @@
   }
 
   const selectValues = (data = [], ids = []) => {
-    const selected = []
+    const selected: number[] = []
 
     data.forEach((elem) => {
       if (ids.includes(elem.id)) {

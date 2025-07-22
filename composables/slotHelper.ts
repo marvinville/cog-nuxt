@@ -30,7 +30,7 @@ export const useSlotHelpers = () => {
   }
 
   const findSatellite = (id: number) => {
-    return satellites.find((el) => el.id == id)
+    return satellites.find((el) => Number(el.id) === id)
   }
 
   const bandNamesCompiler = (fixedBands = []) => {

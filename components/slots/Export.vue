@@ -25,6 +25,11 @@
     dayInWeek: 0,
   })
 
+  const tuesdaysInMonth = getDaysInMonth({
+    schedMonth,
+    dayInWeek: 2,
+  })
+
   let colWidth = '22.5%'
   let colNum = '9'
 
@@ -33,15 +38,24 @@
     colNum = '11'
   }
 
-  const findSlots = (sunday, satId) => {
-    return schedules.filter((element) => {
-      const { date_from, satellite_id } = element
-      if (
-        $dayjs(date_from).format('YYYY-MM-DD') ===
-          $dayjs(sunday).format('YYYY-MM-DD') &&
-        satId === satellite_id
-      )
-        return element
+  const findSlots = (sunday: string, satId: number, isMidSlot: number = 0) => {
+    const targetDate = $dayjs(sunday).format('YYYY-MM-DD')
+
+    return schedules.filter(({ date_from, satellite_id, slot_name }) => {
+      const currentDate = $dayjs(date_from).format('YYYY-MM-DD')
+
+      const isSameDate = currentDate === targetDate
+      const isSameSatellite = satellite_id === satId
+
+      if (isMidSlot === 1) {
+        return (
+          isSameDate &&
+          isSameSatellite &&
+          slot_name?.toLowerCase() === 'mid slot'
+        )
+      }
+
+      return isSameDate && isSameSatellite
     })
   }
 </script>
@@ -73,6 +87,49 @@
           valign="top"
         >
           <MainBlock :slots="findSlots(sunday, 1)" :slot-date="sunday" />
+        </td>
+      </tr>
+
+      <!-- TWS ROW -->
+      <tr>
+        <td width="10%" valign="top">
+          <TitleBlock satellite="TWS" />
+        </td>
+
+        <td
+          v-for="(tue, index) in tuesdaysInMonth"
+          :key="index"
+          colspan="2"
+          class="mainTd"
+          :width="colWidth"
+          valign="top"
+        >
+          <MainBlock
+            :slots="findSlots(tue, 1)"
+            :slot-date="tue"
+            :isTws="true"
+          />
+        </td>
+      </tr>
+
+      <!-- EMPOWERED ROW -->
+      <tr>
+        <td width="10%" valign="top">
+          <TitleBlock satellite="EMPOWERED" />
+        </td>
+
+        <td
+          v-for="(sunday, index) in sundaysInMonth"
+          :key="index"
+          colspan="2"
+          class="mainTd"
+          :width="colWidth"
+          valign="top"
+        >
+          <MainBlock
+            :slots="findSlots(sunday, 1, 1)"
+            :slot-date="$dayjs(sunday).subtract(1, 'day').format('MMM D, YYYY')"
+          />
         </td>
       </tr>
 
