@@ -16,5 +16,114 @@
     "bassists": ["Carlos"],
     "drummers": ["PauloC"],
     "others": []
+  },
+  {
+    "id": 3,
+    "pianists": ["Justin"],
+    "egs": ["Japheth"],
+    "ags": ["Timothy"],
+    "bassists": ["Toni"],
+    "drummers": ["Roi"],
+    "others": []
+  },
+  {
+    "id": 4,
+    "pianists": ["Neil"],
+    "egs": ["Scott"],
+    "ags": ["Stephen"],
+    "bassists": ["Alvin"],
+    "drummers": ["Hero"],
+    "others": []
+  },
+  {
+    "id": 5,
+    "pianists": ["Sam"],
+    "egs": ["Mark L."],
+    "ags": ["Jay Mark"],
+    "bassists": ["JB"],
+    "drummers": ["JJ"],
+    "others": []
+  },
+  {
+    "id": 6,
+    "pianists": ["Jherlyn"],
+    "egs": ["EJ"],
+    "ags": ["Marvhin", "Kheine"],
+    "bassists": ["Hanz"],
+    "drummers": ["Renzo"],
+    "others": []
+  },
+  {
+    "id": 7,
+    "pianists": ["Ezekiel S."],
+    "egs": ["Cedric"],
+    "ags": ["Nicole"],
+    "bassists": ["Xyryll"],
+    "drummers": ["Lerry"],
+    "others": []
+  },
+  {
+    "id": 8,
+    "pianists": ["Lloyd"],
+    "egs": ["Hans A."],
+    "ags": ["Rox"],
+    "bassists": ["John Louie"],
+    "drummers": ["Christian D."],
+    "others": []
+  },
+  {
+    "id": 9,
+    "pianists": ["Sairel"],
+    "egs": ["Dan"],
+    "ags": ["Kim Jay"],
+    "bassists": ["Zion"],
+    "drummers": ["Jeoffrey"],
+    "others": []
+  },
+  {
+    "id": 10,
+    "pianists": ["Nehemiah"],
+    "egs": ["JM"],
+    "ags": ["Elijah O."],
+    "bassists": ["Bryan"],
+    "drummers": ["Karen"],
+    "others": []
+  },
+
+  {
+    "id": 11,
+    "pianists": ["Jeshua"],
+    "egs": ["Yonnie"],
+    "ags": ["Kim P."],
+    "bassists": ["Vid"],
+    "drummers": ["VJ"],
+    "others": []
+  },
+  {
+    "id": 12,
+    "pianists": ["Johnson"],
+    "egs": ["Josh L"],
+    "ags": ["Anna Marie"],
+    "bassists": ["Kenneth"],
+    "drummers": ["Ivan"],
+    "others": []
+  },
+  {
+    "id": 13,
+    "pianists": ["Haniel"],
+    "egs": ["Von"],
+    "ags": ["Iris"],
+    "bassists": ["Archie"],
+    "drummers": ["Ace"],
+    "others": []
+  },
+  {
+    "id": 14,
+    "pianists": ["Warren"],
+    "egs": ["Justin Raven"],
+    "ags": ["Dhaeniel"],
+    "bassists": ["Vernard"],
+    "drummers": ["Paulo C."],
+    "others": []
   }
 ]
