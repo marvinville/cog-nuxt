@@ -9,6 +9,7 @@
   import singers from '@/database/singers.json'
   import ths from '@/database/tech-heads.json'
   import mds from '@/database/mds.json'
+  import satellites from '@/database/satellites.json'
   import type { Singer } from '@/types/Person' // adjust path based on your project
 
   const props = defineProps({
@@ -51,7 +52,6 @@
 
   const {
     bandNamesCompiler,
-    findSatellite,
     getDaysInMonth,
     prioritizeByPreferredSatelliteId,
   } = useSlotHelpers()
@@ -68,12 +68,17 @@
     'Field is required'
 
   const onFormSubmit = async () => {
+    const { slot_name, ...rest } = localFormData.value
+
+    const slots = selectedSat.value.slots
+    const found = slots.find(({ uuid }) => uuid === slot_name) // slot_name is actually the uuid
+
     const validator = await formRef.value?.validate()
     if (!validator?.valid) {
       console.log('Please fill the required fields.')
       return false
     }
-    emit('submit', localFormData.value)
+    emit('submit', { slot_name: found?.title, ...rest })
     emit('update:isDialogVisible', false)
     resetForm()
   }
@@ -203,24 +208,78 @@
     return [...singers, ...musicians]
   })
 
+  const worshipLeaderOptions = computed(() => {
+    return prioritizeByPreferredSatelliteId({
+      data: singers.filter((elem) => elem.is_worship_leader),
+      preferredId: props.formData.satellite_id,
+    })
+  })
+
+  // const keyVoxLeaderOptions = computed(() => {
+  //   return compiledNames.value.filter(({ role }) => role === 'singer')
+  // })
+
+  // const bandLeaderOptions = computed(() => {
+  //   return compiledNames.value.filter(({ role }) => role === 'musician')
+  // })
+
   const isViewOnly = computed(() => {
     return localFormData.value.id > 0
   })
+
+  const selectedSat = computed(() => {
+    const satelliteId = props.formData.satellite_id
+    const selectedSatellite = satellites.find((s) => s.id === satelliteId)
+
+    return {
+      name: selectedSatellite?.name ?? null,
+      slots: selectedSatellite?.slots2 ?? [],
+    }
+  })
+
+  const slotDateOptions = ref<string[]>([])
+
+  const onSlotChange = (selected: string) => {
+    const selectedSlot = selectedSat.value.slots.find(
+      (slot) => slot.uuid === selected
+    )
+    if (selectedSlot) {
+      localFormData.value.slot_date = ''
+      localFormData.value.remarks = selectedSlot.practice_details
+
+      const { day_held } = selectedSlot
+      const selectedMonth = schedMonth.value
+
+      // display all sunday in month
+      if (day_held.toLowerCase() === 'sun') {
+        slotDateOptions.value = getDaysInMonth({
+          schedMonth: selectedMonth,
+          dayInWeek: 0,
+        })
+      } else if (day_held.toLowerCase() === 'tue') {
+        slotDateOptions.value = getDaysInMonth({
+          schedMonth: selectedMonth,
+          dayInWeek: 2,
+        })
+      }
+    }
+  }
 
   const allSingers = ref<Singer[]>(singers)
   const keyVox = ref<Singer[]>(singers)
 
   watch(
     () => props.formData,
-    (newVal) => {
-      localFormData.value = { ...newVal }
+    (newFormData) => {
+      // Clone props.formData into localFormData
+      localFormData.value = { ...newFormData }
 
-      const { satellite_id } = localFormData.value
+      const { satellite_id, worship_leader } = localFormData.value
 
-      // Only set default if no worship leader selected yet
-      if (!localFormData.value.worship_leader && satellite_id) {
+      // Only assign default worship leader if not already selected
+      if (!worship_leader && satellite_id) {
         const defaultWL = singers.find(
-          (s) => s.preferred_satellite_id === satellite_id
+          (singer) => singer.preferred_satellite_id === satellite_id
         )
 
         if (defaultWL) {
@@ -228,7 +287,10 @@
         }
       }
     },
-    { deep: true, immediate: true }
+    {
+      deep: false, // ✅ shallow is sufficient if props.formData is fully replaced
+      immediate: true,
+    }
   )
 
   watch(
@@ -250,14 +312,11 @@
   )
 
   watch(
-    () => localFormData.value.slot_name,
+    () => localFormData.value.satellite_id,
     (newVal, oldVal) => {
-      const mainSlots = ['AM', 'PM', 'Main Slot', 'Mid Slot']
-      if (
-        (mainSlots.includes(oldVal) && newVal === 'TWS') ||
-        (oldVal === 'TWS' && mainSlots.includes(newVal))
-      ) {
-        localFormData.value.slot_date = ''
+      if (newVal !== oldVal && localFormData.value.id === 0) {
+        slotDateOptions.value = []
+        localFormData.value.worship_leader = ''
       }
     }
   )
@@ -265,7 +324,15 @@
   watch(
     () => localFormData.value.worship_leader,
     (newVal) => {
+      if (!newVal) return
+
+      // Update keyVox list by removing the worship leader
       keyVox.value = allSingers.value.filter((elem) => elem.id !== newVal)
+
+      // Remove worship leader from selected key_vox if present (with defensive guard)
+      localFormData.value.key_vox = (localFormData.value.key_vox || []).filter(
+        (id) => id !== newVal
+      )
     }
   )
 
@@ -301,11 +368,9 @@
       <VCardText>
         <!-- 👉 Title -->
         <h4 class="text-h4 text-center mb-2">
-          {{ findSatellite(localFormData.satellite_id)?.name }} - Schedule
-          Information
+          {{ selectedSat.name }} - Schedule Information
         </h4>
         <p class="text-body-1 text-center mb-6">Edit worship slot schedule.</p>
-
         <!-- 👉 Form -->
         <VForm
           ref="formRef"
@@ -320,8 +385,11 @@
                 v-model="localFormData.slot_name"
                 label="Slot Name"
                 placeholder="Select Item"
-                :items="findSatellite(localFormData.satellite_id)?.slots"
+                :items="selectedSat.slots"
+                item-value="uuid"
+                item-title="title"
                 :rules="[requiredValidator]"
+                @update:modelValue="onSlotChange"
               />
             </VCol>
 
@@ -331,33 +399,18 @@
                 v-model="localFormData.slot_date"
                 label="Slot Date"
                 placeholder="Select Item"
-                :items="
-                  localFormData.slot_name === 'TWS'
-                    ? getDaysInMonth({
-                        schedMonth,
-                        dayInWeek: 2,
-                      })
-                    : getDaysInMonth({
-                        schedMonth,
-                        dayInWeek: 0,
-                      })
-                "
+                :items="slotDateOptions"
                 :rules="[requiredValidator]"
               />
             </VCol>
 
             <!-- 👉 Worship Leader -->
             <VCol cols="12" md="6">
-              <AppSelect
+              <AppAutocomplete
                 v-model="localFormData.worship_leader"
                 label="Worship Leader"
                 placeholder="Select Item"
-                :items="
-                  prioritizeByPreferredSatelliteId({
-                    data: singers.filter((elem) => elem.is_worship_leader),
-                    preferredId: localFormData.satellite_id,
-                  })
-                "
+                :items="worshipLeaderOptions"
                 item-title="name"
                 item-value="id"
                 :rules="[requiredValidator]"
@@ -366,7 +419,7 @@
 
             <!-- 👉 Key Vox -->
             <VCol cols="12" md="6">
-              <AppSelect
+              <AppAutocomplete
                 v-model="localFormData.key_vox"
                 label="Key Vox"
                 placeholder="Select Item"
@@ -394,7 +447,7 @@
 
               <!-- 👉 Fixed Bands -->
               <VCol v-if="localFormData.is_fixed_band" cols="12" md="12">
-                <AppSelect
+                <AppAutocomplete
                   v-model="localFormData.fixed_band_id"
                   label="Band"
                   :items="bandNamesCompiler(fixedBands)"
@@ -406,7 +459,7 @@
 
             <!-- 👉 Keyboardist -->
             <VCol cols="12" md="6">
-              <AppSelect
+              <AppAutocomplete
                 v-model="localFormData.pianists"
                 closable-chips
                 chips
@@ -422,7 +475,7 @@
 
             <!-- 👉 E. Guitarist -->
             <VCol cols="12" md="6">
-              <AppSelect
+              <AppAutocomplete
                 v-model="localFormData.egs"
                 closable-chips
                 chips
@@ -438,7 +491,7 @@
 
             <!-- 👉 A. Guitarist -->
             <VCol cols="12" md="6">
-              <AppSelect
+              <AppAutocomplete
                 v-model="localFormData.ags"
                 closable-chips
                 chips
@@ -454,7 +507,7 @@
 
             <!-- 👉 Bassist -->
             <VCol cols="12" md="6">
-              <AppSelect
+              <AppAutocomplete
                 v-model="localFormData.bassists"
                 closable-chips
                 chips
@@ -470,7 +523,7 @@
 
             <!-- 👉 Drummer -->
             <VCol cols="12" md="6">
-              <AppSelect
+              <AppAutocomplete
                 v-model="localFormData.drummers"
                 closable-chips
                 chips
@@ -486,7 +539,7 @@
 
             <!-- 👉 Others -->
             <VCol cols="12" md="6">
-              <AppSelect
+              <AppAutocomplete
                 v-model="localFormData.others"
                 closable-chips
                 chips
@@ -502,7 +555,7 @@
 
             <!-- 👉 Tech Head -->
             <VCol cols="12" md="6">
-              <AppSelect
+              <AppAutocomplete
                 v-model="localFormData.tech_head"
                 label="Tech Head"
                 :items="ths"
@@ -514,7 +567,7 @@
 
             <!-- 👉 MD -->
             <VCol cols="12" md="6">
-              <AppSelect
+              <AppAutocomplete
                 v-model="localFormData.md"
                 label="MD"
                 :items="mds"
@@ -526,7 +579,7 @@
 
             <!-- 👉 Devotion -->
             <VCol cols="12" md="6">
-              <AppSelect
+              <AppAutocomplete
                 v-model="localFormData.devotion"
                 closable-chips
                 chips

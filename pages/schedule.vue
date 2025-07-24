@@ -2,11 +2,12 @@
   import Swal from 'sweetalert2'
   import SchedInfoDialog from '@/components/dialogs/SchedInfoDialog.vue'
   import SlotCard from '@/components/slots/SlotCard.vue'
-  import type { SlotForm } from '@/types/SlotForm'
-  import singers from '@/database/singers.json'
+  import type { SlotForm, ScheduleSlot } from '@/types/Slot'
   const { $dayjs } = useNuxtApp()
 
-  const schedules = ref([])
+  const { buildWorkers } = useSlotHelpers()
+
+  const schedules = ref<ScheduleSlot[]>([])
   const dataIsReady = ref(false)
 
   const schedMonth = $dayjs().add(1, 'month')
@@ -55,64 +56,51 @@
     }
   }
 
-  const preparePayload = (slot) => {
-    const {
-      satellite_id,
-      worship_leader,
-      key_vox,
-      pianists,
-      egs,
-      ags,
-      drummers,
-      bassists,
-      others,
-      fixed_band_id,
-      slot_date,
-      slot_name,
-      tech_head,
-      md,
-      devotion,
-      remarks,
-    } = slot
+  const preparePayload = (slot: SlotForm) => ({
+    satellite_id: slot.satellite_id,
+    slot_name: slot.slot_name,
+    slot_date: slot.slot_date
+      ? $dayjs(slot.slot_date).format('YYYY-MM-DD')
+      : null,
+    workers: JSON.stringify(buildWorkers(slot)),
+    remarks: slot.remarks,
+    created_by: 1,
+  })
 
-    const selectedWL = findWL(worship_leader)
+  const buildSlotRecord = (slot: SlotForm, id: number) => {
     return {
-      satellite_id,
-      slot_name,
-      slot_date: slot_date ? $dayjs(slot_date).format('YYYY-MM-DD') : null,
-      workers: JSON.stringify({
-        worship_leader: selectedWL?.name,
-        key_vox: selectValues(singers, key_vox).map((elem) => elem.name),
-        tech_head,
-        md,
-        devotion,
-        musicians: {
-          pianists,
-          egs,
-          ags,
-          bassists,
-          drummers,
-          others,
-        },
-        fixed_band_id,
-      }),
-      remarks,
-      created_by: 1,
+      id,
+      slot_name: slot.slot_name,
+      date_from: slot.slot_date,
+      date_to: slot.slot_date,
+      satellite_id: slot.satellite_id,
+      workers: JSON.stringify(buildWorkers(slot)),
     }
   }
 
-  const saveSlot = async (slot) => {
+  const saveSlot = async (slot: SlotForm) => {
     try {
       const response = await api('/slots', {
         method: 'POST',
         body: preparePayload(slot),
       })
 
-      return response?.id
+      return response?.id ?? 0
     } catch (err) {
       console.error('Unexpected error while saving slot:', err)
       return 0
     }
+  }
+
+  const handleSubmit = async (slot: SlotForm) => {
+    dataIsReady.value = false
+
+    const id = await saveSlot(slot)
+    if (id > 0) {
+      schedules.value.push(buildSlotRecord(slot, id) as any)
+    }
+
+    dataIsReady.value = true
   }
 
   const handleDeleteSlot = async (slot: any) => {
@@ -213,61 +201,6 @@
   const addSchedule = (satId: number) => {
     formData = { ...formDefault, satellite_id: satId }
     isSchedInfoDialogVisible.value = true
-  }
-
-  const selectValues = (data = [], ids = []) => {
-    const selected: number[] = []
-
-    data.forEach((elem) => {
-      if (ids.includes(elem.id)) {
-        selected.push(elem)
-      }
-    })
-
-    return selected
-  }
-
-  const findWL = (id) => {
-    return singers.find((elem) => elem.id === id)
-  }
-
-  const handleSubmit = async (slot: SlotForm) => {
-    dataIsReady.value = false
-
-    const isSaved = await saveSlot(slot)
-
-    if (isSaved > 0) {
-      const selectedWL = findWL(slot.worship_leader)
-
-      const newSlot = {
-        id: isSaved,
-        slot_name: slot.slot_name,
-        date_from: slot.slot_date,
-        date_to: slot.slot_date,
-        satellite_id: slot.satellite_id,
-        workers: JSON.stringify({
-          worship_leader: selectedWL?.name,
-          key_vox: selectValues(singers, slot.key_vox).map((elem) => elem.name),
-          musicians: {
-            pianists: slot.pianists,
-            egs: slot.egs,
-            ags: slot.ags,
-            drummers: slot.drummers,
-            bassists: slot.bassists,
-            others: slot.others,
-          },
-          fixed_band_id: slot.fixed_band_id,
-          tech_head: slot.tech_head,
-          md: slot.md,
-          devotion: slot.devotion,
-          remarks: slot.remarks,
-        }),
-      }
-
-      schedules.value.push(newSlot)
-    }
-
-    dataIsReady.value = true
   }
 
   onMounted(fetchData)

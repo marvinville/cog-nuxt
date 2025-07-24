@@ -1,6 +1,8 @@
 // composables/useSlotHelpers.ts
 import satellites from '@/database/satellites.json'
+import singers from '@/database/singers.json'
 import type { Singer } from '@/types/Person' // adjust path based on your project
+import type { SlotForm, SlotWorkers } from '@/types/Slot' // adjust path based on your project
 
 export const useSlotHelpers = () => {
   const { $dayjs } = useNuxtApp()
@@ -53,10 +55,27 @@ export const useSlotHelpers = () => {
   const splitNames = (names = []) =>
     names.length === 1 ? names[0] : names.join(' & ')
 
-  const mutateData = (schedules = []) => {
-    return schedules.map((element) => {
-      const { worship_leader, key_vox, musicians, md, tech_head, devotion } =
-        JSON.parse(element.workers || '{}')
+  const safeParseJSON = (json: string | null): any => {
+    try {
+      return JSON.parse(json || '{}')
+    } catch (error) {
+      console.error('Invalid JSON in workers field:', error)
+      return {}
+    }
+  }
+
+  const mutateData = (schedules: any[] = []) => {
+    return schedules.map((slot) => {
+      const workers = safeParseJSON(slot.workers)
+
+      const {
+        worship_leader,
+        key_vox,
+        md,
+        tech_head,
+        devotion,
+        musicians = {},
+      } = workers
 
       const {
         pianists = [],
@@ -68,13 +87,13 @@ export const useSlotHelpers = () => {
       } = musicians
 
       return {
-        id: element.id,
-        date_from: element.date_from,
-        date_to: element.date_to,
-        week: getWeekOfMonth(element.date_from),
-        satellite_id: element.satellite_id,
-        satellite: findSatellite(element.satellite_id)?.name || '',
-        slot_name: element.slot_name,
+        id: slot.id,
+        date_from: slot.date_from,
+        date_to: slot.date_to,
+        week: getWeekOfMonth(slot.date_from),
+        satellite_id: slot.satellite_id,
+        satellite: findSatellite(slot.satellite_id)?.name || '',
+        slot_name: slot.slot_name,
         worship_leader,
         key_vox,
         pianists,
@@ -86,7 +105,7 @@ export const useSlotHelpers = () => {
         md,
         tech_head,
         devotion,
-        remarks: element.remarks,
+        remarks: slot.remarks,
       }
     })
   }
@@ -123,6 +142,40 @@ export const useSlotHelpers = () => {
     return data.filter((elem) => elem.is_worship_leader)
   }
 
+  const findWL = (id) => {
+    return singers.find((elem) => elem.id === id)
+  }
+
+  const selectValues = (data = [], ids = []) => {
+    const selected: number[] = []
+
+    data.forEach((elem) => {
+      if (ids.includes(elem.id)) {
+        selected.push(elem)
+      }
+    })
+
+    return selected
+  }
+
+  const buildWorkers = (slot: SlotForm): SlotWorkers => ({
+    worship_leader: findWL(slot.worship_leader)?.name,
+    key_vox: selectValues(singers, slot.key_vox).map((s) => s.name),
+    tech_head: slot.tech_head,
+    md: slot.md,
+    devotion: slot.devotion,
+    musicians: {
+      pianists: slot.pianists,
+      egs: slot.egs,
+      ags: slot.ags,
+      bassists: slot.bassists,
+      drummers: slot.drummers,
+      others: slot.others,
+    },
+    fixed_band_id: slot.fixed_band_id,
+    remarks: slot.remarks,
+  })
+
   return {
     getDaysInMonth,
     getWeekOfMonth,
@@ -132,5 +185,6 @@ export const useSlotHelpers = () => {
     bandNamesCompiler,
     prioritizeByPreferredSatelliteId,
     filterWorshipLeader,
+    buildWorkers,
   }
 }

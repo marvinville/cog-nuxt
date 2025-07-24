@@ -1,7 +1,7 @@
 <script setup lang="ts">
   const props = defineProps<{
     slotData: {
-      date_to: string
+      date_from: string
       slot_name: string
       workers: string // JSON string
     }
@@ -29,7 +29,7 @@
     <slot name="title">
       <div class="d-flex align-center justify-space-between gap-2">
         <span class="text-h5 mb-2 font-weight-medium">{{
-          `${formatSlotDate(slotData.date_to)} - ${slotData.slot_name}`
+          `${formatSlotDate(slotData.date_from)} - ${slotData.slot_name}`
         }}</span>
 
         <!-- Action Icons -->

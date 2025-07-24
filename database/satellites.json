@@ -2,21 +2,78 @@
   {
     "id": 1,
     "name": "Main",
-    "slots": ["Main Slot", "Mid Slot", "TWS"]
+    "slots": ["Main Slot", "Mid Slot", "TWS"],
+    "slots2": [
+      {
+        "uuid": "main_slot",
+        "title": "Main Slot",
+        "time_slots": ["07:30", "09:30", "11:30", "17:30", "19:30"],
+        "day_held": "sun",
+        "practice_details": "Thu 5-9PM at Main Sanc"
+      },
+      {
+        "uuid": "mid_slot",
+        "title": "Mid Slot",
+        "time_slots": ["05:30", "13:30", "15:30"],
+        "day_held": "sun",
+        "practice_details": "Thu 5-9PM at GB Sanc"
+      },
+      {
+        "uuid": "tws",
+        "title": "TWS",
+        "time_slots": ["19:00"],
+        "day_held": "tue",
+        "practice_details": "Tue 2:00PM-5:30PM"
+      }
+    ]
   },
   {
     "id": 2,
     "name": "Jabez",
-    "slots": ["Wholeday"]
+    "slots": ["Wholeday"],
+    "slots2": [
+      {
+        "uuid": "jabez_wd",
+        "title": "Wholeday",
+        "time_slots": ["07:30", "09:30", "11:30", "15:30", "17:30"],
+        "day_held": "sun",
+        "practice_details": "Sat 1PM - 5PM"
+      }
+    ]
   },
   {
     "id": 3,
     "name": "Silang",
-    "slots": ["Wholeday"]
+    "slots": ["Wholeday"],
+    "slots2": [
+      {
+        "uuid": "silang_wd",
+        "title": "Wholeday",
+        "time_slots": ["07:30", "09:30", "11:30", "15:30", "17:30"],
+        "day_held": "sun",
+        "practice_details": "Thu 6PM-9PM"
+      }
+    ]
   },
   {
     "id": 4,
     "name": "Trece",
-    "slots": ["AM", "PM"]
+    "slots": ["AM", "PM"],
+    "slots2": [
+      {
+        "uuid": "trece_am",
+        "title": "AM",
+        "time_slots": ["07:30", "09:30", "11:30"],
+        "day_held": "sun",
+        "practice_details": "Thu 5PM-9PM"
+      },
+      {
+        "uuid": "trece_pm",
+        "title": "PM",
+        "time_slots": ["14:30", "16:30", "18:30"],
+        "day_held": "sun",
+        "practice_details": "Sat 7AM-12NN"
+      }
+    ]
   }
 ]
