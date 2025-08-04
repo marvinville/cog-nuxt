@@ -46,6 +46,12 @@
     schedMonth: {
       required: true,
     },
+    selectedMonth: {
+      required: true,
+    },
+    selectedYear: {
+      required: true,
+    },
   })
 
   const emit = defineEmits(['submit', 'update:isDialogVisible'])

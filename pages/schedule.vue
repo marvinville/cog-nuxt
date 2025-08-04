@@ -1,6 +1,9 @@
 <script setup lang="ts">
+  import { ref, watch } from 'vue'
   import Swal from 'sweetalert2'
   import SchedInfoDialog from '@/components/dialogs/SchedInfoDialog.vue'
+  import YearSelect from '@/components/reusable/YearSelect.vue'
+  import MonthSelect from '@/components/reusable/MonthSelect.vue'
   import SlotCard from '@/components/slots/SlotCard.vue'
   import type { SlotForm, ScheduleSlot } from '@/types/Slot'
   const { $dayjs } = useNuxtApp()
@@ -10,8 +13,8 @@
   const schedules = ref<ScheduleSlot[]>([])
   const dataIsReady = ref(false)
 
-  const schedMonth = $dayjs().add(1, 'month')
-  const schedMonthTitle = schedMonth.format('MMM YYYY')
+  const selectedMonth = ref<number | null>(null)
+  const selectedYear = ref<number | null>(null)
 
   const isSchedInfoDialogVisible = ref(false)
 
@@ -43,11 +46,13 @@
   const api = useApi()
 
   const fetchData = async () => {
+    if (!selectedMonth.value || !selectedYear.value) return
+
     dataIsReady.value = false
-
     try {
-      const result = await api('/slots')
-
+      const result = await api(
+        `/slots?month=${selectedMonth.value}&year=${selectedYear.value}`
+      )
       schedules.value = result
     } catch (err) {
       console.error('API fetch failed:', err)
@@ -203,7 +208,11 @@
     isSchedInfoDialogVisible.value = true
   }
 
+  // Auto-fetch on mount
   onMounted(fetchData)
+
+  // Refetch when month or year changes
+  watch([selectedMonth, selectedYear], fetchData)
 </script>
 
 <template>
@@ -211,16 +220,26 @@
     v-model:is-dialog-visible="isSchedInfoDialogVisible"
     :form-data="formData"
     :sched-month="schedMonth"
+    :selectedMonth="selectedMonth.value"
+    :selectedYear="selectedYear.value"
     @submit="handleSubmit"
   />
+
+  <VRow>
+    <VCol cols="3">
+      <YearSelect v-model="selectedYear" />
+    </VCol>
+
+    <VCol cols="3">
+      <MonthSelect v-model="selectedMonth" />
+    </VCol>
+  </VRow>
+
   <VCol cols="12">
-    <h2 class="text-h2">
-      {{ schedMonthTitle }}
-    </h2>
-    <span>Praise and Worship Schedule</span>
+    <span class="text-h4">Praise and Worship Schedule</span>
   </VCol>
 
-  <VCol class="py-0">
+  <VCol>
     <RouterLink to="/export">
       <VBtn>
         Export

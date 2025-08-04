@@ -1,45 +1,65 @@
 <script setup lang="ts">
-import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
-import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
-import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
-import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustration-light.png'
-import authV2MaskDark from '@images/pages/misc-mask-dark.png'
-import authV2MaskLight from '@images/pages/misc-mask-light.png'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
-import { useRouter } from 'vue-router'
+  import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
+  import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
+  import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
+  import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
+  import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
+  import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustration-light.png'
+  import authV2MaskDark from '@images/pages/misc-mask-dark.png'
+  import authV2MaskLight from '@images/pages/misc-mask-light.png'
+  import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
+  import { themeConfig } from '@themeConfig'
+  import { useRouter } from 'vue-router'
+  import { loginUser } from '@/composables/authHelper'
 
-const router = useRouter()
+  const router = useRouter()
 
-definePageMeta({
-  layout: 'blank',
-  public: true,
+  definePageMeta({
+    layout: 'blank',
+    public: true,
+  })
 
-})
+  const form = ref({
+    email: '',
+    password: '',
+    remember: false,
+  })
 
-const form = ref({
-  email: '',
-  password: '',
-  remember: false,
-})
+  const isPasswordVisible = ref(false)
 
-const isPasswordVisible = ref(false)
+  const authThemeImg = useGenerateImageVariant(
+    authV2LoginIllustrationLight,
+    authV2LoginIllustrationDark,
+    authV2LoginIllustrationBorderedLight,
+    authV2LoginIllustrationBorderedDark,
+    true
+  )
 
-const authThemeImg = useGenerateImageVariant(
-  authV2LoginIllustrationLight,
-  authV2LoginIllustrationDark,
-  authV2LoginIllustrationBorderedLight,
-  authV2LoginIllustrationBorderedDark,
-  true)
+  const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
-const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
+  const worker_id = ref('')
+  const password = ref('')
 
-const login = () =>{
-  console.log('add login function here')
-  router.push({ name: 'home' })
-}
+  const login = async () => {
+    const user = await loginUser({
+      worker_id: worker_id.value,
+      password: password.value,
+    })
+
+    if (user) {
+      // success: store user or navigate
+      router.push({ name: 'home' })
+    } else {
+      // error: show message
+      console.error('Invalid login')
+    }
+  }
+
+  const requiredValidator = (val: string) => !!val || 'Password is required'
+  const minLengthValidator = (val: string) =>
+    val.length >= 6 || 'Password must be at least 6 characters'
+
+  const passwordRules = [requiredValidator, minLengthValidator]
 </script>
 
 <template>
@@ -52,18 +72,12 @@ const login = () =>{
     </div>
   </a>
 
-  <VRow
-    no-gutters
-    class="auth-wrapper bg-surface"
-  >
-    <VCol
-      md="8"
-      class="d-none d-md-flex"
-    >
+  <VRow no-gutters class="auth-wrapper bg-surface">
+    <VCol md="8" class="d-none d-md-flex">
       <div class="position-relative bg-background w-100 me-0">
         <div
           class="d-flex align-center justify-center w-100 h-100"
-          style="padding-inline: 6.25rem;"
+          style="padding-inline: 6.25rem"
         >
           <VImg
             max-width="613"
@@ -78,7 +92,7 @@ const login = () =>{
           alt="auth-footer-mask"
           height="280"
           width="100"
-        >
+        />
       </div>
     </VCol>
 
@@ -87,14 +101,12 @@ const login = () =>{
       md="4"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VCard
-        flat
-        :max-width="500"
-        class="mt-12 mt-sm-0 pa-6"
-      >
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-6">
         <VCardText>
           <h4 class="text-h4 mb-1">
-            Welcome to <span class="text-capitalize">{{ themeConfig.app.title }}</span>! 👋🏻
+            Welcome to
+            <span class="text-capitalize">{{ themeConfig.app.title }}</span
+            >! 👋🏻
           </h4>
           <p class="mb-0">
             Please sign-in to your account and start the adventure
@@ -103,59 +115,48 @@ const login = () =>{
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <VRow>
-              <!-- email -->
+              <!-- worker id -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="form.email"
+                  v-model="worker_id"
                   autofocus
-                  label="Email or Username"
-                  type="email"
-                  placeholder="johndoe@email.com"
+                  label="Worker ID"
+                  type="text"
+                  placeholder="0001"
+                  :rules="[requiredValidator]"
                 />
               </VCol>
 
               <!-- password -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="form.password"
+                  v-model="password"
                   label="Password"
                   placeholder="············"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   autocomplete="password"
-                  :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  :append-inner-icon="
+                    isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
+                  "
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  :rules="passwordRules"
                 />
 
-                <div class="d-flex align-center flex-wrap justify-space-between my-6">
-                  <VCheckbox
-                    v-model="form.remember"
-                    label="Remember me"
-                  />
-                  <a
-                    class="text-primary"
-                    href="javascript:void(0)"
-                  >
+                <div
+                  class="d-flex align-center flex-wrap justify-space-between my-6"
+                >
+                  <VCheckbox v-model="form.remember" label="Remember me" />
+                  <a class="text-primary" href="javascript:void(0)">
                     Forgot Password?
                   </a>
                 </div>
 
-                <VBtn
-                  block
-                  type="submit"
-                  @click="login"
-                >
-                  Login
-                </VBtn>
+                <VBtn block type="submit" @click="login"> Login </VBtn>
               </VCol>
 
               <!-- create account -->
-              <VCol
-                cols="12"
-                class="text-body-1 text-center"
-              >
-                <span class="d-inline-block">
-                  New on our platform?
-                </span>
+              <VCol cols="12" class="text-body-1 text-center">
+                <span class="d-inline-block"> New on our platform? </span>
                 <a
                   class="text-primary ms-1 d-inline-block text-body-1"
                   href="javascript:void(0)"
@@ -164,20 +165,14 @@ const login = () =>{
                 </a>
               </VCol>
 
-              <VCol
-                cols="12"
-                class="d-flex align-center"
-              >
+              <VCol cols="12" class="d-flex align-center">
                 <VDivider />
                 <span class="mx-4">or</span>
                 <VDivider />
               </VCol>
 
               <!-- auth providers -->
-              <VCol
-                cols="12"
-                class="text-center"
-              >
+              <VCol cols="12" class="text-center">
                 <AuthProvider />
               </VCol>
             </VRow>
@@ -189,5 +184,5 @@ const login = () =>{
 </template>
 
 <style lang="scss">
-@use "@core/scss/template/pages/page-auth";
+  @use '@core/scss/template/pages/page-auth';
 </style>
