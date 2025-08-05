@@ -13,8 +13,12 @@
   const schedules = ref<ScheduleSlot[]>([])
   const dataIsReady = ref(false)
 
-  const selectedMonth = ref<number | null>(null)
-  const selectedYear = ref<number | null>(null)
+  // Get current date
+  const now = $dayjs()
+
+  // Initialize refs with current month (1–12) and year
+  const selectedMonth = ref<number>(now.month() + 1) // month() is 0-based
+  const selectedYear = ref<number>(now.year())
 
   const isSchedInfoDialogVisible = ref(false)
 
@@ -49,10 +53,17 @@
     if (!selectedMonth.value || !selectedYear.value) return
 
     dataIsReady.value = false
+
+    const delay = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms))
+
     try {
-      const result = await api(
-        `/slots?month=${selectedMonth.value}&year=${selectedYear.value}`
-      )
+      // Start both API and delay at the same time
+      const [result] = await Promise.all([
+        api(`/slots?month=${selectedMonth.value}&year=${selectedYear.value}`),
+        delay(500), // minimum 500ms delay for better UX
+      ])
+
       schedules.value = result
     } catch (err) {
       console.error('API fetch failed:', err)
@@ -218,37 +229,55 @@
 <template>
   <SchedInfoDialog
     v-model:is-dialog-visible="isSchedInfoDialogVisible"
+    :selectedMonth="selectedMonth"
+    :selectedYear="selectedYear"
     :form-data="formData"
-    :sched-month="schedMonth"
-    :selectedMonth="selectedMonth.value"
-    :selectedYear="selectedYear.value"
     @submit="handleSubmit"
   />
 
-  <VRow>
-    <VCol cols="3">
-      <YearSelect v-model="selectedYear" />
-    </VCol>
+  <!-- Filters Card -->
+  <VCol cols="12" md="12">
+    <div class="d-flex align-center flex-wrap justify-space-between mb-6 gap-2">
+      <span class="text-h4">Praise and Worship Schedule</span>
 
-    <VCol cols="3">
-      <MonthSelect v-model="selectedMonth" />
-    </VCol>
+      <RouterLink
+        :to="{
+          path: '/export',
+          query: { year: selectedYear, month: selectedMonth },
+        }"
+      >
+        <VBtn>
+          Export
+          <VIcon end icon="tabler-cloud-download" />
+        </VBtn>
+      </RouterLink>
+    </div>
+    <VCard class="pa-4">
+      <VCardTitle class="pb-2">Filters</VCardTitle>
+      <VCardText>
+        <VRow>
+          <VCol class="pl-0" cols="12" md="3" sm="12">
+            <YearSelect v-model="selectedYear" />
+          </VCol>
+          <VCol class="pl-0" cols="12" md="3" sm="12">
+            <MonthSelect v-model="selectedMonth" />
+          </VCol>
+        </VRow>
+      </VCardText>
+    </VCard>
+  </VCol>
+
+  <!-- Show spinner when loading -->
+  <VRow
+    v-if="!dataIsReady"
+    align="center"
+    justify="center"
+    style="min-height: 200px"
+  >
+    <VProgressCircular indeterminate color="primary" size="50" width="5" />
   </VRow>
 
-  <VCol cols="12">
-    <span class="text-h4">Praise and Worship Schedule</span>
-  </VCol>
-
-  <VCol>
-    <RouterLink to="/export">
-      <VBtn>
-        Export
-        <VIcon end icon="tabler-cloud-download" />
-      </VBtn>
-    </RouterLink>
-  </VCol>
-
-  <VRow v-if="dataIsReady">
+  <VRow v-else>
     <VCol v-for="id in [1, 2, 3, 4]" :key="id" cols="12" sm="6" md="3">
       <VCol cols="12" class="text-center">
         <div class="d-flex flex-wrap align-center gap-2 justify-center">

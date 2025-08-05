@@ -7,15 +7,15 @@ import type { SlotForm, SlotWorkers } from '@/types/Slot' // adjust path based o
 export const useSlotHelpers = () => {
   const { $dayjs } = useNuxtApp()
 
-  const getDaysInMonth = ({ schedMonth, dayInWeek = 0 }) => {
-    const month = $dayjs(schedMonth).format('MM')
-    const year = $dayjs(schedMonth).format('YYYY')
-    const date = new Date(Number(year), Number(month) - 1, 1)
+  const getDaysInMonth = ({ schedMonth = 0, schedYear = 0, dayInWeek = 0 }) => {
+    const date = new Date(schedYear, schedMonth - 1, 1) // JavaScript months are 0-based
 
     const slotDays: string[] = []
-    while (date.getMonth() === Number(month) - 1) {
-      if (date.getDay() === dayInWeek)
+
+    while (date.getMonth() === schedMonth - 1) {
+      if (date.getDay() === dayInWeek) {
         slotDays.push($dayjs(date).format('MMM D, YYYY'))
+      }
       date.setDate(date.getDate() + 1)
     }
 

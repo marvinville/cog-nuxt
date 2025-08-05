@@ -15,6 +15,12 @@
   // if converted to composable
   const api = useApi()
 
+  const route = useRoute()
+  const year = computed(() => Number(route.query.year)) // if using query
+  const month = computed(() => Number(route.query.month))
+
+  console.log(year, month)
+
   // PDF settings
   const exampleDate = '2025-08-01'
   const dayjs = useNuxtApp().$dayjs
