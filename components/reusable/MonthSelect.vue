@@ -39,7 +39,7 @@
     :items="months"
     item-title="label"
     item-value="value"
-    label="Select Month"
+    label="Month"
     return-object
     single-line
     placeholder="Choose Month"

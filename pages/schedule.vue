@@ -253,7 +253,7 @@
       </RouterLink>
     </div>
     <VCard class="pa-4">
-      <VCardTitle class="pb-2">Filters</VCardTitle>
+      <VCardTitle class="pb-2">Filter by</VCardTitle>
       <VCardText>
         <VRow>
           <VCol class="pl-0" cols="12" md="3" sm="12">

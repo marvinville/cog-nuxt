@@ -30,7 +30,7 @@
     :items="years"
     item-title="label"
     item-value="value"
-    label="Select Year"
+    label="Year"
     placeholder="Choose Year"
     return-object
   />

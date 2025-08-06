@@ -66,7 +66,7 @@
   const localFormData = ref({ ...props.formData })
   const formRef = ref(null)
 
-  const activeTab = ref(0)
+  const openedPanels = ref<number[]>([])
 
   const requiredValidator = (v: any) =>
     (v !== null &&
@@ -96,6 +96,15 @@
   }
 
   const dialogModelValueUpdate = (val: boolean) => {
+    // closing the modal should set the tab to default view
+    if (!val) {
+      openedPanels.value = [0]
+      // when the form is closed during add, reset the slot date options
+      if (localFormData.value.id < 1) {
+        slotDateOptions.value = []
+      }
+    }
+
     emit('update:isDialogVisible', val)
   }
 
@@ -291,15 +300,16 @@
   const allSingers = ref<Singer[]>(singers)
   const keyVox = ref<Singer[]>(singers)
 
-  watch(
-    () => props.formData,
-    (newFormData) => {
-      // Clone props.formData into localFormData
-      localFormData.value = { ...newFormData }
+  onMounted(() => {
+    watchEffect(() => {
+      const data = props.formData
+      if (!data) return
+
+      // Clone formData into localFormData
+      localFormData.value = { ...data }
 
       const { satellite_id, worship_leader } = localFormData.value
 
-      // Only assign default worship leader if not already selected
       if (!worship_leader && satellite_id) {
         const defaultWL = singers.find(
           (singer) =>
@@ -307,14 +317,21 @@
             singer.is_worship_leader
         )
 
-        if (defaultWL) {
-          console.log(defaultWL)
+        if (defaultWL?.id) {
           localFormData.value.worship_leader = defaultWL.id
         }
       }
+    })
+  })
+
+  watch(
+    () => props.formData,
+    (newFormData) => {
+      // Clone props.formData into localFormData
+      localFormData.value = { ...newFormData }
     },
     {
-      deep: true, // ✅ shallow is sufficient if props.formData is fully replaced
+      deep: false, // ✅ shallow is sufficient if props.formData is fully replaced
       immediate: true,
     }
   )
@@ -399,6 +416,8 @@
     :width="$vuetify.display.smAndDown ? 'auto' : 900"
     :model-value="props.isDialogVisible"
     @update:model-value="dialogModelValueUpdate"
+    persistent
+    :no-click-animation="true"
   >
     <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
@@ -411,253 +430,273 @@
           {{ `${selectedSlotTitle} - ${localFormData.slot_date}` }}
         </p>
 
-        <!-- Tabs -->
-        <VTabs v-model="activeTab" class="mb-4">
-          <VTab>Slot Details</VTab>
-          <VTab>Singers</VTab>
-          <VTab>Band Setup</VTab>
-          <VTab>More</VTab>
-        </VTabs>
-
         <VForm
           ref="formRef"
           class="mt-6"
           @submit.prevent="onFormSubmit"
           :disabled="isViewOnly"
         >
-          <VWindow v-model="activeTab">
-            <!-- SLOT DETAILS TAB -->
-            <VWindowItem>
-              <VRow>
-                <VCol cols="12" md="6">
-                  <AppSelect
-                    v-model="localFormData.slot_name"
-                    label="Slot Name"
-                    placeholder="Select Item"
-                    :items="selectedSat.slots"
-                    item-value="uuid"
-                    item-title="title"
-                    :rules="[requiredValidator]"
-                    @update:modelValue="onSlotChange"
-                  />
-                </VCol>
-                <VCol cols="12" md="6">
-                  <AppSelect
-                    v-model="localFormData.slot_date"
-                    label="Slot Date"
-                    placeholder="Select Item"
-                    :items="slotDateOptions"
-                    :rules="[requiredValidator]"
-                  />
-                </VCol>
+          <VExpansionPanels v-model="openedPanels" class="no-icon-rotate">
+            <VExpansionPanel>
+              <VExpansionPanelTitle class="bold" disable-icon-rotate>
+                Slot Details (Rehearsal Venue & Date)
+                <template #actions>
+                  <!-- <VIcon size="18" icon="tabler-check" color="success" /> -->
+                </template>
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <VRow class="mt-2">
+                  <VCol cols="12" md="6">
+                    <AppSelect
+                      v-model="localFormData.slot_name"
+                      label="Slot Name"
+                      placeholder="Select Item"
+                      :items="selectedSat.slots"
+                      item-value="uuid"
+                      item-title="title"
+                      :rules="[requiredValidator]"
+                      @update:modelValue="onSlotChange"
+                    />
+                  </VCol>
+                  <VCol cols="12" md="6">
+                    <AppSelect
+                      v-model="localFormData.slot_date"
+                      label="Slot Date"
+                      placeholder="Select Item"
+                      :items="slotDateOptions"
+                      :rules="[requiredValidator]"
+                    />
+                  </VCol>
+                  <VCol cols="12" md="6">
+                    <AppTextField
+                      v-model="localFormData.remarks"
+                      :rules="[
+                        (v) => !!v || 'Required',
+                        (v) => !v || v.length <= 25 || 'Max 25 characters',
+                      ]"
+                      counter
+                      maxlength="25"
+                      placeholder="Day & Time"
+                      hint="This field uses maxlength attribute"
+                      label="Practice Details"
+                    />
+                  </VCol>
+                </VRow>
+              </VExpansionPanelText>
+            </VExpansionPanel>
 
-                <VCol cols="12" md="6">
-                  <AppTextField
-                    v-model="localFormData.remarks"
-                    :rules="[
-                      (v) => !!v || 'Required',
-                      (v) => !v || v.length <= 25 || 'Max 25 characters',
-                    ]"
-                    counter
-                    maxlength="25"
-                    placeholder="Thu 5-9PM"
-                    hint="This field uses maxlength attribute"
-                    label="Practice Details"
-                  />
-                </VCol>
-              </VRow>
-            </VWindowItem>
+            <VExpansionPanel>
+              <VExpansionPanelTitle class="bold" disable-icon-rotate>
+                Worship Leader and Choir
+                <template #actions>
+                  <!-- <VIcon size="18" icon="tabler-check" color="success" /> -->
+                </template>
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <VRow class="mt-2">
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.worship_leader"
+                      label="Worship Leader"
+                      placeholder="Select Item"
+                      :items="worshipLeaderOptions"
+                      item-title="name"
+                      item-value="id"
+                      :rules="[requiredValidator]"
+                    />
+                  </VCol>
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.key_vox"
+                      label="Key Vox"
+                      placeholder="Select Item"
+                      :items="keyVox"
+                      item-title="name"
+                      item-value="id"
+                      :rules="[requiredValidator, maxSelectionValidator(6)]"
+                      closable-chips
+                      chips
+                      multiple
+                      clearable
+                    />
+                  </VCol>
+                </VRow>
+              </VExpansionPanelText>
+            </VExpansionPanel>
 
-            <!-- SINGERS TAB -->
-            <VWindowItem>
-              <VRow>
-                <VCol cols="12" md="6">
-                  <AppAutocomplete
-                    v-model="localFormData.worship_leader"
-                    label="Worship Leader"
-                    placeholder="Select Item"
-                    :items="worshipLeaderOptions"
-                    item-title="name"
-                    item-value="id"
-                    :rules="[requiredValidator]"
-                  />
-                </VCol>
-                <VCol cols="12" md="6">
-                  <AppAutocomplete
-                    v-model="localFormData.key_vox"
-                    label="Key Vox"
-                    placeholder="Select Item"
-                    :items="keyVox"
-                    item-title="name"
-                    item-value="id"
-                    :rules="[requiredValidator, maxSelectionValidator(6)]"
-                    closable-chips
-                    chips
-                    multiple
-                    clearable
-                  />
-                </VCol>
-              </VRow>
-            </VWindowItem>
+            <VExpansionPanel>
+              <VExpansionPanelTitle class="bold" disable-icon-rotate>
+                Band Setup
+                <template #actions>
+                  <!-- <VIcon size="18" icon="tabler-check" color="success" /> -->
+                </template>
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <VRow class="mt-2">
+                  <VCol cols="12">
+                    <VSwitch
+                      v-model="localFormData.is_fixed_band"
+                      density="compact"
+                      label="Is Fixed Band?"
+                    />
+                  </VCol>
 
-            <!-- BAND SETUP TAB -->
-            <VWindowItem>
-              <VRow>
-                <VCol cols="12" md="12">
-                  <VSwitch
-                    v-model="localFormData.is_fixed_band"
-                    density="compact"
-                    label="Is Fixed Band?"
-                  />
-                </VCol>
+                  <VCol v-if="localFormData.is_fixed_band" cols="12">
+                    <AppAutocomplete
+                      v-model="localFormData.fixed_band_id"
+                      label="Band"
+                      :items="bandNamesCompiler(fixedBands)"
+                      item-title="names"
+                      item-value="id"
+                    />
+                  </VCol>
 
-                <VCol v-if="localFormData.is_fixed_band" cols="12" md="12">
-                  <AppAutocomplete
-                    v-model="localFormData.fixed_band_id"
-                    label="Band"
-                    :items="bandNamesCompiler(fixedBands)"
-                    item-title="names"
-                    item-value="id"
-                  />
-                </VCol>
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.pianists"
+                      closable-chips
+                      chips
+                      multiple
+                      label="Keyboardist"
+                      :items="pianists"
+                      item-title="name"
+                      item-value="name"
+                      :rules="[requiredValidator, maxSelectionValidator(2)]"
+                      @update:modelValue="handleFixedBand"
+                    />
+                  </VCol>
 
-                <VCol cols="12" md="6">
-                  <AppAutocomplete
-                    v-model="localFormData.pianists"
-                    closable-chips
-                    chips
-                    multiple
-                    label="Keyboardist"
-                    :items="pianists"
-                    item-title="name"
-                    item-value="name"
-                    :rules="[requiredValidator, maxSelectionValidator(2)]"
-                    @update:modelValue="handleFixedBand"
-                  />
-                </VCol>
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.egs"
+                      closable-chips
+                      chips
+                      multiple
+                      label="EG"
+                      :items="egs"
+                      item-title="name"
+                      item-value="name"
+                      :rules="[requiredValidator, maxSelectionValidator(2)]"
+                      @update:modelValue="handleFixedBand"
+                    />
+                  </VCol>
 
-                <VCol cols="12" md="6">
-                  <AppAutocomplete
-                    v-model="localFormData.egs"
-                    closable-chips
-                    chips
-                    multiple
-                    label="EG"
-                    :items="egs"
-                    item-title="name"
-                    item-value="name"
-                    :rules="[requiredValidator, maxSelectionValidator(2)]"
-                    @update:modelValue="handleFixedBand"
-                  />
-                </VCol>
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.ags"
+                      closable-chips
+                      chips
+                      multiple
+                      label="AG"
+                      :items="ags"
+                      item-title="name"
+                      item-value="name"
+                      :rules="[requiredValidator, maxSelectionValidator(2)]"
+                      @update:modelValue="handleFixedBand"
+                    />
+                  </VCol>
 
-                <VCol cols="12" md="6">
-                  <AppAutocomplete
-                    v-model="localFormData.ags"
-                    closable-chips
-                    chips
-                    multiple
-                    label="AG"
-                    :items="ags"
-                    item-title="name"
-                    item-value="name"
-                    :rules="[requiredValidator, maxSelectionValidator(2)]"
-                    @update:modelValue="handleFixedBand"
-                  />
-                </VCol>
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.bassists"
+                      closable-chips
+                      chips
+                      multiple
+                      label="Bassist"
+                      :items="bassists"
+                      item-title="name"
+                      item-value="name"
+                      :rules="[requiredValidator, maxSelectionValidator(2)]"
+                      @update:modelValue="handleFixedBand"
+                    />
+                  </VCol>
 
-                <VCol cols="12" md="6">
-                  <AppAutocomplete
-                    v-model="localFormData.bassists"
-                    closable-chips
-                    chips
-                    multiple
-                    label="Bassist"
-                    :items="bassists"
-                    item-title="name"
-                    item-value="name"
-                    :rules="[requiredValidator, maxSelectionValidator(2)]"
-                    @update:modelValue="handleFixedBand"
-                  />
-                </VCol>
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.drummers"
+                      closable-chips
+                      chips
+                      multiple
+                      label="Drummer"
+                      :items="drummers"
+                      item-title="name"
+                      item-value="name"
+                      :rules="[requiredValidator, maxSelectionValidator(2)]"
+                      @update:modelValue="handleFixedBand"
+                    />
+                  </VCol>
 
-                <VCol cols="12" md="6">
-                  <AppAutocomplete
-                    v-model="localFormData.drummers"
-                    closable-chips
-                    chips
-                    multiple
-                    label="Drummer"
-                    :items="drummers"
-                    item-title="name"
-                    item-value="name"
-                    :rules="[requiredValidator, maxSelectionValidator(2)]"
-                    @update:modelValue="handleFixedBand"
-                  />
-                </VCol>
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.others"
+                      closable-chips
+                      chips
+                      multiple
+                      label="Others"
+                      :items="others"
+                      item-title="name"
+                      item-value="name"
+                      :rules="[maxSelectionValidator(2)]"
+                      @update:modelValue="handleFixedBand"
+                    />
+                  </VCol>
+                </VRow>
+              </VExpansionPanelText>
+            </VExpansionPanel>
 
-                <VCol cols="12" md="6">
-                  <AppAutocomplete
-                    v-model="localFormData.others"
-                    closable-chips
-                    chips
-                    multiple
-                    label="Others"
-                    :items="others"
-                    item-title="name"
-                    item-value="name"
-                    :rules="[maxSelectionValidator(2)]"
-                    @update:modelValue="handleFixedBand"
-                  />
-                </VCol>
-              </VRow>
-            </VWindowItem>
+            <!-- LEADERS -->
+            <VExpansionPanel>
+              <VExpansionPanelTitle class="bold" disable-icon-rotate>
+                MD/TH & Devotion
+                <template #actions>
+                  <!-- <VIcon size="18" icon="tabler-check" color="success" /> -->
+                </template>
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <VRow class="mt-2">
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.tech_head"
+                      label="Tech Head"
+                      :items="ths"
+                      item-title="name"
+                      item-value="name"
+                      clearable
+                    />
+                  </VCol>
 
-            <!-- MORE TAB -->
-            <VWindowItem>
-              <VRow>
-                <VCol cols="12" md="6">
-                  <AppAutocomplete
-                    v-model="localFormData.tech_head"
-                    label="Tech Head"
-                    :items="ths"
-                    item-title="name"
-                    item-value="name"
-                    clearable
-                  />
-                </VCol>
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.md"
+                      label="MD"
+                      :items="mds"
+                      item-title="name"
+                      item-value="name"
+                      clearable
+                    />
+                  </VCol>
 
-                <VCol cols="12" md="6">
-                  <AppAutocomplete
-                    v-model="localFormData.md"
-                    label="MD"
-                    :items="mds"
-                    item-title="name"
-                    item-value="name"
-                    clearable
-                  />
-                </VCol>
-
-                <VCol cols="12" md="6">
-                  <AppAutocomplete
-                    v-model="localFormData.devotion"
-                    closable-chips
-                    chips
-                    multiple
-                    label="Devotion"
-                    :items="compiledNames"
-                    item-title="name"
-                    item-value="name"
-                    :rules="[
-                      requiredValidator,
-                      maxSelectionValidator(2),
-                      checkScheduledNames,
-                    ]"
-                  />
-                </VCol>
-              </VRow>
-            </VWindowItem>
-          </VWindow>
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.devotion"
+                      closable-chips
+                      chips
+                      multiple
+                      label="Devotion"
+                      :items="compiledNames"
+                      item-title="name"
+                      item-value="name"
+                      :rules="[
+                        requiredValidator,
+                        maxSelectionValidator(2),
+                        checkScheduledNames,
+                      ]"
+                    />
+                  </VCol>
+                </VRow>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
 
           <VCol
             cols="12"
