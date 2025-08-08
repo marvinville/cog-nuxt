@@ -20,8 +20,9 @@
     { label: 'Dec', value: 12 },
   ]
 
-  const currentMonthIndex = new Date().getMonth() // returns 0–11
-  const selectedMonth = ref(months[currentMonthIndex])
+  // Get next month index (0–11), wrapping to January if December
+  const nextMonthIndex = (new Date().getMonth() + 1) % 12
+  const selectedMonth = ref(months[nextMonthIndex])
 
   // Emit only the value when selection changes
   watch(
@@ -30,7 +31,7 @@
       emit('update:modelValue', newVal.value)
     },
     { immediate: true }
-  ) // <-- this emits the default value immediately on mount
+  )
 </script>
 
 <template>

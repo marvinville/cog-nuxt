@@ -55,18 +55,14 @@
 
   const emit = defineEmits(['submit', 'update:isDialogVisible'])
 
-  const {
-    bandNamesCompiler,
-    getDaysInMonth,
-    prioritizeByPreferredSatelliteId,
-  } = useSlotHelpers()
+  const { getDaysInMonth, prioritizeByPreferredSatelliteId } = useSlotHelpers()
 
   const selectedMonth = ref(props.selectedMonth)
   const selectedYear = ref(props.selectedYear)
   const localFormData = ref({ ...props.formData })
   const formRef = ref(null)
 
-  const openedPanels = ref<number[]>([])
+  const openedPanels = ref<number[]>([0])
 
   const requiredValidator = (v: any) =>
     (v !== null &&
@@ -145,6 +141,10 @@
 
     return isValid || 'One or more names are not scheduled'
   }
+
+  const MDTHRules = computed(() =>
+    props.formData?.satellite_id === 1 ? [requiredValidator] : []
+  )
 
   const handleFixedBand = (value: string[]) => {
     const band = fixedBands.find(
@@ -255,6 +255,11 @@
   })
 
   const selectedSlotTitle = computed(() => {
+    // get the saved name if in edit view
+    if (localFormData.value.id) {
+      return localFormData.value.slot_name
+    }
+
     const mergedSlots = satellites.flatMap((item) => item.slots2)
 
     const slotId = localFormData.value.slot_name ?? null
@@ -300,16 +305,20 @@
   const allSingers = ref<Singer[]>(singers)
   const keyVox = ref<Singer[]>(singers)
 
-  onMounted(() => {
-    watchEffect(() => {
+  watch(
+    () => props.isDialogVisible,
+    (isOpen) => {
+      if (!isOpen) return
+
       const data = props.formData
       if (!data) return
 
-      // Clone formData into localFormData
+      // Clone formData into local state
       localFormData.value = { ...data }
 
       const { satellite_id, worship_leader } = localFormData.value
 
+      // Only set default worship leader if not already set
       if (!worship_leader && satellite_id) {
         const defaultWL = singers.find(
           (singer) =>
@@ -321,8 +330,8 @@
           localFormData.value.worship_leader = defaultWL.id
         }
       }
-    })
-  })
+    }
+  )
 
   watch(
     () => props.formData,
@@ -427,7 +436,7 @@
           {{ selectedSat.name }} - Schedule Information
         </h4>
         <p class="text-body-1 text-center mb-6">
-          {{ `${selectedSlotTitle} - ${localFormData.slot_date}` }}
+          {{ `${selectedSlotTitle} - ${localFormData.slot_date ?? ''}` }}
         </p>
 
         <VForm
@@ -436,7 +445,12 @@
           @submit.prevent="onFormSubmit"
           :disabled="isViewOnly"
         >
-          <VExpansionPanels v-model="openedPanels" class="no-icon-rotate">
+          <VExpansionPanels
+            v-model="openedPanels"
+            multiple
+            class="no-icon-rotate"
+            variant="popout"
+          >
             <VExpansionPanel>
               <VExpansionPanelTitle class="bold" disable-icon-rotate>
                 Slot Details (Rehearsal Venue & Date)
@@ -478,7 +492,7 @@
                       maxlength="25"
                       placeholder="Day & Time"
                       hint="This field uses maxlength attribute"
-                      label="Practice Details"
+                      label="Rehearsal Details"
                     />
                   </VCol>
                 </VRow>
@@ -545,8 +559,8 @@
                     <AppAutocomplete
                       v-model="localFormData.fixed_band_id"
                       label="Band"
-                      :items="bandNamesCompiler(fixedBands)"
-                      item-title="names"
+                      :items="fixedBands"
+                      item-title="name"
                       item-value="id"
                     />
                   </VCol>
@@ -662,6 +676,7 @@
                       item-title="name"
                       item-value="name"
                       clearable
+                      :rules="MDTHRules"
                     />
                   </VCol>
 
@@ -673,6 +688,7 @@
                       item-title="name"
                       item-value="name"
                       clearable
+                      :rules="MDTHRules"
                     />
                   </VCol>
 

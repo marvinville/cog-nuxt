@@ -2,33 +2,66 @@
   import MainBlock from '@/components/slots/blocks/Main.vue'
   import TitleBlock from '@/components/slots/blocks/Title.vue'
 
-  const { range, schedules } = defineProps({
-    range: {
-      type: String,
-      required: true,
-    },
+  const { schedules, selectedMonth, selectedYear } = defineProps({
     schedules: {
       type: Array,
       required: true,
     },
+    selectedMonth: {
+      type: Number,
+      required: true,
+    },
+    selectedYear: {
+      type: Number,
+      required: true,
+    },
   })
+
+  let range = ''
+
+  if (selectedYear && selectedMonth) {
+    let monthString = selectedMonth.toString()
+
+    // add lead zero to month 1-9
+    if (selectedMonth <= 9) {
+      monthString = `0${selectedMonth.toString()}`
+    }
+
+    range = `${selectedYear}-${monthString}-01`
+  }
 
   const { getDaysInMonth } = useSlotHelpers()
 
   const { $dayjs } = useNuxtApp()
 
-  const schedMonth = new Date(`${range}-01`)
+  const schedMonth = new Date(range)
   const monthDisplay = $dayjs(schedMonth).format('MMM YYYY')
 
   const sundaysInMonth = getDaysInMonth({
-    schedMonth,
+    schedMonth: selectedMonth,
+    schedYear: selectedYear,
     dayInWeek: 0,
   })
 
   const tuesdaysInMonth = getDaysInMonth({
-    schedMonth,
+    schedMonth: selectedMonth,
+    schedYear: selectedYear,
     dayInWeek: 2,
   })
+
+  const totalSun = sundaysInMonth.length
+  const totalTue = tuesdaysInMonth.length
+
+  if (Math.abs(totalSun - totalTue) === 1) {
+    // if number of sun are higher than tue or vice versa
+    if (totalSun > totalTue) {
+      tuesdaysInMonth.push('')
+    }
+
+    if (totalTue > totalSun) {
+      sundaysInMonth.push('')
+    }
+  }
 
   let colWidth = '22.5%'
   let colNum = '9'
@@ -113,6 +146,7 @@
       </tr>
 
       <!-- EMPOWERED ROW -->
+      <!-- COPY OF MID SLOT -->
       <tr>
         <td width="10%" valign="top">
           <TitleBlock satellite="EMPOWERED" />
@@ -128,7 +162,11 @@
         >
           <MainBlock
             :slots="findSlots(sunday, 1, 1)"
-            :slot-date="$dayjs(sunday).subtract(1, 'day').format('MMM D, YYYY')"
+            :slot-date="
+              sunday
+                ? $dayjs(sunday).subtract(1, 'day').format('MMM D, YYYY')
+                : ''
+            "
           />
         </td>
       </tr>

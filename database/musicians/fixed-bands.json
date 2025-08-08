@@ -1,129 +1,158 @@
 [
   {
     "id": 1,
-    "pianists": ["Adrinel"],
-    "egs": ["Tambin", "Iris"],
-    "ags": ["Jennie"],
-    "bassists": ["JC"],
-    "drummers": ["Arjay"],
-    "others": ["New Player"]
+    "name": "Justine Band",
+    "pianists": ["Justine"],
+    "egs": ["Japheth"],
+    "ags": ["Timo"],
+    "bassists": ["TONET"],
+    "drummers": ["Roi"],
+    "others": [],
+    "preferred_satellite_id": 1
   },
   {
     "id": 2,
+    "name": "Jeff BAND",
+    "pianists": ["Jeff"],
+    "egs": ["Nikoy"],
+    "ags": ["Cymone"],
+    "bassists": ["Kyle"],
+    "drummers": ["Abed"],
+    "others": [],
+    "preferred_satellite_id": 1
+  },
+  {
+    "id": 3,
+    "name": "JJ CHENG BAND",
+    "pianists": ["Sam"],
+    "egs": ["Mark L."],
+    "ags": ["Jay Mark"],
+    "bassists": ["JB"],
+    "drummers": ["JJ Cheng"],
+    "others": [],
+    "preferred_satellite_id": 1
+  },
+  {
+    "id": 4,
+    "name": "NEIL BAND",
+    "pianists": ["NEIL"],
+    "egs": ["Scott"],
+    "ags": ["Stephen"],
+    "bassists": ["Josh P."],
+    "drummers": ["Hero"],
+    "others": [],
+    "preferred_satellite_id": 1
+  },
+
+  {
+    "id": 5,
+    "name": "RENZO BAND",
+    "pianists": ["Jherlyn"],
+    "egs": ["EJ"],
+    "ags": ["Marvhin"],
+    "bassists": ["Hanz"],
+    "drummers": ["Renzo"],
+    "others": [],
+    "preferred_satellite_id": 1
+  },
+  {
+    "id": 6,
+    "name": "LLYOD BAND",
+    "pianists": ["Lloyd"],
+    "egs": ["Hans A."],
+    "ags": ["Rox"],
+    "bassists": ["John Loui"],
+    "drummers": ["Warlo"],
+    "others": [],
+    "preferred_satellite_id": 1
+  },
+  {
+    "id": 7,
+    "name": "IAN BAND",
+    "pianists": ["Alvin B."],
+    "egs": ["Cris"],
+    "ags": ["Nash"],
+    "bassists": ["Edmon"],
+    "drummers": ["Ian"],
+    "others": [],
+    "preferred_satellite_id": 1
+  },
+  {
+    "id": 8,
+    "name": "LERRY BAND",
+    "pianists": ["Ezekiel S."],
+    "egs": ["Cedric"],
+    "ags": ["Nicole"],
+    "bassists": ["Xyrill"],
+    "drummers": ["Lerry"],
+    "others": [],
+    "preferred_satellite_id": 1
+  },
+  {
+    "id": 9,
+    "name": "Adrinel Band",
+    "pianists": ["Adrinel"],
+    "egs": ["Tambin"],
+    "ags": ["Eli"],
+    "bassists": ["JC"],
+    "drummers": ["Arjay"],
+    "others": [],
+    "preferred_satellite_id": 4
+  },
+  {
+    "id": 10,
+    "name": "Owen Band",
     "pianists": ["Owen"],
     "egs": ["Eldrin"],
     "ags": ["Eiren"],
     "bassists": ["Carlos"],
     "drummers": ["PauloC"],
-    "others": []
+    "others": [],
+    "preferred_satellite_id": 4
   },
   {
-    "id": 3,
-    "pianists": ["Justin"],
-    "egs": ["Japheth"],
-    "ags": ["Timothy"],
-    "bassists": ["Toni"],
-    "drummers": ["Roi"],
-    "others": []
-  },
-  {
-    "id": 4,
-    "pianists": ["Neil"],
-    "egs": ["Scott"],
-    "ags": ["Stephen"],
-    "bassists": ["Alvin"],
-    "drummers": ["Hero"],
-    "others": []
-  },
-  {
-    "id": 5,
-    "pianists": ["Sam"],
-    "egs": ["Mark L."],
-    "ags": ["Jay Mark"],
-    "bassists": ["JB"],
-    "drummers": ["JJ"],
-    "others": []
-  },
-  {
-    "id": 6,
-    "pianists": ["Jherlyn"],
-    "egs": ["EJ"],
-    "ags": ["Marvhin", "Kheine"],
-    "bassists": ["Hanz"],
-    "drummers": ["Renzo"],
-    "others": []
-  },
-  {
-    "id": 7,
-    "pianists": ["Ezekiel S."],
-    "egs": ["Cedric"],
-    "ags": ["Nicole"],
-    "bassists": ["Xyryll"],
-    "drummers": ["Lerry"],
-    "others": []
-  },
-  {
-    "id": 8,
-    "pianists": ["Lloyd"],
-    "egs": ["Hans A."],
-    "ags": ["Rox"],
-    "bassists": ["John Louie"],
-    "drummers": ["Christian D."],
-    "others": []
-  },
-  {
-    "id": 9,
-    "pianists": ["Sairel"],
-    "egs": ["Dan"],
-    "ags": ["Kim Jay"],
-    "bassists": ["Zion"],
-    "drummers": ["Jeoffrey"],
-    "others": []
-  },
-  {
-    "id": 10,
+    "id": 11,
+    "name": "EM Band",
     "pianists": ["Nehemiah"],
     "egs": ["JM"],
     "ags": ["Elijah O."],
     "bassists": ["Bryan"],
     "drummers": ["Karen"],
-    "others": []
+    "others": [],
+    "preferred_satellite_id": 2
   },
 
   {
-    "id": 11,
+    "id": 12,
+    "name": "Jeshu Band",
     "pianists": ["Jeshua"],
     "egs": ["Yonnie"],
     "ags": ["Kim P."],
     "bassists": ["Vid"],
     "drummers": ["VJ"],
-    "others": []
+    "others": [],
+    "preferred_satellite_id": 3
   },
   {
-    "id": 12,
+    "id": 13,
+    "name": "Johnson Band",
     "pianists": ["Johnson"],
     "egs": ["Josh L"],
     "ags": ["Anna Marie"],
     "bassists": ["Kenneth"],
     "drummers": ["Ivan"],
-    "others": []
+    "others": [],
+    "preferred_satellite_id": 3
   },
   {
-    "id": 13,
+    "id": 14,
+    "name": "Haniel Band",
     "pianists": ["Haniel"],
     "egs": ["Von"],
     "ags": ["Iris"],
     "bassists": ["Archie"],
     "drummers": ["Ace"],
-    "others": []
-  },
-  {
-    "id": 14,
-    "pianists": ["Warren"],
-    "egs": ["Justin Raven"],
-    "ags": ["Dhaeniel"],
-    "bassists": ["Vernard"],
-    "drummers": ["Paulo C."],
-    "others": []
+    "others": [],
+    "preferred_satellite_id": 4
   }
 ]

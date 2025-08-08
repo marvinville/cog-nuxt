@@ -19,13 +19,24 @@
   const year = computed(() => Number(route.query.year)) // if using query
   const month = computed(() => Number(route.query.month))
 
-  console.log(year, month)
+  let exampleDate = ''
+  let selectedYear = year.value || null
+  let selectedMonth = month.value || null
+
+  if (selectedYear && selectedMonth) {
+    let monthString = selectedMonth.toString()
+
+    // add lead zero to month 1-9
+    if (selectedMonth < 10) {
+      monthString = `0${selectedMonth.toString()}`
+    }
+
+    exampleDate = `${selectedYear}-${monthString}-01`
+  }
 
   // PDF settings
-  const exampleDate = '2025-08-01'
   const dayjs = useNuxtApp().$dayjs
 
-  const range = dayjs(exampleDate).format('YYYY-MM')
   const rangeTitle = dayjs(exampleDate).format('MMM YYYY')
   const pdfName = `PNW_Schedule_${rangeTitle}`
 
@@ -141,7 +152,11 @@
 
     <!-- Export Content -->
     <div ref="pdfContent" class="pdf-content mb-5">
-      <Export :schedules="schedules" :range="range" />
+      <Export
+        :schedules="schedules"
+        :selectedMonth="selectedMonth"
+        :selectedYear="selectedYear"
+      />
     </div>
   </div>
 </template>
