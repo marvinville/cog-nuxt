@@ -138,6 +138,20 @@ export const useSlotHelpers = () => {
     return [...prioritized, ...others]
   }
 
+  /**
+   * Filters out items with a blank "name" and sorts the rest alphabetically.
+   *
+   * @param array - Array of objects with a "name" property.
+   * @returns A new sorted array without blank names.
+   */
+  const sortByName = <T extends { name: string }>(array: T[]): T[] => {
+    return array
+      .filter((item) => item.name.trim() !== '') // remove blank names
+      .sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+      )
+  }
+
   const filterWorshipLeader = (data: Singer[]): Singer[] => {
     return data.filter((elem) => elem.is_worship_leader)
   }
@@ -158,23 +172,29 @@ export const useSlotHelpers = () => {
     return selected
   }
 
-  const buildWorkers = (slot: SlotForm): SlotWorkers => ({
-    worship_leader: findWL(slot.worship_leader)?.name,
-    key_vox: selectValues(singers, slot.key_vox).map((s) => s.name),
-    tech_head: slot.tech_head,
-    md: slot.md,
-    devotion: slot.devotion,
-    musicians: {
-      pianists: slot.pianists,
-      egs: slot.egs,
-      ags: slot.ags,
-      bassists: slot.bassists,
-      drummers: slot.drummers,
-      others: slot.others,
-    },
-    fixed_band_id: slot.fixed_band_id,
-    remarks: slot.remarks,
-  })
+  const buildWorkers = (slot: SlotForm): SlotWorkers => {
+    const result: any = {}
+
+    Object.entries(slot).forEach(([key, value]) => {
+      switch (key) {
+        case 'worship_leader':
+          result[key] = findWL(value as string | number)?.name ?? null
+          break
+
+        case 'key_vox':
+          result[key] = selectValues(singers, value as (string | number)[]).map(
+            (s) => s.name
+          )
+          break
+
+        default:
+          result[key] = value
+          break
+      }
+    })
+
+    return result as SlotWorkers
+  }
 
   return {
     getDaysInMonth,
@@ -186,5 +206,6 @@ export const useSlotHelpers = () => {
     prioritizeByPreferredSatelliteId,
     filterWorshipLeader,
     buildWorkers,
+    sortByName,
   }
 }

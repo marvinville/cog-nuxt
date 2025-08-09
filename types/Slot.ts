@@ -8,9 +8,11 @@ export type SlotForm = {
   drummers: any[]
   bassists: any[]
   others: any[]
+  band_leader: string
   slot_date: string
   slot_name: string
   key_vox: string[]
+  key_vox_leader: string
   tech_head: string
   md: string
   devotion: string[]
@@ -33,6 +35,8 @@ export type SlotWorkers = {
     drummers: any[]
     others: any[]
   }
+  band_leader: string
+  key_vox_leader: string
   fixed_band_id: number | null
   remarks: string
 }

@@ -9,9 +9,8 @@
   import singers from '@/database/singers.json'
   import ths from '@/database/tech-heads.json'
   import mds from '@/database/mds.json'
-  import musicians from '@/database/musicians.json'
   import satellites from '@/database/satellites.json'
-  import type { Musician, Singer } from '@/types/Person' // adjust path based on your project
+  import type { Singer } from '@/types/Person' // adjust path based on your project
 
   const props = defineProps({
     formData: {
@@ -470,6 +469,8 @@
           {{ `${selectedSlotTitle} - ${localFormData.slot_date ?? ''}` }}
         </p>
 
+        {{ localFormData.pianists }}
+
         <VForm
           ref="formRef"
           class="mt-6"
@@ -482,6 +483,119 @@
             class="no-icon-rotate"
             variant="popout"
           >
+            <VExpansionPanel>
+              <VExpansionPanelTitle class="bold" disable-icon-rotate>
+                Slot Details (Rehearsal Venue & Date)
+                <template #actions>
+                  <!-- <VIcon size="18" icon="tabler-check" color="success" /> -->
+                </template>
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <VRow class="mt-2">
+                  <VCol cols="12" md="6">
+                    <AppSelect
+                      v-model="localFormData.slot_name"
+                      label="Slot Name"
+                      placeholder="Select Item"
+                      :items="selectedSat.slots"
+                      item-value="uuid"
+                      item-title="title"
+                      :rules="[requiredValidator]"
+                      @update:modelValue="onSlotChange"
+                    />
+                  </VCol>
+                  <VCol cols="12" md="6">
+                    <AppSelect
+                      v-model="localFormData.slot_date"
+                      label="Slot Date"
+                      placeholder="Select Item"
+                      :items="slotDateOptions"
+                      :rules="[requiredValidator]"
+                    />
+                  </VCol>
+                  <VCol cols="12" md="6">
+                    <AppTextField
+                      v-model="localFormData.remarks"
+                      :rules="[
+                        (v) => !!v || 'Required',
+                        (v) => !v || v.length <= 25 || 'Max 25 characters',
+                      ]"
+                      counter
+                      maxlength="25"
+                      placeholder="Day & Time"
+                      hint="This field uses maxlength attribute"
+                      label="Rehearsal Details"
+                    />
+                  </VCol>
+                </VRow>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+
+            <VExpansionPanel>
+              <VExpansionPanelTitle class="bold" disable-icon-rotate>
+                Worship Leader and Choir
+                <template #actions>
+                  <!-- <VIcon size="18" icon="tabler-check" color="success" /> -->
+                </template>
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <VRow class="mt-2">
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.worship_leader"
+                      label="Worship Leader"
+                      placeholder="Select Item"
+                      :items="
+                        prioritizeByPreferredSatelliteId({
+                          data: sortByName(worshipLeaderOptions),
+                          preferredId: props.formData.satellite_id,
+                        })
+                      "
+                      item-title="name"
+                      item-value="id"
+                      :rules="[requiredValidator]"
+                    />
+                  </VCol>
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.key_vox"
+                      label="Key Vox"
+                      placeholder="Select Item"
+                      :items="
+                        prioritizeByPreferredSatelliteId({
+                          data: sortByName(keyVox),
+                          preferredId: props.formData.satellite_id,
+                        })
+                      "
+                      item-title="name"
+                      item-value="id"
+                      :rules="[requiredValidator, maxSelectionValidator(6)]"
+                      closable-chips
+                      chips
+                      multiple
+                      clearable
+                      @update:modelValue="handleKeyVox"
+                    />
+                  </VCol>
+
+                  <VCol cols="12" md="6">
+                    {{ localFormData.key_vox_leader }}
+                    <AppAutocomplete
+                      v-model="localFormData.key_vox_leader"
+                      label="Key Vox Leader"
+                      :items="
+                        compiledNames.filter(({ role }: { role: string }) => role === 'singer')
+                      "
+                      item-title="name"
+                      item-value="id"
+                      clearable
+                      :rules="[requiredValidator]"
+                    />
+                  </VCol>
+                </VRow>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+
             <VExpansionPanel>
               <VExpansionPanelTitle class="bold" disable-icon-rotate>
                 Band Setup
@@ -516,7 +630,7 @@
                       chips
                       multiple
                       label="Keyboardist"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'keys')"
+                      :items="pianists"
                       item-title="name"
                       item-value="id"
                       :rules="[requiredValidator, maxSelectionValidator(2)]"
@@ -531,7 +645,7 @@
                       chips
                       multiple
                       label="EG"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'eg')"
+                      :items="egs"
                       item-title="name"
                       item-value="id"
                       :rules="[requiredValidator, maxSelectionValidator(2)]"
@@ -546,7 +660,7 @@
                       chips
                       multiple
                       label="AG"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'ag')"
+                      :items="ags"
                       item-title="name"
                       item-value="id"
                       :rules="[requiredValidator, maxSelectionValidator(2)]"
@@ -561,7 +675,7 @@
                       chips
                       multiple
                       label="Bassist"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'bass')"
+                      :items="bassists"
                       item-title="name"
                       item-value="id"
                       :rules="[requiredValidator, maxSelectionValidator(2)]"
@@ -576,7 +690,7 @@
                       chips
                       multiple
                       label="Drummer"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'drums')"
+                      :items="drummers"
                       item-title="name"
                       item-value="id"
                       :rules="[requiredValidator, maxSelectionValidator(2)]"
@@ -591,7 +705,7 @@
                       chips
                       multiple
                       label="Others"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'others')"
+                      :items="others"
                       item-title="name"
                       item-value="id"
                       :rules="[maxSelectionValidator(2)]"
@@ -610,6 +724,61 @@
                       item-value="name"
                       clearable
                       :rules="[requiredValidator]"
+                    />
+                  </VCol>
+                </VRow>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+
+            <!-- LEADERS -->
+            <VExpansionPanel>
+              <VExpansionPanelTitle class="bold" disable-icon-rotate>
+                MD/TH & Devotion
+                <template #actions>
+                  <!-- <VIcon size="18" icon="tabler-check" color="success" /> -->
+                </template>
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <VRow class="mt-2">
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.tech_head"
+                      label="Tech Head"
+                      :items="ths"
+                      item-title="name"
+                      item-value="name"
+                      clearable
+                      :rules="MDTHRules"
+                    />
+                  </VCol>
+
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.md"
+                      label="MD"
+                      :items="mds"
+                      item-title="name"
+                      item-value="name"
+                      clearable
+                      :rules="MDTHRules"
+                    />
+                  </VCol>
+
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.devotion"
+                      closable-chips
+                      chips
+                      multiple
+                      label="Devotion"
+                      :items="compiledNames"
+                      item-title="name"
+                      item-value="name"
+                      :rules="[
+                        requiredValidator,
+                        maxSelectionValidator(2),
+                        checkScheduledNames,
+                      ]"
                     />
                   </VCol>
                 </VRow>

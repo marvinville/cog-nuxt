@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { ref, watch, defineEmits } from 'vue'
+  import { ref, watch } from 'vue'
 
   const emit = defineEmits<{
     (e: 'update:modelValue', value: number): void
