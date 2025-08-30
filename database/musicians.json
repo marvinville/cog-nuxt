@@ -83,5 +83,7 @@
   { "id": 76, "name": "Nash", "instrument": "ag" },
   { "id": 77, "name": "Edmon", "instrument": "bass" },
   { "id": 78, "name": "Ian", "instrument": "drums" },
-  { "id": 79, "name": "Eli", "instrument": "ag" }
+  { "id": 79, "name": "Eli", "instrument": "ag" },
+  { "id": 80, "name": "Alvin B.", "instrument": "keys" },
+  { "id": 81, "name": "Danielle B.", "instrument": "bass" }
 ]

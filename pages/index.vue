@@ -37,8 +37,8 @@
 
   const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
-  const worker_id = ref('')
-  const password = ref('')
+  const worker_id = ref('000001')
+  const password = ref('@Demo1234!')
 
   const login = async () => {
     const user = await loginUser({

@@ -160,11 +160,20 @@
     </div>
   </div>
 </template>
-
-<style scoped>
+<style lang="scss" scoped>
   .pdf-content {
-    padding: 1rem;
-    border-radius: 8px;
+    padding: 16px;
+    border-radius: 0.5rem;
     background-color: #f9f9f9;
+  }
+
+  .v-theme--dark {
+    .font-white {
+      color: white !important;
+    }
+
+    .pdf-content {
+      color: rgb(47, 43, 61);
+    }
   }
 </style>

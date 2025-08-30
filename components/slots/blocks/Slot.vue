@@ -1,16 +1,20 @@
 <script setup lang="ts">
+  import users from '@/database/users.json'
+
   interface Slot {
-    worship_leader: string
-    key_vox: string[]
-    pianists: string[]
-    egs: string[]
-    ags: string[]
-    bassists: string[]
-    drummers: string[]
-    others: string[]
-    tech_head: string
-    md: string
-    devotion: string[]
+    worship_leader: number
+    key_vox: number[]
+    pianists: number[]
+    egs: number[]
+    ags: number[]
+    bassists: number[]
+    drummers: number[]
+    others: number[]
+    tech_head: number
+    md: number
+    devotion: number[]
+    band_leader: number
+    key_vox_leader: number
     remarks: string
   }
 
@@ -18,7 +22,54 @@
 
   const { slot } = props
 
-  const { splitNames } = useSlotHelpers()
+  const {
+    pianists,
+    egs,
+    ags,
+    bassists,
+    drummers,
+    others,
+    tech_head,
+    md,
+    worship_leader,
+    key_vox,
+    band_leader,
+    key_vox_leader,
+    devotion,
+  } = slot
+
+  const { splitNames, toNames } = useSlotHelpers()
+
+  const selectedWorkerIds = [
+    ...pianists,
+    ...egs,
+    ...ags,
+    ...bassists,
+    ...drummers,
+    ...others,
+    ...key_vox,
+    ...[worship_leader],
+    ...[tech_head],
+    ...[md],
+  ]
+
+  const workersPool = selectedWorkerIds.map((id) => {
+    const user = users.find((u) => u.id === id)
+    return user
+  })
+
+  const slotNames = {
+    pianists: toNames(pianists, workersPool, band_leader),
+    egs: toNames(egs, workersPool, band_leader),
+    ags: toNames(ags, workersPool, band_leader),
+    bassists: toNames(bassists, workersPool, band_leader),
+    drummers: toNames(drummers, workersPool, band_leader),
+    wl: toNames([worship_leader], workersPool),
+    th: toNames([tech_head], workersPool),
+    md: toNames([md], workersPool),
+    keyVox: toNames(key_vox, workersPool, key_vox_leader),
+    devotion: toNames(devotion, workersPool),
+  }
 
   // Split the array into chunks of 3 for the rows
   const chunkArray = (arr: string[], chunkSize: number): string[][] => {
@@ -29,14 +80,14 @@
     return result
   }
 
-  const nameChunks = computed(() => chunkArray(slot.key_vox, 3))
+  const nameChunks = computed(() => chunkArray(slotNames.keyVox, 3))
 </script>
 
 <template>
   <table class="slot-table" width="100%">
     <tbody>
       <tr>
-        <td class="bold">{{ slot.worship_leader }}</td>
+        <td class="bold">{{ splitNames(slotNames.wl) }}</td>
       </tr>
 
       <tr>
@@ -44,9 +95,12 @@
           <table width="100%" class="inner-table">
             <tbody>
               <tr v-for="(row, rowIndex) in nameChunks" :key="rowIndex">
-                <td v-for="(name, colIndex) in row" :key="colIndex" width="33%">
-                  {{ name || '\u00A0' }}
-                </td>
+                <td
+                  v-for="(name, colIndex) in row"
+                  :key="colIndex"
+                  width="33%"
+                  v-html="name || '&nbsp;'"
+                ></td>
                 <!-- Fill empty columns if row has less than 3 items -->
                 <td v-for="n in 3 - row.length" :key="'empty-' + n" width="33%">
                   &nbsp;
@@ -58,29 +112,29 @@
       </tr>
 
       <tr>
-        <td v-html="splitNames(slot.pianists) || '&nbsp;'"></td>
+        <td v-html="splitNames(slotNames.pianists) || '&nbsp;'"></td>
       </tr>
       <tr>
-        <td v-html="splitNames(slot.egs) || '&nbsp;'"></td>
+        <td v-html="splitNames(slotNames.egs) || '&nbsp;'"></td>
       </tr>
       <tr>
-        <td v-html="splitNames(slot.ags) || '&nbsp;'"></td>
+        <td v-html="splitNames(slotNames.ags) || '&nbsp;'"></td>
       </tr>
       <tr>
-        <td v-html="splitNames(slot.bassists) || '&nbsp;'"></td>
+        <td v-html="splitNames(slotNames.bassists) || '&nbsp;'"></td>
       </tr>
       <tr>
-        <td v-html="splitNames(slot.drummers) || '&nbsp;'"></td>
+        <td v-html="splitNames(slotNames.drummers) || '&nbsp;'"></td>
       </tr>
 
       <tr>
-        <td v-html="slot.tech_head || '&nbsp;'"></td>
+        <td v-html="splitNames(slotNames.th) || '&nbsp;'"></td>
       </tr>
       <tr>
-        <td v-html="slot.md || '&nbsp;'"></td>
+        <td v-html="slotNames.md || '&nbsp;'"></td>
       </tr>
       <tr>
-        <td v-html="splitNames(slot.devotion) || '&nbsp;'"></td>
+        <td v-html="splitNames(slotNames.devotion) || '&nbsp;'"></td>
       </tr>
 
       <tr>
