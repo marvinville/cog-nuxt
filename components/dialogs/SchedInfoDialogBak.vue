@@ -389,7 +389,6 @@
 
         // set pianist as default band leader for fixed bands
         localFormData.value.band_leader = band.pianists[0] || null // fallback to null if no pianists
-        console.log(localFormData.value)
       }
     }
   )

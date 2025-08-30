@@ -1,7 +1,6 @@
 // composables/useSlotHelpers.ts
 import satellites from '@/database/satellites.json'
-import singers from '@/database/singers.json'
-import type { Singer } from '@/types/Person' // adjust path based on your project
+import type { BasicPerson, Singer } from '@/types/Person' // adjust path based on your project
 import type { SlotForm, SlotWorkers } from '@/types/Slot' // adjust path based on your project
 
 export const useSlotHelpers = () => {
@@ -66,25 +65,10 @@ export const useSlotHelpers = () => {
 
   const mutateData = (schedules: any[] = []) => {
     return schedules.map((slot) => {
-      const workers = safeParseJSON(slot.workers)
+      const workers = safeParseJSON(slot.workers) ?? {}
 
-      const {
-        worship_leader,
-        key_vox,
-        md,
-        tech_head,
-        devotion,
-        musicians = {},
-      } = workers
-
-      const {
-        pianists = [],
-        egs = [],
-        ags = [],
-        bassists = [],
-        drummers = [],
-        others = [],
-      } = musicians
+      // split out musicians from workers
+      const { musicians = {}, ...restWorkers } = workers
 
       return {
         id: slot.id,
@@ -94,18 +78,13 @@ export const useSlotHelpers = () => {
         satellite_id: slot.satellite_id,
         satellite: findSatellite(slot.satellite_id)?.name || '',
         slot_name: slot.slot_name,
-        worship_leader,
-        key_vox,
-        pianists,
-        egs,
-        ags,
-        bassists,
-        drummers,
-        others,
-        md,
-        tech_head,
-        devotion,
         remarks: slot.remarks,
+
+        // all other worker-level keys (worship_leader, md, tech_head, etc.)
+        ...restWorkers,
+
+        // all musician-level keys (pianists, drummers, etc.)
+        ...musicians,
       }
     })
   }
@@ -121,7 +100,7 @@ export const useSlotHelpers = () => {
     data,
     preferredId,
   }: {
-    data: Singer
+    data: BasicPerson[]
     preferredId: number
   }) => {
     const prioritized = []
@@ -156,45 +135,45 @@ export const useSlotHelpers = () => {
     return data.filter((elem) => elem.is_worship_leader)
   }
 
-  const findWL = (id) => {
-    return singers.find((elem) => elem.id === id)
-  }
-
-  const selectValues = (data = [], ids = []) => {
-    const selected: number[] = []
-
-    data.forEach((elem) => {
-      if (ids.includes(elem.id)) {
-        selected.push(elem)
-      }
-    })
-
-    return selected
-  }
-
   const buildWorkers = (slot: SlotForm): SlotWorkers => {
-    const result: any = {}
-
-    Object.entries(slot).forEach(([key, value]) => {
-      switch (key) {
-        case 'worship_leader':
-          result[key] = findWL(value as string | number)?.name ?? null
-          break
-
-        case 'key_vox':
-          result[key] = selectValues(singers, value as (string | number)[]).map(
-            (s) => s.name
-          )
-          break
-
-        default:
-          result[key] = value
-          break
-      }
-    })
-
-    return result as SlotWorkers
+    return {
+      worship_leader: slot.worship_leader,
+      key_vox: slot.key_vox,
+      tech_head: slot.tech_head,
+      md: slot.md,
+      devotion: slot.devotion,
+      musicians: {
+        pianists: slot.pianists,
+        egs: slot.egs,
+        ags: slot.ags,
+        bassists: slot.bassists,
+        drummers: slot.drummers,
+        others: slot.others,
+      },
+      band_leader: slot.band_leader,
+      key_vox_leader: slot.key_vox_leader,
+      fixed_band_id: slot.fixed_band_id,
+    }
   }
+
+  // // helper to convert IDs → names
+  // const toNames = (ids: number[], options: any[]) =>
+  //   ids.map((id) => options.find((elem) => elem.id === id)?.name ?? 'Unknown')
+
+  // helper to convert IDs → names
+  const toNames = (
+    ids: number[] = [],
+    options: any[] = [],
+    leaderId?: number
+  ) =>
+    ids.map((id) => {
+      const name = options.find((elem) => elem.id === id)?.name ?? 'Unknown'
+
+      if (leaderId && id === leaderId) {
+        return `<b>*${name}</b>` // bold + asterisk if leader
+      }
+      return name
+    })
 
   return {
     getDaysInMonth,
@@ -207,5 +186,6 @@ export const useSlotHelpers = () => {
     filterWorshipLeader,
     buildWorkers,
     sortByName,
+    toNames,
   }
 }

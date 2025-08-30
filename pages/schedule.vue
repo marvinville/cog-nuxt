@@ -6,6 +6,59 @@
   import MonthSelect from '@/components/reusable/MonthSelect.vue'
   import SlotCard from '@/components/slots/SlotCard.vue'
   import type { SlotForm, ScheduleSlot } from '@/types/Slot'
+  import singers from '@/database/singers.json'
+  import ths from '@/database/tech-heads.json'
+  import mds from '@/database/mds.json'
+  import musicians from '@/database/musicians.json'
+  import users from '@/database/users.json'
+
+  // musicians
+  const musiciansPool = musicians.map((elem) => {
+    const user = users.find((u) => u.id === elem.id)
+    return {
+      ...elem,
+      id: user?.id,
+      name: user?.name,
+      role: 'musician',
+    }
+  })
+
+  // singers
+  const singersPool = singers.map((elem) => {
+    const user = users.find((u) => u.id === elem.id)
+    return {
+      ...elem,
+      id: user?.id,
+      name: user?.name,
+      role: 'singer',
+    }
+  })
+
+  // tech heads
+  const thPool = ths.map((elem) => {
+    const user = users.find((u) => u.id === elem.id)
+    return {
+      ...elem,
+      id: user?.id,
+      name: user?.name,
+      role: 'tech_head',
+    }
+  })
+
+  // MDs
+  const mdPool = mds.map((elem) => {
+    const user = users.find((u) => u.id === elem.id)
+    return {
+      ...elem,
+      id: user?.id,
+      name: user?.name,
+      role: 'md',
+    }
+  })
+
+  // You might want to tag them with a role so you know their origin
+  const workers = [...singersPool, ...thPool, ...mdPool, ...musiciansPool]
+
   const { $dayjs } = useNuxtApp()
 
   const { buildWorkers } = useSlotHelpers()
@@ -167,6 +220,8 @@
       tech_head,
       devotion,
       fixed_band_id,
+      key_vox_leader,
+      band_leader,
     } = JSON.parse(workers || '{}')
 
     const {
@@ -187,7 +242,7 @@
       date_to,
       worship_leader,
       key_vox,
-      is_fixed_band: false,
+      is_fixed_band: fixed_band_id > 0,
       pianists,
       egs,
       ags,
@@ -195,6 +250,8 @@
       bassists,
       others,
       fixed_band_id,
+      band_leader,
+      key_vox_leader,
       tech_head,
       md,
       devotion,
@@ -219,9 +276,6 @@
     isSchedInfoDialogVisible.value = true
   }
 
-  // Auto-fetch on mount
-  onMounted(fetchData)
-
   // Refetch when month or year changes
   watch([selectedMonth, selectedYear], fetchData)
 </script>
@@ -232,6 +286,7 @@
     :selectedMonth="selectedMonth"
     :selectedYear="selectedYear"
     :form-data="formData"
+    :workers="workers"
     @submit="handleSubmit"
   />
 
@@ -307,6 +362,10 @@
             :slot-data="item"
             @delete-slot="handleDeleteSlot"
             @edit-slot="handleEditSlot"
+            :workers="{
+              singersOptions: singersPool,
+              musiciansOptions: musiciansPool,
+            }"
           />
         </VCard>
       </VCol>

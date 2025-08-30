@@ -1,44 +1,43 @@
 export type SlotForm = {
   id: number
-  satellite_id: number | string
-  worship_leader: string
-  pianists: any[]
-  egs: any[]
-  ags: any[]
-  drummers: any[]
-  bassists: any[]
-  others: any[]
-  band_leader: string
+  satellite_id: number
+  worship_leader: number
+  pianists: number[]
+  egs: number[]
+  ags: number[]
+  drummers: number[]
+  bassists: number[]
+  others: number[]
+  band_leader: number
   slot_date: string
   slot_name: string
-  key_vox: string[]
-  key_vox_leader: string
-  tech_head: string
-  md: string
-  devotion: string[]
+  key_vox: number[]
+  key_vox_leader: number
+  tech_head: number
+  md: number
+  devotion: number[]
   remarks: string
   fixed_band_id: number | null
 }
 
 // 👥 Workers inside the slot
 export type SlotWorkers = {
-  worship_leader: string | undefined
-  key_vox: string[]
-  tech_head: string
-  md: string
-  devotion: string[]
+  worship_leader: number
+  key_vox: number[]
+  tech_head: number
+  md: number
+  devotion: number[]
   musicians: {
-    pianists: any[]
-    egs: any[]
-    ags: any[]
-    bassists: any[]
-    drummers: any[]
-    others: any[]
+    pianists: number[]
+    egs: number[]
+    ags: number[]
+    bassists: number[]
+    drummers: number[]
+    others: number[]
   }
-  band_leader: string
-  key_vox_leader: string
+  band_leader: number
+  key_vox_leader: number
   fixed_band_id: number | null
-  remarks: string
 }
 
 // 📅 Main schedule slot item

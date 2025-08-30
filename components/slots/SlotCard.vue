@@ -5,6 +5,10 @@
       slot_name: string
       workers: string // JSON string
     }
+    workers: {
+      singersOptions: []
+      musiciansOptions: []
+    }
   }>()
 
   const emit = defineEmits<{
@@ -12,14 +16,27 @@
     (e: 'deleteSlot', payload: typeof props.slotData): void
   }>()
 
-  const { splitNames } = useSlotHelpers()
+  const { splitNames, toNames } = useSlotHelpers()
   const { $dayjs } = useNuxtApp()
 
   // ✅ Parse workers JSON string once
   const workers = JSON.parse(props.slotData.workers)
   const { worship_leader, musicians } = workers
-
   const { pianists, egs, ags, bassists, drummers } = musicians
+
+  const allMusicians = props.workers.musiciansOptions || []
+  const allSingers = props.workers.singersOptions || []
+
+  // now apply to each instrument
+  const musicianNames = {
+    pianists: toNames(pianists, allMusicians),
+    egs: toNames(egs, allMusicians),
+    ags: toNames(ags, allMusicians),
+    bassists: toNames(bassists, allMusicians),
+    drummers: toNames(drummers, allMusicians),
+  }
+
+  const WLNames = toNames([worship_leader], allSingers)
 
   const formatSlotDate = (date: string) => $dayjs(date).format('MMM D')
 </script>
@@ -56,42 +73,42 @@
     <h6 class="text-h6 my-1">
       Worship Leader:
       <span class="text-body-1 d-inline-block">
-        {{ worship_leader }}
+        {{ splitNames(WLNames) }}
       </span>
     </h6>
 
     <h6 class="text-h6 my-1">
       Pianist:
       <span class="text-body-1 d-inline-block">
-        {{ splitNames(pianists) }}
+        {{ splitNames(musicianNames.pianists) }}
       </span>
     </h6>
 
     <h6 class="text-h6 my-1">
       EG:
       <span class="text-body-1 d-inline-block">
-        {{ splitNames(egs) }}
+        {{ splitNames(musicianNames.egs) }}
       </span>
     </h6>
 
     <h6 class="text-h6 my-1">
       AG:
       <span class="text-body-1 d-inline-block">
-        {{ splitNames(ags) }}
+        {{ splitNames(musicianNames.ags) }}
       </span>
     </h6>
 
     <h6 class="text-h6 my-1">
       Bassist:
       <span class="text-body-1 d-inline-block">
-        {{ splitNames(bassists) }}
+        {{ splitNames(musicianNames.bassists) }}
       </span>
     </h6>
 
     <h6 class="text-h6 my-1">
       Drummer:
       <span class="text-body-1 d-inline-block">
-        {{ splitNames(drummers) }}
+        {{ splitNames(musicianNames.drummers) }}
       </span>
     </h6>
   </VCardText>

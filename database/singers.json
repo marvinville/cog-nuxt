@@ -1,1426 +1,1661 @@
 [
   {
-    "id": 1,
+    "id": 82,
     "name": "Cess",
     "preferred_satellite_id": 1,
-    "is_worship_leader": true
-  },
-  {
-    "id": 2,
-    "name": "Ec",
     "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 3,
-    "name": "Kriz",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 4,
-    "name": "Janna",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 5,
-    "name": "Lance",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 6,
-    "name": "Henry",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 7,
-    "name": "hosue",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 8,
-    "name": "Jam",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 9,
-    "name": "Uziel",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 10,
-    "name": "Jhay",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 11,
-    "name": "Den",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 12,
-    "name": "Lim/Lem",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 13,
-    "name": "Jayzon / Doy",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 14,
-    "name": "Nehem/Miah/Yanyan",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 15,
-    "name": "Kim",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 16,
-    "name": "Clo",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 17,
-    "name": "Yuki",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 18,
-    "name": "Dothy",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 19,
-    "name": "Ally",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-
-  {
-    "id": 20,
-    "name": "Karlo",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 21,
-    "name": "Cathie",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 22,
-    "name": "Jaycee",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 23,
-    "name": "Loy",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 24,
-    "name": "Ashley",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 25,
-    "name": "Sheen",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 26,
-    "name": "Micha",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 27,
-    "name": "Mena",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 28,
-    "name": "Jaz",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 29,
-    "name": "Eze",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 30,
-    "name": "Kends",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 31,
-    "name": "Ivy",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 32,
-    "name": "Dary",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 33,
-    "name": "Dash",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 34,
-    "name": "Andeng",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 35,
-    "name": "Anna",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-
-  {
-    "id": 36,
-    "name": "Leni",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 37,
-    "name": "Jimmy",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 38,
-    "name": "Ecka",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 39,
-    "name": "Weng",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 40,
-    "name": "Charie Faith",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 41,
-    "name": "Lyra",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 42,
-    "name": "Vivian",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 43,
-    "name": "Meann",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 44,
-    "name": "Nell",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 45,
-    "name": "Nela",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 46,
-    "name": "Iyah",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 47,
-    "name": "Zyk",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 48,
-    "name": "Loy",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 49,
-    "name": "Coy",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 50,
-    "name": "Mima",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 51,
-    "name": "Jhem",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 52,
-    "name": "Aahhnnaa",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 53,
-    "name": "OZ",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 54,
-    "name": "Nina",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 55,
-    "name": "Aerro",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 56,
-    "name": "Ann",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 57,
-    "name": "Bon Toreta",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 58,
-    "name": "Cherry",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 59,
-    "name": "Riel",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 60,
-    "name": "Cho",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 61,
-    "name": "Kelsey",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 62,
-    "name": "Yuyu",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 63,
-    "name": "Rj",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 64,
-    "name": "Angelo",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 65,
-    "name": "Ferry",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 66,
-    "name": "LUI",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 67,
-    "name": "Schelo",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 68,
-    "name": "Rai",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 69,
-    "name": "Ate Ma",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 70,
-    "name": "Sai",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 71,
-    "name": "ANNE",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 72,
-    "name": "Bree",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 73,
-    "name": "Elija",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 74,
-    "name": "Daphnie",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 75,
-    "name": "Anika",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 76,
-    "name": "Don",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 77,
-    "name": "Basti",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 78,
-    "name": "Yomi",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 79,
-    "name": "James",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 80,
-    "name": "Iñigo",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 81,
-    "name": "Aaron",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
-  },
-  {
-    "id": 82,
-    "name": "Armie",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
+    "role": "singer"
   },
   {
     "id": 83,
-    "name": "Eunice",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "name": "Ec",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 84,
-    "name": "Shamaica",
+    "name": "Kriz",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 85,
-    "name": "Amot",
+    "name": "Janna",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 86,
-    "name": "Jean",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "name": "Lance",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 87,
-    "name": "Jen",
+    "name": "Henry",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 88,
-    "name": "Alex",
+    "name": "hosue",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 89,
-    "name": "Ysa",
+    "name": "Jam",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 90,
-    "name": "April",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "name": "Uziel",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 91,
-    "name": "MJ",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
+    "name": "Jhay",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 92,
-    "name": "Kate",
+    "name": "Den",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 93,
-    "name": "Anam",
+    "name": "Lim/Lem",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 94,
-    "name": "Majoy",
+    "name": "Jayzon / Doy",
     "is_worship_leader": true,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 95,
-    "name": "Edmon",
+    "name": "Nehem/Miah/Yanyan",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 96,
-    "name": "Jon",
+    "name": "Kim",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 97,
-    "name": "Mela",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "name": "Clo",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 98,
-    "name": "Shai",
+    "name": "Yuki",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 99,
-    "name": "Reema",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
+    "name": "Dothy",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 100,
-    "name": "Gena",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
+    "name": "Ally",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 101,
-    "name": "Gem",
+    "name": "Karlo",
     "is_worship_leader": true,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 102,
-    "name": "Shayne",
+    "name": "Cathie",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 103,
-    "name": "Jen",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "name": "Jaycee",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 104,
-    "name": "hanna",
+    "name": "Loy",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 105,
-    "name": "Chezca",
+    "name": "Ashley",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 106,
-    "name": "Leo",
+    "name": "Sheen",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 107,
-    "name": "Kit",
+    "name": "Micha",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 108,
-    "name": "Colleene",
+    "name": "Mena",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 109,
-    "name": "Aaron",
+    "name": "Jaz",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 110,
-    "name": "Kat",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 1
+    "name": "Eze",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 111,
-    "name": "Rhi",
+    "name": "Kends",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 112,
-    "name": "Renzo",
+    "name": "Ivy",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 113,
-    "name": "Zek",
+    "name": "Dary",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 114,
-    "name": "JM",
+    "name": "Dash",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 115,
-    "name": "",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "name": "Andeng",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 116,
-    "name": "Ruth",
+    "name": "Anna",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 117,
-    "name": "Aerra",
+    "name": "Leni",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 118,
-    "name": "Shasha",
+    "name": "Jimmy",
     "is_worship_leader": false,
-    "preferred_satellite_id": 1
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 119,
-    "name": "Jewel",
+    "name": "Ecka",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 120,
-    "name": "Lilay",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "name": "Weng",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 121,
-    "name": "Chae",
+    "name": "Charie Faith",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 122,
-    "name": "Anne",
+    "name": "Lyra",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 123,
-    "name": "Edith",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 2
+    "name": "Vivian",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 124,
-    "name": "Den",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "name": "Meann",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 125,
-    "name": "Miks",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 2
+    "name": "Nell",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 126,
-    "name": "Rachel / Ellie",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "name": "Nela",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 127,
-    "name": "Mel",
+    "name": "Iyah",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 128,
-    "name": "Anaias",
+    "name": "Zyk",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 129,
-    "name": "Melai",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 2
+    "name": "Loy",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 130,
-    "name": "Rach/Chel",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 2
+    "name": "Coy",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 131,
-    "name": "Day",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 2
+    "name": "Mima",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 132,
-    "name": "Santy",
+    "name": "Jhem",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 133,
-    "name": "Cole",
+    "name": "Aahhnnaa",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 134,
-    "name": "Angelica",
+    "name": "OZ",
     "is_worship_leader": true,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 135,
-    "name": "Jing",
+    "name": "Nina",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 136,
-    "name": "Delle",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "name": "Aerro",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 137,
-    "name": "Dale",
+    "name": "Ann",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 138,
-    "name": "Rose",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "name": "Bon",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 139,
-    "name": "Sean",
+    "name": "Cherry",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 140,
-    "name": "CK",
+    "name": "Riel",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 141,
-    "name": "Kath",
+    "name": "Cho",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 142,
-    "name": "Nathan",
+    "name": "Kelsey",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 143,
-    "name": "Ty",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "name": "Yuyu",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 144,
-    "name": "Niel",
+    "name": "Rj",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 145,
-    "name": "Trish",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 2
+    "name": "Angelo",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 146,
-    "name": "Izy",
+    "name": "Ferry",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 147,
-    "name": "Bambi",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "name": "LUI",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 148,
-    "name": "Red",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "name": "Schelo",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 149,
-    "name": "Eliz",
+    "name": "Rai",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 150,
-    "name": "",
+    "name": "Ate Ma",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 151,
-    "name": "Bane",
+    "name": "Sai",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 152,
-    "name": "Cham",
+    "name": "ANNE",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 153,
-    "name": "Khim",
+    "name": "Bree",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 154,
-    "name": "Julia",
+    "name": "Elija",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 155,
-    "name": "Tin",
+    "name": "Daphnie",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 156,
-    "name": "Migz",
+    "name": "Anika",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 157,
-    "name": "Jay",
+    "name": "Don",
     "is_worship_leader": false,
-    "preferred_satellite_id": 2
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 158,
-    "name": "Mayenne",
+    "name": "Basti",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 159,
-    "name": "Zig",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "name": "Yomi",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 160,
-    "name": "Fe",
+    "name": "James",
     "is_worship_leader": true,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 161,
-    "name": "Kristina",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "name": "Iñigo",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 162,
-    "name": "Angela",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "name": "Aaron",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 163,
-    "name": "Jess / Je",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "name": "Armie",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 164,
-    "name": "Gwen",
+    "name": "Eunice",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 165,
-    "name": "Ange",
+    "name": "Shamaica",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 166,
-    "name": "Bang",
+    "name": "Amot",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 167,
-    "name": "Hayms",
+    "name": "Jean",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 168,
-    "name": "Jing",
+    "name": "Jen",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 169,
-    "name": "Mae",
+    "name": "Alex",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 170,
-    "name": "Ella",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 3
+    "name": "Ysa",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 171,
-    "name": "Aloha",
+    "name": "April",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 172,
-    "name": "Mhel",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "name": "MJ",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 173,
-    "name": "Ja",
+    "name": "Kate",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 174,
-    "name": "Jes",
+    "name": "Anam",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 175,
-    "name": "Tamiya",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "name": "Majoy",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 176,
-    "name": "Xzy",
+    "name": "Edmon",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 177,
-    "name": "Mhick2",
+    "name": "Jon",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 178,
-    "name": "Len",
+    "name": "Mela",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 179,
-    "name": "Judea",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 3
+    "name": "Shai",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 180,
-    "name": "Cheska",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "name": "Reema",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 181,
-    "name": "Cessy",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "name": "Gena",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 182,
-    "name": "Angela",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "name": "Gem",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 183,
-    "name": "Cha",
+    "name": "Shayne",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 184,
-    "name": "Vea",
+    "name": "Jen",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 185,
-    "name": "Chuni",
+    "name": "hanna",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 186,
-    "name": "Kristel",
+    "name": "Chezca",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 187,
-    "name": "Gwen",
+    "name": "Leo",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 188,
-    "name": "Keren",
+    "name": "Kit",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 189,
-    "name": "Neah",
+    "name": "Colleene",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 190,
-    "name": "Hasmina/Hearty",
+    "name": "Aaron",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 191,
-    "name": "Drey",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "name": "Kat",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 192,
-    "name": "Casey",
+    "name": "Rhi",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 193,
-    "name": "Tine",
+    "name": "Renzo",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 194,
-    "name": "Gelai",
+    "name": "Zek",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 195,
-    "name": "Ian",
+    "name": "JM",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 196,
-    "name": "Mean",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 3
+    "name": "",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 197,
-    "name": "Mica",
+    "name": "Ruth",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 198,
-    "name": "Drey",
+    "name": "Aerra",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 199,
-    "name": "Ysa",
+    "name": "Shasha",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 1,
+    "role": "singer"
   },
   {
     "id": 200,
-    "name": "Gani",
+    "name": "Jewel",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 201,
-    "name": "Kaly/Kaith",
+    "name": "Lilay",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 202,
-    "name": "Aly",
+    "name": "Chae",
     "is_worship_leader": false,
-    "preferred_satellite_id": 3
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 203,
-    "name": "Jai",
+    "name": "Anne",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 204,
-    "name": "Phicole",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "name": "Edith",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 205,
-    "name": "Sweet",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 4
+    "name": "Den",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 206,
-    "name": "Abby",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "name": "Miks",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 207,
-    "name": "Fernan",
+    "name": "Rachel",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 208,
-    "name": "Carl",
+    "name": "Mel",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 209,
-    "name": "Kinang",
+    "name": "Anaias",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 210,
-    "name": "Lerma",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "name": "Melai",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 211,
-    "name": "Dedaye",
+    "name": "Rach/Chel",
     "is_worship_leader": true,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 212,
-    "name": "Rod",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "name": "Day",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 213,
-    "name": "Bianca",
+    "name": "Santy",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 214,
-    "name": "Stacy",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 4
+    "name": "Cole",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 215,
-    "name": "Maybs",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "name": "Angelica",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 216,
-    "name": "Che",
+    "name": "Jing",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 217,
-    "name": "Grace",
+    "name": "Delle",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 218,
-    "name": "Fredd",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 4
+    "name": "Dale",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 219,
-    "name": "Flor",
+    "name": "Rose",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 220,
-    "name": "Inou",
+    "name": "Sean",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 221,
-    "name": "Mitch",
+    "name": "CK",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 222,
-    "name": "Gab",
+    "name": "Kath",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 223,
-    "name": "Len",
+    "name": "Nathan",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 224,
-    "name": "Jenny",
+    "name": "Ty",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 225,
-    "name": "Flex",
+    "name": "Niel",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 226,
-    "name": "Yannie",
-    "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "name": "Trish",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 227,
-    "name": "Fairy",
+    "name": "Izy",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 228,
-    "name": "Je",
+    "name": "Bambi",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 229,
-    "name": "Pian",
+    "name": "Red",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 230,
-    "name": "Genra",
+    "name": "Eliz",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 231,
-    "name": "Avic",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 4
+    "name": "",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 232,
-    "name": "Ov",
+    "name": "Bane",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 233,
-    "name": "Yen",
+    "name": "Cham",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 234,
-    "name": "Bless",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 4
+    "name": "Khim",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 235,
-    "name": "Heaven",
-    "is_worship_leader": true,
-    "preferred_satellite_id": 4
+    "name": "Julia",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 236,
-    "name": "Ely",
+    "name": "Tin",
     "is_worship_leader": false,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 2,
+    "role": "singer"
   },
   {
     "id": 237,
+    "name": "Migz",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 2,
+    "role": "singer"
+  },
+  {
+    "id": 238,
+    "name": "Jay",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 2,
+    "role": "singer"
+  },
+  {
+    "id": 239,
+    "name": "Mayenne",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 240,
+    "name": "Zig",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 241,
+    "name": "Fe",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 242,
+    "name": "Kristina",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 243,
+    "name": "Angela",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 244,
+    "name": "Jess / Je",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 245,
+    "name": "Gwen",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 246,
+    "name": "Ange",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 247,
+    "name": "Bang",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 248,
+    "name": "Hayms",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 249,
+    "name": "Jing",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 250,
+    "name": "Mae",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 251,
+    "name": "Ella",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 252,
+    "name": "Aloha",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 253,
+    "name": "Mhel",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 254,
+    "name": "Ja",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 255,
+    "name": "Jes",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 256,
+    "name": "Tamiya",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 257,
+    "name": "Xzy",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 258,
+    "name": "Mhick2",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 259,
+    "name": "Len",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 260,
+    "name": "Judea",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 261,
+    "name": "Cheska",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 262,
+    "name": "Cessy",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 263,
+    "name": "Angela",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 264,
+    "name": "Cha",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 265,
+    "name": "Vea",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 266,
+    "name": "Chuni",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 267,
+    "name": "Kristel",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 268,
+    "name": "Gwen",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 269,
+    "name": "Keren",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 270,
+    "name": "Neah",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 271,
+    "name": "Hasmina/Hearty",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 272,
+    "name": "Drey",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 273,
+    "name": "Casey",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 274,
+    "name": "Tine",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 275,
+    "name": "Gelai",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 276,
+    "name": "Ian",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 277,
+    "name": "Mean",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 278,
+    "name": "Mica",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 279,
+    "name": "Drey",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 280,
+    "name": "Ysa",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 281,
+    "name": "Gani",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 282,
+    "name": "Kaly/Kaith",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 283,
+    "name": "Aly",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 3,
+    "role": "singer"
+  },
+  {
+    "id": 284,
+    "name": "Jai",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 285,
+    "name": "Phicole",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 286,
+    "name": "Sweet",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 287,
+    "name": "Abby",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 288,
+    "name": "Fernan",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 289,
+    "name": "Carl",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 290,
+    "name": "Kinang",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 291,
+    "name": "Lerma",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 292,
+    "name": "Daye",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 293,
+    "name": "Rod",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 294,
+    "name": "Bianca",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 295,
+    "name": "Stacy",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 296,
+    "name": "Maybs",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 297,
+    "name": "Che",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 298,
+    "name": "Grace",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 299,
+    "name": "Fredd",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 300,
+    "name": "Flor",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 301,
+    "name": "Inou",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 302,
+    "name": "Mitch",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 303,
+    "name": "Gab",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 304,
+    "name": "Len",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 305,
+    "name": "Jenny",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 306,
+    "name": "Flex",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 307,
+    "name": "Yannie",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 308,
+    "name": "Fairy",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 309,
+    "name": "Je",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 310,
+    "name": "Pian",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 311,
+    "name": "Genra",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 312,
+    "name": "Avic",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 313,
+    "name": "Ov",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 314,
+    "name": "Yen",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 315,
+    "name": "Bless",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 316,
+    "name": "Heaven",
+    "is_worship_leader": true,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 317,
+    "name": "Ely",
+    "is_worship_leader": false,
+    "preferred_satellite_id": 4,
+    "role": "singer"
+  },
+  {
+    "id": 318,
     "name": "Kate V",
     "is_worship_leader": true,
-    "preferred_satellite_id": 4
+    "preferred_satellite_id": 4,
+    "role": "singer"
   }
 ]
