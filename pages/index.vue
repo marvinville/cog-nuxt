@@ -41,18 +41,20 @@
   const password = ref('@Demo1234!')
 
   const login = async () => {
-    const user = await loginUser({
-      worker_id: worker_id.value,
-      password: password.value,
-    })
+    // const user = await loginUser({
+    //   worker_id: worker_id.value,
+    //   password: password.value,
+    // })
+    // if (user) {
+    //   // success: store user or navigate
+    //   router.push({ name: 'home' })
+    // } else {
+    //   // error: show message
+    //   console.error('Invalid login')
+    // }
 
-    if (user) {
-      // success: store user or navigate
-      router.push({ name: 'home' })
-    } else {
-      // error: show message
-      console.error('Invalid login')
-    }
+    console.log('login')
+    router.push({ name: 'home' })
   }
 
   const requiredValidator = (val: string) => !!val || 'Password is required'
