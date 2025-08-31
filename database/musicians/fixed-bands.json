@@ -12,6 +12,42 @@
     "preferred_satellite_id": 1
   },
   {
+    "id": 2,
+    "name": "Jeff Band",
+    "pianists": [324],
+    "egs": [325],
+    "ags": [326],
+    "bassists": [327],
+    "drummers": [328],
+    "others": [],
+    "band_leader_id": 324,
+    "preferred_satellite_id": 1
+  },
+  {
+    "id": 3,
+    "name": "JJ Band",
+    "pianists": [5],
+    "egs": [20],
+    "ags": [34],
+    "bassists": [48],
+    "drummers": [62],
+    "others": [],
+    "band_leader_id": 62,
+    "preferred_satellite_id": 1
+  },
+  {
+    "id": 4,
+    "name": "Neil Band",
+    "pianists": [4],
+    "egs": [19],
+    "ags": [33],
+    "bassists": [47],
+    "drummers": [61],
+    "others": [],
+    "band_leader_id": 4,
+    "preferred_satellite_id": 1
+  },
+  {
     "id": 5,
     "name": "RENZO BAND",
     "pianists": [6],
@@ -76,5 +112,41 @@
     "drummers": [70],
     "others": [],
     "preferred_satellite_id": 4
+  },
+  {
+    "id": 11,
+    "name": "Villy Band",
+    "pianists": [329],
+    "egs": [330],
+    "ags": [331],
+    "bassists": [333],
+    "drummers": [332],
+    "others": [],
+    "band_leader_id": 332,
+    "preferred_satellite_id": 3
+  },
+  {
+    "id": 12,
+    "name": "Gyneth Band",
+    "pianists": [334],
+    "egs": [],
+    "ags": [335],
+    "bassists": [337],
+    "drummers": [336],
+    "others": [],
+    "band_leader_id": 334,
+    "preferred_satellite_id": 2
+  },
+  {
+    "id": 13,
+    "name": "Nehemiah Band",
+    "pianists": [10],
+    "egs": [25],
+    "ags": [40],
+    "bassists": [53],
+    "drummers": [67],
+    "others": [],
+    "band_leader_id": 10,
+    "preferred_satellite_id": 2
   }
 ]

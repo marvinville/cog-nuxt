@@ -128,6 +128,7 @@
   const preparePayload = (slot: SlotForm) => ({
     satellite_id: slot.satellite_id,
     slot_name: slot.slot_name,
+    slot_uuid: slot.slot_uuid,
     slot_date: slot.slot_date
       ? $dayjs(slot.slot_date).format('YYYY-MM-DD')
       : null,
@@ -140,8 +141,10 @@
     return {
       id,
       slot_name: slot.slot_name,
+      slot_uuid: slot.slot_uuid,
       date_from: slot.slot_date,
       date_to: slot.slot_date,
+      remarks: slot.remarks,
       satellite_id: slot.satellite_id,
       workers: JSON.stringify(buildWorkers(slot)),
     }
@@ -281,15 +284,6 @@
 </script>
 
 <template>
-  <SchedInfoDialog
-    v-model:is-dialog-visible="isSchedInfoDialogVisible"
-    :selectedMonth="selectedMonth"
-    :selectedYear="selectedYear"
-    :form-data="formData"
-    :workers="workers"
-    @submit="handleSubmit"
-  />
-
   <!-- Filters Card -->
   <VCol cols="12" md="12">
     <div class="d-flex align-center flex-wrap justify-space-between mb-6 gap-2">
@@ -333,6 +327,16 @@
   </VRow>
 
   <VRow v-else>
+    <SchedInfoDialog
+      v-model:is-dialog-visible="isSchedInfoDialogVisible"
+      :selectedMonth="selectedMonth"
+      :selectedYear="selectedYear"
+      :form-data="formData"
+      :workers="workers"
+      :schedules="schedules"
+      @submit="handleSubmit"
+    />
+
     <VCol v-for="id in [1, 2, 3, 4]" :key="id" cols="12" sm="6" md="3">
       <VCol cols="12" class="text-center">
         <div class="d-flex flex-wrap align-center gap-2 justify-center">

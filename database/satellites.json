@@ -2,7 +2,6 @@
   {
     "id": 1,
     "name": "Main",
-    "slots": ["Main Slot", "Mid Slot", "TWS"],
     "slots2": [
       {
         "uuid": "main_slot",
@@ -30,7 +29,6 @@
   {
     "id": 2,
     "name": "Jabez",
-    "slots": ["Wholeday"],
     "slots2": [
       {
         "uuid": "jabez_wd",
@@ -44,7 +42,6 @@
   {
     "id": 3,
     "name": "Silang",
-    "slots": ["Wholeday"],
     "slots2": [
       {
         "uuid": "silang_wd",
@@ -58,14 +55,13 @@
   {
     "id": 4,
     "name": "Trece",
-    "slots": ["AM", "PM"],
     "slots2": [
       {
         "uuid": "trece_am",
         "title": "AM",
         "time_slots": ["07:30", "09:30", "11:30"],
         "day_held": "sun",
-        "practice_details": "Thu 5PM-9PM"
+        "practice_details": "Sat 7AM-12NN"
       },
       {
         "uuid": "trece_pm",

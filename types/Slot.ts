@@ -11,6 +11,7 @@ export type SlotForm = {
   band_leader: number
   slot_date: string
   slot_name: string
+  slot_uuid: string
   key_vox: number[]
   key_vox_leader: number
   tech_head: number

@@ -48,12 +48,17 @@
       type: Array as PropType<BasicPerson[]>,
       required: true,
     },
+    schedules: {
+      type: Array,
+    },
   })
 
   const emit = defineEmits(['submit', 'update:isDialogVisible'])
 
   const { getDaysInMonth, prioritizeByPreferredSatelliteId, sortByName } =
     useSlotHelpers()
+
+  const { $dayjs } = useNuxtApp()
 
   const selectedMonth = ref(props.selectedMonth)
   const selectedYear = ref(props.selectedYear)
@@ -77,9 +82,10 @@
 
   const onFormSubmit = async () => {
     const { slot_name, ...rest } = localFormData.value
+    const slotUuid = slot_name
 
     const slots = selectedSat.value.slots
-    const found = slots.find(({ uuid }) => uuid === slot_name) // slot_name is actually the uuid
+    const found = slots.find(({ uuid }) => uuid === slotUuid)
 
     const validator = await formRef.value?.validate()
 
@@ -96,7 +102,7 @@
       console.log('Please fill the required fields.')
       return false
     }
-    emit('submit', { slot_name: found?.title, ...rest })
+    emit('submit', { slot_name: found?.title, slot_uuid: slotUuid, ...rest })
     emit('update:isDialogVisible', false)
     resetForm()
   }
@@ -359,6 +365,21 @@
           dayInWeek: 2,
         })
       }
+      // remove taken slots
+      const satId = props.formData?.satellite_id
+      const takenSched = props.schedules?.find(
+        (sched: any) =>
+          sched.satellite_id === satId && sched.slot_uuid === selectedSlot.uuid
+      )
+
+      if (takenSched) {
+        const takenDate = $dayjs(takenSched.date_to).format('MMM D, YYYY')
+        const trimmedSlots = slotDateOptions.value.filter(
+          (slot) => slot != takenDate
+        )
+
+        slotDateOptions.value = trimmedSlots
+      }
     }
   }
 
@@ -393,18 +414,6 @@
       // }
     }
   )
-
-  // watch(
-  //   () => props.formData,
-  //   (newFormData) => {
-  //     // Clone props.formData into localFormData
-  //     localFormData.value = { ...newFormData }
-  //   },
-  //   {
-  //     deep: false, // ✅ shallow is sufficient if props.formData is fully replaced
-  //     immediate: true,
-  //   }
-  // )
 
   watch(
     () => localFormData.value.fixed_band_id,

@@ -156,10 +156,6 @@ export const useSlotHelpers = () => {
     }
   }
 
-  // // helper to convert IDs → names
-  // const toNames = (ids: number[], options: any[]) =>
-  //   ids.map((id) => options.find((elem) => elem.id === id)?.name ?? 'Unknown')
-
   // helper to convert IDs → names
   const toNames = (
     ids: number[] = [],
