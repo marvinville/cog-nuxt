@@ -339,7 +339,7 @@
     })
   })
 
-  const slotDateOptions = ref<string[]>([])
+  const slotDateOptions = ref<any[]>([])
 
   const onSlotChange = (selected: string) => {
     const selectedSlot = selectedSat.value.slots.find(
@@ -367,19 +367,28 @@
       }
       // remove taken slots
       const satId = props.formData?.satellite_id
-      const takenSched = props.schedules?.find(
-        (sched: any) =>
-          sched.satellite_id === satId && sched.slot_uuid === selectedSlot.uuid
-      )
+      const takenScheds =
+        props.schedules
+          ?.filter(
+            (sched: any) =>
+              sched.satellite_id === satId &&
+              sched.slot_uuid === selectedSlot.uuid
+          )
+          .map((el) => {
+            return $dayjs(el.date_from).format('MMM D, YYYY')
+          }) || []
 
-      if (takenSched) {
-        const takenDate = $dayjs(takenSched.date_from).format('MMM D, YYYY')
-        const trimmedSlots = slotDateOptions.value.filter(
-          (slot) => slot != takenDate
-        )
+      // tag taken date as disabled
 
-        slotDateOptions.value = trimmedSlots
-      }
+      const trimmedSlots = slotDateOptions.value.map((elem) => {
+        return {
+          value: elem,
+          text: elem,
+          disabled: takenScheds.includes(elem),
+        }
+      })
+
+      slotDateOptions.value = trimmedSlots
     }
   }
 
@@ -565,8 +574,27 @@
                       label="Slot Date"
                       placeholder="Select Item"
                       :items="slotDateOptions"
-                      :rules="[requiredValidator]"
-                    />
+                      item-title="text"
+                      item-value="value"
+                      clearable
+                      clear-icon="tabler-x"
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="props"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <!-- display the text field -->
+                          <VListItemTitle
+                            >{{ item.raw.text }}
+                            {{
+                              item.raw.disabled ? '(taken)' : ''
+                            }}</VListItemTitle
+                          >
+                        </VListItem>
+                      </template>
+                    </AppSelect>
                   </VCol>
                   <VCol cols="12" md="6">
                     <AppTextField
