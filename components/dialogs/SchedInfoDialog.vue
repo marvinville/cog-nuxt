@@ -373,7 +373,7 @@
       )
 
       if (takenSched) {
-        const takenDate = $dayjs(takenSched.date_to).format('MMM D, YYYY')
+        const takenDate = $dayjs(takenSched.date_from).format('MMM D, YYYY')
         const trimmedSlots = slotDateOptions.value.filter(
           (slot) => slot != takenDate
         )
