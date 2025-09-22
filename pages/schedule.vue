@@ -12,6 +12,10 @@
   import musicians from '@/database/musicians.json'
   import users from '@/database/users.json'
 
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter() // add this at the top
+
   // musicians
   const musiciansPool = musicians.map((elem) => {
     const user = users.find((u) => u.id === elem.id)
@@ -279,6 +283,14 @@
     isSchedInfoDialogVisible.value = true
   }
 
+  const openInNewTab = () => {
+    const url = router.resolve({
+      path: '/export',
+      query: { year: selectedYear.value, month: selectedMonth.value },
+    }).href
+    window.open(url, '_blank')
+  }
+
   // Refetch when month or year changes
   watch([selectedMonth, selectedYear], fetchData)
 </script>
@@ -289,17 +301,10 @@
     <div class="d-flex align-center flex-wrap justify-space-between mb-6 gap-2">
       <span class="text-h4">Praise and Worship Schedule</span>
 
-      <RouterLink
-        :to="{
-          path: '/export',
-          query: { year: selectedYear, month: selectedMonth },
-        }"
-      >
-        <VBtn>
-          Export
-          <VIcon end icon="tabler-cloud-download" />
-        </VBtn>
-      </RouterLink>
+      <VBtn @click="openInNewTab">
+        Export
+        <VIcon end icon="tabler-cloud-download" />
+      </VBtn>
     </div>
     <VCard class="pa-4">
       <VCardTitle class="pb-2">Filter by</VCardTitle>

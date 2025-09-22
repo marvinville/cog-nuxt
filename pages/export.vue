@@ -35,10 +35,11 @@
   }
 
   // PDF settings
-  const dayjs = useNuxtApp().$dayjs
+  const { $dayjs } = useNuxtApp()
 
-  const rangeTitle = dayjs(exampleDate).format('MMM YYYY')
-  const pdfName = `PNW_Schedule_${rangeTitle}`
+  const rangeTitle = $dayjs(exampleDate).format('MMM YYYY')
+  const timestamp = $dayjs().format('YYYYMMDD_HHmmss') // e.g. '20250922_125704'
+  const pdfName = `PNW_Schedule_${rangeTitle}_${timestamp}.pdf`
 
   // Refs
   const pdfContent = ref<HTMLElement | null>(null)
