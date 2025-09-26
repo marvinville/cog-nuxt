@@ -158,6 +158,26 @@
       return value.length <= max || `You can select up to ${max} items only`
     }
   }
+
+  const minKeyVoxBySatellite = (satelliteId: number) => {
+    switch (satelliteId) {
+      case 1: // main should have atleast 5
+        return 5
+      default: // default atleast 3
+        return 3
+    }
+  }
+
+  const minSelectionValidator = (min: number) => {
+    return (value: any[]) => {
+      if (!Array.isArray(value)) return `Must select at least ${min} items`
+      return value.length >= min || `You must select at least ${min} items`
+    }
+  }
+
+  const minKeyVoxRule = (satelliteId: number) =>
+    minSelectionValidator(minKeyVoxBySatellite(satelliteId))
+
   const checkScheduledNames = (ids: number[]) => {
     // Build a Set of scheduled ids for fast lookup
     const scheduledIds = new Set(compiledNames.value.map((el) => el.id))
@@ -511,6 +531,17 @@
       selectedMonth.value = newVal
     }
   )
+
+  watch(
+    compiledNames,
+    (newList) => {
+      const validIds = newList.map((person) => person.id)
+      localFormData.value.devotion = localFormData.value.devotion.filter((id) =>
+        validIds.includes(id)
+      )
+    },
+    { deep: true }
+  )
 </script>
 
 <template>
@@ -589,7 +620,7 @@
                           <VListItemTitle
                             >{{ item.raw.text }}
                             {{
-                              item.raw.disabled ? '(taken)' : ''
+                              item.raw.disabled ? '(Already in Draft)' : ''
                             }}</VListItemTitle
                           >
                         </VListItem>
@@ -641,7 +672,7 @@
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.key_vox"
-                      label="Key Vox"
+                      label="Key Vocals"
                       name="key_vox"
                       placeholder="Select Item"
                       :items="
@@ -652,11 +683,14 @@
                       "
                       item-title="name"
                       item-value="id"
-                      :rules="[requiredValidator, maxSelectionValidator(6)]"
+                      :rules="[
+                        requiredValidator,
+                        maxSelectionValidator(6),
+                        minKeyVoxRule(props.formData.satellite_id),
+                      ]"
                       closable-chips
                       chips
                       multiple
-                      clearable
                       @update:modelValue="handleKeyVox"
                     />
                   </VCol>
@@ -664,14 +698,13 @@
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.key_vox_leader"
-                      label="Key Vox Leader"
+                      label="Key Vocals Leader"
                       name="key_vox_leader"
                       :items="
                         compiledNames.filter(({ role }: { role: string }) => role === 'singer')
                       "
                       item-title="name"
                       item-value="id"
-                      clearable
                       :rules="[requiredValidator]"
                     />
                   </VCol>
@@ -820,7 +853,6 @@
                       "
                       item-title="name"
                       item-value="id"
-                      clearable
                       :rules="[requiredValidator]"
                     />
                   </VCol>
@@ -832,7 +864,7 @@
             <!-- LEADERS -->
             <VExpansionPanel>
               <VExpansionPanelTitle class="bold" disable-icon-rotate>
-                MD/TH & Devotion
+                Music Director, Tech Head & Devotion
                 <template #actions>
                   <!-- <VIcon size="18" icon="tabler-check" color="success" /> -->
                 </template>
@@ -847,7 +879,6 @@
                       :items="ths"
                       item-title="name"
                       item-value="id"
-                      clearable
                       :rules="MDTHRules"
                     />
                   </VCol>
@@ -860,7 +891,6 @@
                       :items="mds"
                       item-title="name"
                       item-value="id"
-                      clearable
                       :rules="MDTHRules"
                     />
                   </VCol>
