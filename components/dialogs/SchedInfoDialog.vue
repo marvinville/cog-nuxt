@@ -10,6 +10,7 @@
       default: () => ({
         id: 0,
         satellite_id: 0,
+        slot_uuid: '',
         slot_name: '',
         date_from: '',
         date_to: '',
@@ -72,26 +73,38 @@
   const ths = workers.filter((elem) => elem.role === 'tech_head')
 
   const openedPanels = ref<number[]>([0, 1, 2, 3])
+  const search = reactive({
+    pianists: '',
+    egs: '',
+    ags: '',
+    bassists: '',
+    drummers: '',
+    others: '',
+    key_vox: '',
+  })
 
-  const requiredValidator = (v: any) =>
-    (v !== null &&
-      v !== '' &&
-      v !== undefined &&
-      !(Array.isArray(v) && v.length === 0)) ||
-    'Field is required'
+  const handleSearch = (field: keyof typeof search) => {
+    search[field] = '' // clears typed input
+  }
+
+  const requiredValidator = (fieldName: string) => {
+    return (v: any) => {
+      const valid =
+        v !== null &&
+        v !== '' &&
+        v !== undefined &&
+        !(Array.isArray(v) && v.length === 0)
+
+      if (!valid) {
+        // console.warn(`Validation failed: ${fieldName} is required`)
+        return 'Field is required'
+      }
+      return true
+    }
+  }
 
   const onFormSubmit = async () => {
-    const { slot_name, ...rest } = localFormData.value
-    const slotUuid = slot_name
-
-    const slots = selectedSat.value.slots
-    const found = slots.find(({ uuid }) => uuid === slotUuid)
-
     const validator = await formRef.value?.validate()
-
-    console.log('Validation result:', validator)
-    // result.valid -> true / false
-    // result.errors -> details of which field failed
 
     if (!validator.valid) {
       console.log('Form errors:', validator.errors)
@@ -102,7 +115,7 @@
       console.log('Please fill the required fields.')
       return false
     }
-    emit('submit', { slot_name: found?.title, slot_uuid: slotUuid, ...rest })
+    emit('submit', localFormData.value)
     emit('update:isDialogVisible', false)
     resetForm()
   }
@@ -124,32 +137,50 @@
     emit('update:isDialogVisible', val)
   }
 
+  const baseFormData = {
+    slot_uuid: '',
+    slot_name: '',
+    slot_date: null,
+    satellite_id: null,
+    worship_leader: null,
+    band_leader: null,
+    key_vox_leader: null,
+    key_vox: [] as number[],
+    is_fixed_band: false,
+    fixed_band_id: null as number | null,
+    pianists: [] as number[],
+    egs: [] as number[],
+    ags: [] as number[],
+    drummers: [] as number[],
+    bassists: [] as number[],
+    others: [] as number[],
+    tech_head: null as number | null,
+    md: null as number | null,
+    devotion: [] as string[],
+    remarks: '',
+  }
+
   const resetForm = () => {
-    localFormData.value = {
-      id: 0,
-      satellite_id: props.formData.satellite_id,
-      slot_name: '',
-      date_from: '',
-      date_to: '',
-      worship_leader: 0,
-      band_leader: 0,
-      key_vox_leader: 0,
-      key_vox: [],
-      is_fixed_band: false,
-      fixed_band_id: null,
-      pianists: [],
-      egs: [],
-      ags: [],
-      drummers: [],
-      bassists: [],
-      others: [],
-      tech_head: 0,
-      md: 0,
-      devotion: [],
-      remarks: '',
+    if (localFormData.value.id > 0) {
+      // edit mode → keep id and maybe other values
+      localFormData.value = {
+        ...baseFormData,
+        id: localFormData.value.id,
+        satellite_id: props.formData.satellite_id,
+        slot_uuid: localFormData.value.slot_uuid,
+        slot_name: localFormData.value.slot_name,
+        slot_date: localFormData.value.slot_date,
+      }
+    } else {
+      // add mode → fresh reset
+      localFormData.value = {
+        ...baseFormData,
+        id: 0,
+        satellite_id: props.formData.satellite_id,
+      }
     }
 
-    // 👇 Clear validation state so errors don’t show after successful submit
+    // clear validation state
     formRef.value?.resetValidation()
   }
 
@@ -192,59 +223,58 @@
     props.formData?.satellite_id === 1 ? [requiredValidator] : []
   )
 
-  // check whether all musicians selected are fixed band
-  const handleFixedBand = (value: string[]) => {
-    const band = fixedBands.find(
-      (b) => b.id === localFormData.value.fixed_band_id
-    )
+  // Flatten each band's members into a Set for easier comparison
+  const findMatchingBand = (
+    selectedMusicianIds: number[],
+    fixedBands: any[]
+  ): number => {
+    // ✅ remove duplicates from selection
+    const uniqueSelection = Array.from(new Set(selectedMusicianIds))
 
-    if (!band) {
-      localFormData.value.fixed_band_id = null
-      localFormData.value.is_fixed_band = false
-      return
+    for (const band of fixedBands) {
+      const bandMemberIds = new Set<number>([
+        ...band.pianists,
+        ...band.egs,
+        ...band.ags,
+        ...band.bassists,
+        ...band.drummers,
+        ...band.others,
+      ])
+
+      // ✅ must be same size
+      if (bandMemberIds.size !== uniqueSelection.length) continue
+
+      // ✅ every selected id must exist in band
+      const isExactMatch = uniqueSelection.every((id) => bandMemberIds.has(id))
+
+      if (isExactMatch) {
+        return band.id
+      }
     }
 
-    const {
-      pianists = [],
-      ags = [],
-      egs = [],
-      bassists = [],
-      drummers = [],
-      others = [],
-    } = band
+    return 0
+  }
 
-    const fixedBandMembers = new Set([
-      ...pianists,
-      ...ags,
-      ...egs,
-      ...bassists,
-      ...drummers,
-      ...others,
-    ])
-
+  // check whether all musicians selected are fixed band
+  const handleChangeMusicians = (value: string[]) => {
     const selectedMusicians = compiledNames.value.filter(
       (person) => person.role === 'musician'
     )
 
-    const selectedMusiciansNamesOnly = selectedMusicians.map(
-      (elem) => elem.name
-    )
+    const selectedMusicianIds = selectedMusicians.map((elem) => elem.id)
+
+    const matchingBandId = findMatchingBand(selectedMusicianIds, fixedBands)
+
+    localFormData.value.is_fixed_band = matchingBandId > 0 ? true : false
+    localFormData.value.fixed_band_id = matchingBandId
 
     // if selected band leader is not in the list, reset value
     if (
       localFormData.value.band_leader &&
-      !selectedMusiciansNamesOnly.includes(localFormData.value.band_leader)
+      selectedMusicianIds.includes(localFormData.value.band_leader) === false
     ) {
       localFormData.value.band_leader = null
     }
-
-    if (selectedMusicians.length !== fixedBandMembers.size) {
-      localFormData.value.is_fixed_band = false
-      return
-    }
-
-    const isPartOfFixedBand = value.every((name) => fixedBandMembers.has(name))
-    localFormData.value.is_fixed_band = isPartOfFixedBand
   }
 
   // watch selected keyvox
@@ -307,6 +337,11 @@
   })
 
   const isViewOnly = computed(() => {
+    return false
+    // return localFormData.value.id > 0
+  })
+
+  const isEditting = computed(() => {
     return localFormData.value.id > 0
   })
 
@@ -318,25 +353,6 @@
       name: selectedSatellite?.name ?? null,
       slots: selectedSatellite?.slots2 ?? [],
     }
-  })
-
-  const selectedSlotTitle = computed(() => {
-    // get the saved name if in edit view
-    if (localFormData.value.id) {
-      return localFormData.value.slot_name
-    }
-
-    const mergedSlots = satellites.flatMap((item) => item.slots2)
-
-    const slotId = localFormData.value.slot_name ?? null
-
-    if (slotId) {
-      const selectedSlot = mergedSlots.find((elem) => elem.uuid === slotId)
-
-      return selectedSlot?.title || ''
-    }
-
-    return ''
   })
 
   const sortedFixedBands = computed(() => {
@@ -412,9 +428,23 @@
     }
   }
 
+  const onFixedBandChange = (newValue: boolean) => {
+    localFormData.value.fixed_band_id = null
+    localFormData.value.band_leader = null
+    Object.assign(localFormData.value, {
+      pianists: [],
+      egs: [],
+      ags: [],
+      bassists: [],
+      drummers: [],
+      others: [],
+    })
+  }
+
   const allSingers = ref<Singer[]>(singers)
   const keyVox = ref<Singer[]>(singers)
 
+  // make props into a reactive state
   watch(
     () => props.isDialogVisible,
     (isOpen) => {
@@ -425,22 +455,6 @@
 
       // Clone formData into local state
       localFormData.value = { ...data }
-
-      // COMMENTED OUT IN THE MEANTIME
-      // const { satellite_id, worship_leader } = localFormData.value
-
-      // // Only set default worship leader if not already set
-      // if (!worship_leader && satellite_id) {
-      //   const defaultWL = singers.find(
-      //     (singer) =>
-      //       singer.preferred_satellite_id === satellite_id &&
-      //       singer.is_worship_leader
-      //   )
-
-      //   if (defaultWL?.id) {
-      //     localFormData.value.worship_leader = defaultWL.id
-      //   }
-      // }
     }
   )
 
@@ -498,28 +512,6 @@
   )
 
   watch(
-    () => localFormData.value.is_fixed_band,
-    (newVal, oldVal) => {
-      if (isViewOnly) {
-        return
-      }
-
-      // if from fixed band to non-fixed band, reset the band members
-      if (oldVal === false && newVal === true) {
-        localFormData.value.fixed_band_id = null
-        Object.assign(localFormData.value, {
-          pianists: [],
-          egs: [],
-          ags: [],
-          bassists: [],
-          drummers: [],
-          others: [],
-        })
-      }
-    }
-  )
-
-  watch(
     () => props.selectedYear,
     (newVal) => {
       selectedYear.value = newVal
@@ -542,6 +534,19 @@
     },
     { deep: true }
   )
+
+  // auto-populate value of slot_name
+  watch(
+    () => localFormData.value.slot_uuid,
+    (newVal) => {
+      const satelliteId = props.formData.satellite_id
+      const satellite = satellites.find((elem) => elem.id === satelliteId)
+      const satelliteSlots = satellite?.slots2 || []
+      const found = satelliteSlots.find((elem) => elem.uuid === newVal)
+
+      localFormData.value.slot_name = found?.title || ''
+    }
+  )
 </script>
 
 <template>
@@ -560,7 +565,7 @@
           {{ selectedSat.name }} - Schedule Information
         </h4>
         <p class="text-body-1 text-center mb-6">
-          {{ `${selectedSlotTitle} - ${localFormData.slot_date ?? ''}` }}
+          {{ `${localFormData.slot_name} - ${localFormData.slot_date ?? ''}` }}
         </p>
 
         <VForm
@@ -587,15 +592,16 @@
                 <VRow class="mt-2">
                   <VCol cols="12" md="6">
                     <AppSelect
-                      v-model="localFormData.slot_name"
+                      v-model="localFormData.slot_uuid"
                       label="Slot Name"
-                      name="slot_name"
+                      name="slot_uuid"
                       placeholder="Select Item"
                       :items="selectedSat.slots"
                       item-value="uuid"
                       item-title="title"
-                      :rules="[requiredValidator]"
+                      :rules="[requiredValidator('Slot Name')]"
                       @update:modelValue="onSlotChange"
+                      :disabled="isEditting"
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -607,8 +613,7 @@
                       :items="slotDateOptions"
                       item-title="text"
                       item-value="value"
-                      clearable
-                      clear-icon="tabler-x"
+                      :disabled="isEditting"
                     >
                       <template #item="{ item, props }">
                         <VListItem
@@ -660,18 +665,21 @@
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.worship_leader"
+                      id="ac-worship-leader"
                       label="Worship Leader"
                       name="worship_leader"
                       placeholder="Select Item"
                       :items="worshipLeaderOptions"
                       item-title="name"
                       item-value="id"
-                      :rules="[requiredValidator]"
+                      :rules="[requiredValidator('Worship Leader')]"
                     />
                   </VCol>
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.key_vox"
+                      id="ac-key-vox"
+                      v-model:search="search.key_vox"
                       label="Key Vocals"
                       name="key_vox"
                       placeholder="Select Item"
@@ -684,20 +692,26 @@
                       item-title="name"
                       item-value="id"
                       :rules="[
-                        requiredValidator,
+                        requiredValidator('Key Vocals'),
                         maxSelectionValidator(6),
                         minKeyVoxRule(props.formData.satellite_id),
                       ]"
                       closable-chips
                       chips
                       multiple
-                      @update:modelValue="handleKeyVox"
+                      @update:modelValue="
+                        () => {
+                          handleChangeMusicians()
+                          handleSearch('key_vox')
+                        }
+                      "
                     />
                   </VCol>
 
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.key_vox_leader"
+                      id="ac-kvl"
                       label="Key Vocals Leader"
                       name="key_vox_leader"
                       :items="
@@ -705,7 +719,7 @@
                       "
                       item-title="name"
                       item-value="id"
-                      :rules="[requiredValidator]"
+                      :rules="[requiredValidator('Key Vocals Leader')]"
                     />
                   </VCol>
                 </VRow>
@@ -734,12 +748,14 @@
                       density="compact"
                       label="Is Fixed Band?"
                       name="is_fixed_band"
+                      @update:model-value="onFixedBandChange"
                     />
                   </VCol>
 
                   <VCol v-if="localFormData.is_fixed_band" cols="12">
                     <AppAutocomplete
                       v-model="localFormData.fixed_band_id"
+                      id="ac-fixed-band-id"
                       label="Band"
                       name="fixed_band_id"
                       :items="sortedFixedBands"
@@ -751,6 +767,8 @@
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.pianists"
+                      v-model:search="search.pianists"
+                      id="ac-pianists"
                       closable-chips
                       chips
                       multiple
@@ -759,14 +777,24 @@
                       :items="musicians.filter((m: Musician) => m.instrument === 'keys')"
                       item-title="name"
                       item-value="id"
-                      :rules="[requiredValidator, maxSelectionValidator(2)]"
-                      @update:modelValue="handleFixedBand"
+                      :rules="[
+                        requiredValidator('Pianists'),
+                        maxSelectionValidator(2),
+                      ]"
+                      @update:modelValue="
+                        () => {
+                          handleChangeMusicians()
+                          handleSearch('pianists')
+                        }
+                      "
                     />
                   </VCol>
 
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.egs"
+                      v-model:search="search.egs"
+                      id="ac-egs"
                       closable-chips
                       chips
                       multiple
@@ -775,14 +803,24 @@
                       :items="musicians.filter((m: Musician) => m.instrument === 'eg')"
                       item-title="name"
                       item-value="id"
-                      :rules="[requiredValidator, maxSelectionValidator(2)]"
-                      @update:modelValue="handleFixedBand"
+                      :rules="[
+                        requiredValidator('EGs'),
+                        maxSelectionValidator(2),
+                      ]"
+                      @update:modelValue="
+                        () => {
+                          handleChangeMusicians()
+                          handleSearch('egs')
+                        }
+                      "
                     />
                   </VCol>
 
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.ags"
+                      v-model:search="search.ags"
+                      id="ac-ags"
                       closable-chips
                       chips
                       multiple
@@ -791,14 +829,24 @@
                       :items="musicians.filter((m: Musician) => m.instrument === 'ag')"
                       item-title="name"
                       item-value="id"
-                      :rules="[requiredValidator, maxSelectionValidator(2)]"
-                      @update:modelValue="handleFixedBand"
+                      :rules="[
+                        requiredValidator('AGs'),
+                        maxSelectionValidator(2),
+                      ]"
+                      @update:modelValue="
+                        () => {
+                          handleChangeMusicians()
+                          handleSearch('ags')
+                        }
+                      "
                     />
                   </VCol>
 
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.bassists"
+                      v-model:search="search.bassists"
+                      id="ac-bassists"
                       closable-chips
                       chips
                       multiple
@@ -807,14 +855,24 @@
                       :items="musicians.filter((m: Musician) => m.instrument === 'bass')"
                       item-title="name"
                       item-value="id"
-                      :rules="[requiredValidator, maxSelectionValidator(2)]"
-                      @update:modelValue="handleFixedBand"
+                      :rules="[
+                        requiredValidator('Bassists'),
+                        maxSelectionValidator(2),
+                      ]"
+                      @update:modelValue="
+                        () => {
+                          handleChangeMusicians()
+                          handleSearch('bassists')
+                        }
+                      "
                     />
                   </VCol>
 
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.drummers"
+                      v-model:search="search.drummers"
+                      id="ac-drummers"
                       closable-chips
                       chips
                       multiple
@@ -823,14 +881,24 @@
                       :items="musicians.filter((m: Musician) => m.instrument === 'drums')"
                       item-title="name"
                       item-value="id"
-                      :rules="[requiredValidator, maxSelectionValidator(2)]"
-                      @update:modelValue="handleFixedBand"
+                      :rules="[
+                        requiredValidator('Drummers'),
+                        maxSelectionValidator(2),
+                      ]"
+                      @update:modelValue="
+                        () => {
+                          handleChangeMusicians()
+                          handleSearch('drummers')
+                        }
+                      "
                     />
                   </VCol>
 
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.others"
+                      v-model:search="search.others"
+                      id="ac-others"
                       closable-chips
                       chips
                       multiple
@@ -840,20 +908,26 @@
                       item-title="name"
                       item-value="id"
                       :rules="[maxSelectionValidator(2)]"
-                      @update:modelValue="handleFixedBand"
+                      @update:modelValue="
+                        () => {
+                          handleChangeMusicians()
+                          handleSearch('others')
+                        }
+                      "
                     />
                   </VCol>
 
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.band_leader"
+                      id="ac-bl"
                       label="Band Leader"
                       :items="
                         compiledNames.filter(({ role }: { role: string }) => role === 'musician')
                       "
                       item-title="name"
                       item-value="id"
-                      :rules="[requiredValidator]"
+                      :rules="[requiredValidator('Band Leader')]"
                     />
                   </VCol>
                 </VRow>
@@ -874,6 +948,7 @@
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.tech_head"
+                      id="ac-th"
                       label="Tech Head"
                       name="ths"
                       :items="ths"
@@ -886,7 +961,8 @@
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.md"
-                      label="MD"
+                      id="ac-md"
+                      label="Music Director"
                       name="mds"
                       :items="mds"
                       item-title="name"
@@ -898,6 +974,7 @@
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.devotion"
+                      id="ac-devotion"
                       closable-chips
                       chips
                       multiple
@@ -907,7 +984,7 @@
                       item-title="name"
                       item-value="id"
                       :rules="[
-                        requiredValidator,
+                        requiredValidator('Devotion'),
                         maxSelectionValidator(2),
                         checkScheduledNames,
                       ]"

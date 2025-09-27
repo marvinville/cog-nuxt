@@ -1,6 +1,6 @@
 // composables/useSlotHelpers.ts
 import satellites from '@/database/satellites.json'
-import type { BasicPerson, Singer } from '@/types/Person' // adjust path based on your project
+import type { BasicPerson, Singer, Musician } from '@/types/Person' // adjust path based on your project
 import type { SlotForm, SlotWorkers } from '@/types/Slot' // adjust path based on your project
 
 export const useSlotHelpers = () => {
@@ -171,6 +171,11 @@ export const useSlotHelpers = () => {
       return name
     })
 
+  const getMusiciansByInstrument = (
+    musicians: Musician[],
+    instrument: string
+  ): Musician[] => musicians.filter((m) => m.instrument === instrument)
+
   return {
     getDaysInMonth,
     getWeekOfMonth,
@@ -183,5 +188,6 @@ export const useSlotHelpers = () => {
     buildWorkers,
     sortByName,
     toNames,
+    getMusiciansByInstrument,
   }
 }

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import type { Musician } from '@/types/Person'
+  import SlotCardName from './SlotCardName.vue'
   const props = defineProps<{
     slotData: {
       date_from: string
@@ -16,25 +18,54 @@
     (e: 'deleteSlot', payload: typeof props.slotData): void
   }>()
 
-  const { splitNames, toNames } = useSlotHelpers()
+  const { splitNames, toNames, getMusiciansByInstrument } = useSlotHelpers()
   const { $dayjs } = useNuxtApp()
 
   // ✅ Parse workers JSON string once
   const workers = JSON.parse(props.slotData.workers)
   const { worship_leader, musicians } = workers
-  const { pianists, egs, ags, bassists, drummers } = musicians
+  const { pianists, egs, ags, bassists, drummers, others } = musicians
+  const bandLeaderId = workers.band_leader || 0
 
   const allMusicians = props.workers.musiciansOptions || []
   const allSingers = props.workers.singersOptions || []
 
-  // now apply to each instrument
-  const musicianNames = {
-    pianists: toNames(pianists, allMusicians),
-    egs: toNames(egs, allMusicians),
-    ags: toNames(ags, allMusicians),
-    bassists: toNames(bassists, allMusicians),
-    drummers: toNames(drummers, allMusicians),
-  }
+  const selectedMusicianIds = [
+    ...pianists,
+    ...egs,
+    ...ags,
+    ...bassists,
+    ...drummers,
+    ...others,
+  ]
+
+  const selectedMusicians = selectedMusicianIds
+    .map((id) => allMusicians.find((elem: Musician) => elem.id === id))
+    .filter((m): m is any => m !== undefined) // ✅ remove any nulls if id not found
+
+  // Tip: avoid calling the function twice in template — use a computed property instead:
+  const keysMusicians = computed(() =>
+    getMusiciansByInstrument(selectedMusicians, 'keys')
+  )
+
+  const egMusicians = computed(() =>
+    getMusiciansByInstrument(selectedMusicians, 'eg')
+  )
+
+  const agMusicians = computed(() =>
+    getMusiciansByInstrument(selectedMusicians, 'ag')
+  )
+  const bassMusicians = computed(() =>
+    getMusiciansByInstrument(selectedMusicians, 'bass')
+  )
+
+  const drumsMusicians = computed(() =>
+    getMusiciansByInstrument(selectedMusicians, 'drums')
+  )
+
+  const othersMusicians = computed(() =>
+    getMusiciansByInstrument(selectedMusicians, 'others')
+  )
 
   const WLNames = toNames([worship_leader], allSingers)
 
@@ -79,37 +110,32 @@
 
     <h6 class="text-h6 my-1">
       Pianist:
-      <span class="text-body-1 d-inline-block">
-        {{ splitNames(musicianNames.pianists) }}
-      </span>
+      <SlotCardName :musicians="keysMusicians" :bandLeaderId />
     </h6>
 
     <h6 class="text-h6 my-1">
       EG:
-      <span class="text-body-1 d-inline-block">
-        {{ splitNames(musicianNames.egs) }}
-      </span>
+      <SlotCardName :musicians="egMusicians" :bandLeaderId />
     </h6>
 
     <h6 class="text-h6 my-1">
       AG:
-      <span class="text-body-1 d-inline-block">
-        {{ splitNames(musicianNames.ags) }}
-      </span>
+      <SlotCardName :musicians="agMusicians" :bandLeaderId />
     </h6>
 
     <h6 class="text-h6 my-1">
       Bassist:
-      <span class="text-body-1 d-inline-block">
-        {{ splitNames(musicianNames.bassists) }}
-      </span>
+      <SlotCardName :musicians="bassMusicians" :bandLeaderId />
     </h6>
 
     <h6 class="text-h6 my-1">
       Drummer:
-      <span class="text-body-1 d-inline-block">
-        {{ splitNames(musicianNames.drummers) }}
-      </span>
+      <SlotCardName :musicians="drumsMusicians" :bandLeaderId />
+    </h6>
+
+    <h6 class="text-h6 my-1">
+      Others:
+      <SlotCardName :musicians="othersMusicians" :bandLeaderId />
     </h6>
   </VCardText>
   <template />

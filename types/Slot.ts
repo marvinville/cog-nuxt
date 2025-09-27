@@ -19,6 +19,7 @@ export type SlotForm = {
   devotion: number[]
   remarks: string
   fixed_band_id: number | null
+  created_by: number
 }
 
 // 👥 Workers inside the slot

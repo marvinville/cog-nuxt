@@ -82,6 +82,7 @@
   const formDefault = {
     id: 0,
     satellite_id: 0,
+    slot_uuid: '',
     slot_name: '',
     slot_date: '',
     date_from: '',
@@ -141,16 +142,26 @@
     created_by: 1,
   })
 
-  const buildSlotRecord = (slot: SlotForm, id: number) => {
+  const buildSlotRecord = (slot: SlotForm, id: number): any => {
+    const dateFrom = `${slot.slot_date} 00:00:00`
+    const dateTo = `${slot.slot_date} 23:59:59`
+    const isSundaySlot = slot.slot_name.toUpperCase() === 'TWS' ? 0 : 1
+
     return {
       id,
       slot_name: slot.slot_name,
       slot_uuid: slot.slot_uuid,
-      date_from: slot.slot_date,
-      date_to: slot.slot_date,
+      date_from: dateFrom,
+      date_to: dateTo,
       remarks: slot.remarks,
       satellite_id: slot.satellite_id,
       workers: JSON.stringify(buildWorkers(slot)),
+      is_sunday_slot: isSundaySlot,
+      created_by: slot.created_by ?? 0,
+      created_at: new Date().toISOString(),
+      updated_by: null,
+      updated_at: null,
+      deleted_at: null,
     }
   }
 
@@ -160,10 +171,24 @@
         method: 'POST',
         body: preparePayload(slot),
       })
-
-      return response?.id ?? 0
+      return response?.id ?? 0 // backend insert returns the new id
     } catch (err) {
       console.error('Unexpected error while saving slot:', err)
+      return 0
+    }
+  }
+
+  // api helper is assumed to JSON.stringify + set headers
+  const updateSlot = async (slot: SlotForm) => {
+    try {
+      const response = await api(`/slots/${slot.id}`, {
+        method: 'PUT',
+        body: preparePayload(slot),
+      })
+      // backend doesn't send id back, so just return the existing id
+      return slot.id
+    } catch (err) {
+      console.error('Unexpected error while updating slot:', err)
       return 0
     }
   }
@@ -171,9 +196,20 @@
   const handleSubmit = async (slot: SlotForm) => {
     dataIsReady.value = false
 
-    const id = await saveSlot(slot)
-    if (id > 0) {
-      schedules.value.push(buildSlotRecord(slot, id) as any)
+    let editId = slot.id || 0
+
+    if (editId > 0) {
+      editId = await updateSlot(slot)
+
+      // ✅ Replace the existing slot in the list instead of pushing a new one
+      const index = schedules.value.findIndex((s) => s.id === editId)
+      if (index !== -1) {
+        console.log(`update ran`)
+        schedules.value[index] = buildSlotRecord(slot, editId)
+      }
+    } else {
+      editId = await saveSlot(slot)
+      schedules.value.push(buildSlotRecord(slot, editId) as any)
     }
 
     dataIsReady.value = true
@@ -212,6 +248,7 @@
     const {
       id,
       satellite_id,
+      slot_uuid,
       slot_name,
       date_from,
       date_to,
@@ -244,6 +281,7 @@
       id,
       satellite_id,
       slot_date: $dayjs(date_from).format('MMM D, YYYY'),
+      slot_uuid,
       slot_name,
       date_from,
       date_to,
