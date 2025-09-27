@@ -176,6 +176,22 @@ export const useSlotHelpers = () => {
     instrument: string
   ): Musician[] => musicians.filter((m) => m.instrument === instrument)
 
+  /**
+   * Sort slot objects by `date_from`.
+   *
+   * @param {Array} slots - The array of slot objects.
+   * @param {string} order - 'asc' for ascending, 'desc' for descending.
+   * @returns {Array} Sorted array of slot objects.
+   */
+  const sortSlots = (slots: any[], order: 'asc' | 'desc' = 'asc') => {
+    return [...slots].sort((a, b) => {
+      const dateA = new Date(a.date_from).getTime()
+      const dateB = new Date(b.date_from).getTime()
+
+      return order === 'desc' ? dateB - dateA : dateA - dateB
+    })
+  }
+
   return {
     getDaysInMonth,
     getWeekOfMonth,
@@ -189,5 +205,6 @@ export const useSlotHelpers = () => {
     sortByName,
     toNames,
     getMusiciansByInstrument,
+    sortSlots,
   }
 }

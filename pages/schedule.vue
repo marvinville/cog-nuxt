@@ -16,6 +16,8 @@
 
   const router = useRouter() // add this at the top
 
+  const { sortSlots } = useSlotHelpers()
+
   // musicians
   const musiciansPool = musicians.map((elem) => {
     const user = users.find((u) => u.id === elem.id)
@@ -400,7 +402,7 @@
         <VCard
           v-for="item in filterBySatellite({
             satelliteId: id,
-            data: schedules,
+            data: sortSlots(schedules),
           })"
           :key="item.index"
           class="mb-2"
