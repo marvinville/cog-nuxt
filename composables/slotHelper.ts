@@ -192,6 +192,58 @@ export const useSlotHelpers = () => {
     })
   }
 
+  const checkWorkerConflicts = (workers, conflicts) => {
+    // flatten out conflicts to an array of { workerId, slot }
+    const conflictEntries = conflicts.flatMap((slot) => {
+      const selectedWorkers = JSON.parse(slot.workers)
+
+      const { worship_leader, key_vox, md, tech_head } = selectedWorkers
+      const { ags, bassists, drummers, egs, others, pianists } =
+        selectedWorkers.musicians
+
+      const allIds = [
+        ...ags,
+        ...bassists,
+        ...drummers,
+        ...egs,
+        ...others,
+        ...pianists,
+        ...(Array.isArray(key_vox) ? key_vox : [key_vox]),
+        worship_leader,
+        md,
+        tech_head,
+      ].filter(Boolean) // remove null/empty
+
+      const satellite = satellites.find((elem) => elem.id === slot.satellite_id)
+
+      return allIds.map((id) => ({
+        workerId: id,
+        slotName: slot.slot_name,
+        satelliteName: satellite?.name || '',
+      }))
+    })
+
+    return workers.map((elem) => {
+      const { id, name, ...rest } = elem
+
+      // find all conflicts for this worker
+      const conflictsForWorker = conflictEntries.filter(
+        (c) => c.workerId === id
+      )
+
+      return {
+        id,
+        name,
+        title: name,
+        ...rest,
+        disabled: conflictsForWorker.length > 0,
+        conflictText: conflictsForWorker.map(
+          (c) => `Already in ${c.satelliteName} - ${c.slotName}`
+        ),
+      }
+    })
+  }
+
   return {
     getDaysInMonth,
     getWeekOfMonth,
@@ -206,5 +258,6 @@ export const useSlotHelpers = () => {
     toNames,
     getMusiciansByInstrument,
     sortSlots,
+    checkWorkerConflicts,
   }
 }

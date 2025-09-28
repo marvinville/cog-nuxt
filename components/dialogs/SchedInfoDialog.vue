@@ -54,10 +54,16 @@
     },
   })
 
+  const api = useApi()
+
   const emit = defineEmits(['submit', 'update:isDialogVisible'])
 
-  const { getDaysInMonth, prioritizeByPreferredSatelliteId, sortByName } =
-    useSlotHelpers()
+  const {
+    getDaysInMonth,
+    prioritizeByPreferredSatelliteId,
+    sortByName,
+    checkWorkerConflicts,
+  } = useSlotHelpers()
 
   const { $dayjs } = useNuxtApp()
 
@@ -68,7 +74,12 @@
 
   const workers = props.workers || []
   const singers = workers.filter((elem) => elem.role === 'singer')
-  const musicians = workers.filter((elem) => elem.role === 'musician')
+
+  const isMusician = (person: BasicPerson): person is Musician => {
+    return person.role === 'musician'
+  }
+
+  const musicians = workers.filter(isMusician)
   const mds = workers.filter((elem) => elem.role === 'md')
   const ths = workers.filter((elem) => elem.role === 'tech_head')
 
@@ -277,17 +288,6 @@
     }
   }
 
-  // watch selected keyvox
-  const handleKeyVox = (value: string[]) => {
-    // if selected leader is not in the list, reset value
-    if (
-      localFormData.value.key_vox_leader &&
-      !value.includes(localFormData.value.key_vox_leader)
-    ) {
-      localFormData.value.key_vox_leader = null
-    }
-  }
-
   type CompiledName = {
     id: Number
     role: String
@@ -441,6 +441,65 @@
     })
   }
 
+  const conflicts = ref([])
+
+  const options = ref({
+    pianists: [] as any[],
+    egs: [] as any[],
+    ags: [] as any[],
+    bassists: [] as any[],
+    drummers: [] as any[],
+    others: [] as any[],
+  })
+
+  const filterByInstrument = (musicians: Musician[], instrument: string) => {
+    return musicians.filter((m) => m.instrument === instrument)
+  }
+
+  const handleConflicts = async (date: string) => {
+    const exactDate = $dayjs(date).format('YYYY-MM-DD')
+    try {
+      // just attach ?date= param
+      const response = await api(`/slots?date=${exactDate}`, {
+        method: 'GET',
+      })
+
+      conflicts.value = response
+
+      options.value.pianists = checkWorkerConflicts(
+        filterByInstrument(musicians, 'keys'),
+        conflicts.value
+      )
+
+      options.value.egs = checkWorkerConflicts(
+        filterByInstrument(musicians, 'eg'),
+        conflicts.value
+      )
+
+      options.value.ags = checkWorkerConflicts(
+        filterByInstrument(musicians, 'ag'),
+        conflicts.value
+      )
+
+      options.value.bassists = checkWorkerConflicts(
+        filterByInstrument(musicians, 'bass'),
+        conflicts.value
+      )
+
+      options.value.drummers = checkWorkerConflicts(
+        filterByInstrument(musicians, 'drums'),
+        conflicts.value
+      )
+
+      options.value.others = checkWorkerConflicts(
+        filterByInstrument(musicians, 'others'),
+        conflicts.value
+      )
+    } catch (err) {
+      console.error('Unexpected error while fetching slots:', err)
+    }
+  }
+
   const allSingers = ref<Singer[]>(singers)
   const keyVox = ref<Singer[]>(singers)
 
@@ -458,6 +517,7 @@
     }
   )
 
+  // auto populate names of fixed band
   watch(
     () => localFormData.value.fixed_band_id,
     (newVal) => {
@@ -614,6 +674,7 @@
                       item-title="text"
                       item-value="value"
                       :disabled="isEditting"
+                      @update:modelValue="handleConflicts"
                     >
                       <template #item="{ item, props }">
                         <VListItem
@@ -765,7 +826,7 @@
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppAutocomplete
+                    <AppSelect
                       v-model="localFormData.pianists"
                       v-model:search="search.pianists"
                       id="ac-pianists"
@@ -774,7 +835,7 @@
                       multiple
                       label="Keyboardist"
                       name="keys"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'keys')"
+                      :items="options.pianists"
                       item-title="name"
                       item-value="id"
                       :rules="[
@@ -787,11 +848,27 @@
                           handleSearch('pianists')
                         }
                       "
-                    />
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="props"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              <!-- join multiple conflicts -->
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppSelect>
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppAutocomplete
+                    <AppSelect
                       v-model="localFormData.egs"
                       v-model:search="search.egs"
                       id="ac-egs"
@@ -800,7 +877,7 @@
                       multiple
                       label="EG"
                       name="egs"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'eg')"
+                      :items="options.egs"
                       item-title="name"
                       item-value="id"
                       :rules="[
@@ -813,11 +890,27 @@
                           handleSearch('egs')
                         }
                       "
-                    />
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="props"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              <!-- join multiple conflicts -->
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppSelect>
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppAutocomplete
+                    <AppSelect
                       v-model="localFormData.ags"
                       v-model:search="search.ags"
                       id="ac-ags"
@@ -826,7 +919,7 @@
                       multiple
                       label="AG"
                       name="ags"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'ag')"
+                      :items="options.ags"
                       item-title="name"
                       item-value="id"
                       :rules="[
@@ -839,11 +932,27 @@
                           handleSearch('ags')
                         }
                       "
-                    />
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="props"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              <!-- join multiple conflicts -->
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppSelect>
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppAutocomplete
+                    <AppSelect
                       v-model="localFormData.bassists"
                       v-model:search="search.bassists"
                       id="ac-bassists"
@@ -852,7 +961,7 @@
                       multiple
                       label="Bassist"
                       name="bassists"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'bass')"
+                      :items="options.bassists"
                       item-title="name"
                       item-value="id"
                       :rules="[
@@ -865,11 +974,27 @@
                           handleSearch('bassists')
                         }
                       "
-                    />
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="props"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              <!-- join multiple conflicts -->
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppSelect>
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppAutocomplete
+                    <AppSelect
                       v-model="localFormData.drummers"
                       v-model:search="search.drummers"
                       id="ac-drummers"
@@ -878,7 +1003,7 @@
                       multiple
                       label="Drummer"
                       name="drummers"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'drums')"
+                      :items="options.drummers"
                       item-title="name"
                       item-value="id"
                       :rules="[
@@ -891,11 +1016,27 @@
                           handleSearch('drummers')
                         }
                       "
-                    />
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="props"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              <!-- join multiple conflicts -->
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppSelect>
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppAutocomplete
+                    <AppSelect
                       v-model="localFormData.others"
                       v-model:search="search.others"
                       id="ac-others"
@@ -904,17 +1045,36 @@
                       multiple
                       label="Others"
                       name="others"
-                      :items="musicians.filter((m: Musician) => m.instrument === 'others')"
+                      :items="options.others"
                       item-title="name"
                       item-value="id"
-                      :rules="[maxSelectionValidator(2)]"
+                      :rules="[
+                        requiredValidator('Others'),
+                        maxSelectionValidator(1),
+                      ]"
                       @update:modelValue="
                         () => {
                           handleChangeMusicians()
                           handleSearch('others')
                         }
                       "
-                    />
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="props"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              <!-- join multiple conflicts -->
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppSelect>
                   </VCol>
 
                   <VCol cols="12" md="6">
