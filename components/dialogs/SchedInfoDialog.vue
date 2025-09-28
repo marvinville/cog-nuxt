@@ -450,6 +450,8 @@
     bassists: [] as any[],
     drummers: [] as any[],
     others: [] as any[],
+    wls: [] as any[],
+    key_vocals: [] as any[],
   })
 
   const filterByInstrument = (musicians: Musician[], instrument: string) => {
@@ -493,6 +495,19 @@
 
       options.value.others = checkWorkerConflicts(
         filterByInstrument(musicians, 'others'),
+        conflicts.value
+      )
+
+      options.value.wls = checkWorkerConflicts(
+        worshipLeaderOptions.value,
+        conflicts.value
+      )
+
+      options.value.key_vocals = checkWorkerConflicts(
+        prioritizeByPreferredSatelliteId({
+          data: sortByName(keyVox.value),
+          preferredId: props.formData.satellite_id,
+        }),
         conflicts.value
       )
     } catch (err) {
@@ -724,32 +739,42 @@
               <VExpansionPanelText>
                 <VRow class="mt-2">
                   <VCol cols="12" md="6">
-                    <AppAutocomplete
+                    <AppSelect
                       v-model="localFormData.worship_leader"
                       id="ac-worship-leader"
                       label="Worship Leader"
                       name="worship_leader"
-                      placeholder="Select Item"
-                      :items="worshipLeaderOptions"
+                      :items="options.wls"
                       item-title="name"
                       item-value="id"
                       :rules="[requiredValidator('Worship Leader')]"
-                    />
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="props"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              <!-- join multiple conflicts -->
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppSelect>
                   </VCol>
                   <VCol cols="12" md="6">
-                    <AppAutocomplete
+                    <AppSelect
                       v-model="localFormData.key_vox"
                       id="ac-key-vox"
                       v-model:search="search.key_vox"
                       label="Key Vocals"
                       name="key_vox"
                       placeholder="Select Item"
-                      :items="
-                        prioritizeByPreferredSatelliteId({
-                          data: sortByName(keyVox),
-                          preferredId: props.formData.satellite_id,
-                        })
-                      "
+                      :items="options.key_vocals"
                       item-title="name"
                       item-value="id"
                       :rules="[
@@ -762,11 +787,26 @@
                       multiple
                       @update:modelValue="
                         () => {
-                          handleChangeMusicians()
                           handleSearch('key_vox')
                         }
                       "
-                    />
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="props"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              <!-- join multiple conflicts -->
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppSelect>
                   </VCol>
 
                   <VCol cols="12" md="6">
