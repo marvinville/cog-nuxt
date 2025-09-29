@@ -5,9 +5,6 @@
   import { initConfigStore, useConfigStore } from '@core/stores/config'
   import { hexToRgb } from '@core/utils/colorConverter'
 
-  // ✨ Import Notivue components
-  import { Notivue, Notification } from 'notivue'
-
   const { global } = useTheme()
 
   // ℹ️ Sync current theme with initial loader theme
@@ -31,11 +28,6 @@
       </NuxtLayout>
 
       <ScrollToTop />
-
-      <!-- ✨ Notivue toast container -->
-      <Notivue v-slot="item" teleport="body">
-        <Notification :item="item" />
-      </Notivue>
     </VApp>
   </VLocaleProvider>
 </template>

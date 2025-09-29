@@ -36,10 +36,6 @@ export default defineNuxtConfig({
     '@core/scss/template/index.scss',
     '@styles/styles.scss',
     '@/plugins/iconify/icons.css',
-
-    // → Add Notivue css (optional — remove if you want headless/custom styling)
-    'notivue/notification.css',
-    'notivue/animations.css',
   ],
 
   components: {
@@ -150,25 +146,6 @@ export default defineNuxtConfig({
     transpile: ['vuetify'],
   },
 
-  // → add the Notivue module here
-  modules: [
-    '@vueuse/nuxt',
-    '@nuxtjs/i18n',
-    '@nuxtjs/device',
-    '@pinia/nuxt',
-    'notivue/nuxt', // ← <- add
-  ],
-
-  // → optional Notivue module options
-  notivue: {
-    position: 'top-right', // 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' ...
-    limit: 4,
-    enqueue: true,
-    avoidDuplicates: true,
-    notifications: {
-      global: { duration: 5000 }, // default toast duration in ms
-    },
-  },
-
+  modules: ['@vueuse/nuxt', '@nuxtjs/i18n', '@nuxtjs/device', '@pinia/nuxt'],
   compatibilityDate: '2025-06-20',
 })

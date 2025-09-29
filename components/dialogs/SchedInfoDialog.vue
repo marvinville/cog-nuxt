@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { push } from 'notivue'
   import fixedBands from '@/database/musicians/fixed-bands.json'
   import satellites from '@/database/satellites.json'
   import type { BasicPerson, Musician, Singer } from '@/types/Person' // adjust path based on your project
