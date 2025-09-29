@@ -371,7 +371,7 @@
     <VProgressCircular indeterminate color="primary" size="50" width="5" />
   </VRow>
 
-  <div v-else>
+  <VRow v-else>
     <SchedInfoDialog
       v-model:is-dialog-visible="isSchedInfoDialogVisible"
       :selectedMonth="selectedMonth"
@@ -382,9 +382,9 @@
       @submit="handleSubmit"
     />
 
-    <VRow v-for="id in [1, 2, 3, 4]" :key="id" cols="12" class="mt-2">
+    <VCol v-for="id in [1, 2, 3, 4]" :key="id" cols="12" sm="6" md="3">
       <VCol cols="12" class="text-center">
-        <div class="d-flex flex-wrap align-center gap-2">
+        <div class="d-flex flex-wrap align-center gap-2 justify-center">
           <h3 class="text-h3">
             {{ ['Main', 'Jabez', 'Silang', 'Trece'][id - 1] }}
           </h3>
@@ -398,36 +398,26 @@
         </div>
       </VCol>
 
-      <VCol lg="12">
-        <div class="d-flex flex-wrap align-start gap-3">
-          <VCard
-            v-for="item in filterBySatellite({
-              satelliteId: id,
-              data: sortSlots(schedules),
-            })"
-            :key="item.index"
-            class="mb-2 flex-fill max-4"
-          >
-            <SlotCard
-              :slot-data="item"
-              @delete-slot="handleDeleteSlot"
-              @edit-slot="handleEditSlot"
-              :workers="{
-                singersOptions: singersPool,
-                musiciansOptions: musiciansPool,
-              }"
-            />
-          </VCard>
-        </div>
+      <VCol cols="12" lg="12" md="12">
+        <VCard
+          v-for="item in filterBySatellite({
+            satelliteId: id,
+            data: sortSlots(schedules),
+          })"
+          :key="item.index"
+          class="mb-2"
+        >
+          <SlotCard
+            :slot-data="item"
+            @delete-slot="handleDeleteSlot"
+            @edit-slot="handleEditSlot"
+            :workers="{
+              singersOptions: singersPool,
+              musiciansOptions: musiciansPool,
+            }"
+          />
+        </VCard>
       </VCol>
-    </VRow>
-  </div>
+    </VCol>
+  </VRow>
 </template>
-
-<style scoped>
-  .max-4 {
-    flex: 1 1 calc(25% - 1rem); /* 4 items per row max */
-    max-width: 25%;
-    margin: 0.5rem; /* optional gap */
-  }
-</style>

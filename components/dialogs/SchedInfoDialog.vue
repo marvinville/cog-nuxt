@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { push } from 'notivue'
   import fixedBands from '@/database/musicians/fixed-bands.json'
   import satellites from '@/database/satellites.json'
   import type { BasicPerson, Musician, Singer } from '@/types/Person' // adjust path based on your project
@@ -341,6 +342,11 @@
     // return localFormData.value.id > 0
   })
 
+  //
+  const isReady = computed(() => {
+    return localFormData.value.slot_date ? true : false
+  })
+
   const isEditting = computed(() => {
     return localFormData.value.id > 0
   })
@@ -517,6 +523,9 @@
 
   const allSingers = ref<Singer[]>(singers)
   const keyVox = ref<Singer[]>(singers)
+  const conflictMsg = ref({
+    musicians: '' as string,
+  })
 
   // make props into a reactive state
   watch(
@@ -536,6 +545,23 @@
   watch(
     () => localFormData.value.fixed_band_id,
     (newVal) => {
+      // get conflicts of musicians on the same date
+      const musicianConflicts = conflicts.value.flatMap((slot) => {
+        const selectedWorkers = JSON.parse(slot.workers)
+
+        const { ags, bassists, drummers, egs, others, pianists } =
+          selectedWorkers.musicians
+
+        return [
+          ...ags,
+          ...bassists,
+          ...drummers,
+          ...egs,
+          ...others,
+          ...pianists,
+        ]
+      })
+
       const band = fixedBands.find((item) => item.id === newVal)
       if (band) {
         const {
@@ -547,6 +573,27 @@
           others,
           band_leader_id,
         } = band
+
+        const fixedBandMemberIds = [
+          ...pianists,
+          ...egs,
+          ...ags,
+          ...bassists,
+          ...drummers,
+          ...others,
+        ]
+
+        // check if any band member is in conflicts
+        const hasConflict = fixedBandMemberIds.some((id) =>
+          musicianConflicts.includes(id)
+        )
+
+        if (hasConflict) {
+          conflictMsg.value.musicians =
+            'A member of the selected band is already scheduled in other satellite.'
+          return
+        }
+
         Object.assign(localFormData.value, {
           pianists,
           egs,
@@ -732,6 +779,9 @@
             <VExpansionPanel>
               <VExpansionPanelTitle class="bold" disable-icon-rotate>
                 Worship Leader and Choir
+                <span v-if="!isReady" class="ml-1 text-subtitle-2"
+                  >- Please select a Slot Date first.</span
+                >
                 <template #actions>
                   <!-- <VIcon size="18" icon="tabler-check" color="success" /> -->
                 </template>
@@ -748,6 +798,7 @@
                       item-title="name"
                       item-value="id"
                       :rules="[requiredValidator('Worship Leader')]"
+                      :disabled="!isReady"
                     >
                       <template #item="{ item, props }">
                         <VListItem
@@ -774,6 +825,7 @@
                       label="Key Vocals"
                       name="key_vox"
                       placeholder="Select Item"
+                      :disabled="!isReady"
                       :items="options.key_vocals"
                       item-title="name"
                       item-value="id"
@@ -815,6 +867,7 @@
                       id="ac-kvl"
                       label="Key Vocals Leader"
                       name="key_vox_leader"
+                      :disabled="!isReady"
                       :items="
                         compiledNames.filter(({ role }: { role: string }) => role === 'singer')
                       "
@@ -832,6 +885,9 @@
             <VExpansionPanel>
               <VExpansionPanelTitle class="bold" disable-icon-rotate>
                 Band Setup
+                <span v-if="!isReady" class="ml-1 text-subtitle-2"
+                  >- Please select a Slot Date first.</span
+                >
                 <template #actions>
                   <!-- <VIcon size="18" icon="tabler-check" color="success" /> -->
                 </template>
@@ -839,7 +895,7 @@
               <VExpansionPanelText>
                 <VRow class="mt-2">
                   <VCol cols="12" v-if="isViewOnly > 0">
-                    Is Fixed Band?
+                    Fixed Band
                     {{ localFormData.is_fixed_band ? 'Yes' : 'No' }}
                   </VCol>
 
@@ -850,6 +906,7 @@
                       label="Is Fixed Band?"
                       name="is_fixed_band"
                       @update:model-value="onFixedBandChange"
+                      :disabled="!isReady"
                     />
                   </VCol>
 
@@ -865,6 +922,18 @@
                     />
                   </VCol>
 
+                  <VCol cols="12">
+                    <VAlert
+                      v-if="conflictMsg.musicians"
+                      variant="tonal"
+                      color="error"
+                      closable
+                      close-label="Close Alert"
+                    >
+                      {{ conflictMsg.musicians }}
+                    </VAlert>
+                  </VCol>
+
                   <VCol cols="12" md="6">
                     <AppSelect
                       v-model="localFormData.pianists"
@@ -875,6 +944,7 @@
                       multiple
                       label="Keyboardist"
                       name="keys"
+                      :disabled="!isReady"
                       :items="options.pianists"
                       item-title="name"
                       item-value="id"
@@ -917,6 +987,7 @@
                       multiple
                       label="EG"
                       name="egs"
+                      :disabled="!isReady"
                       :items="options.egs"
                       item-title="name"
                       item-value="id"
@@ -959,6 +1030,7 @@
                       multiple
                       label="AG"
                       name="ags"
+                      :disabled="!isReady"
                       :items="options.ags"
                       item-title="name"
                       item-value="id"
@@ -1001,6 +1073,7 @@
                       multiple
                       label="Bassist"
                       name="bassists"
+                      :disabled="!isReady"
                       :items="options.bassists"
                       item-title="name"
                       item-value="id"
@@ -1043,6 +1116,7 @@
                       multiple
                       label="Drummer"
                       name="drummers"
+                      :disabled="!isReady"
                       :items="options.drummers"
                       item-title="name"
                       item-value="id"
@@ -1085,13 +1159,11 @@
                       multiple
                       label="Others"
                       name="others"
+                      :disabled="!isReady"
                       :items="options.others"
                       item-title="name"
                       item-value="id"
-                      :rules="[
-                        requiredValidator('Others'),
-                        maxSelectionValidator(1),
-                      ]"
+                      :rules="[maxSelectionValidator(1)]"
                       @update:modelValue="
                         () => {
                           handleChangeMusicians()
@@ -1122,6 +1194,7 @@
                       v-model="localFormData.band_leader"
                       id="ac-bl"
                       label="Band Leader"
+                      :disabled="!isReady"
                       :items="
                         compiledNames.filter(({ role }: { role: string }) => role === 'musician')
                       "
@@ -1139,6 +1212,9 @@
             <VExpansionPanel>
               <VExpansionPanelTitle class="bold" disable-icon-rotate>
                 Music Director, Tech Head & Devotion
+                <span v-if="!isReady" class="ml-1 text-subtitle-2"
+                  >- Please select a Slot Date first.</span
+                >
                 <template #actions>
                   <!-- <VIcon size="18" icon="tabler-check" color="success" /> -->
                 </template>
@@ -1151,6 +1227,7 @@
                       id="ac-th"
                       label="Tech Head"
                       name="ths"
+                      :disabled="!isReady"
                       :items="ths"
                       item-title="name"
                       item-value="id"
@@ -1164,6 +1241,7 @@
                       id="ac-md"
                       label="Music Director"
                       name="mds"
+                      :disabled="!isReady"
                       :items="mds"
                       item-title="name"
                       item-value="id"
@@ -1180,6 +1258,7 @@
                       multiple
                       label="Devotion"
                       name="devo"
+                      :disabled="!isReady"
                       :items="compiledNames"
                       item-title="name"
                       item-value="id"

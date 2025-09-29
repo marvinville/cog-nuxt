@@ -38,6 +38,7 @@
     "jwt-decode": "4.0.0",
     "mapbox-gl": "3.5.2",
     "next-auth": "4.21.1",
+    "notivue": "^2.4.5",
     "nuxt": "3.14.1592",
     "ofetch": "1.4.1",
     "pinia": "2.3.0",

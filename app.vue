@@ -1,24 +1,26 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
-import ScrollToTop from '@core/components/ScrollToTop.vue'
-import initCore from '@core/initCore'
-import { initConfigStore, useConfigStore } from '@core/stores/config'
-import { hexToRgb } from '@core/utils/colorConverter'
+  import { useTheme } from 'vuetify'
+  import ScrollToTop from '@core/components/ScrollToTop.vue'
+  import initCore from '@core/initCore'
+  import { initConfigStore, useConfigStore } from '@core/stores/config'
+  import { hexToRgb } from '@core/utils/colorConverter'
 
-const { global } = useTheme()
+  // ✨ Import Notivue components
+  import { Notivue, Notification } from 'notivue'
 
-// ℹ️ Sync current theme with initial loader theme
-initCore()
-initConfigStore()
+  const { global } = useTheme()
 
-const configStore = useConfigStore()
-const { isMobile } = useDevice()
-if (isMobile) configStore.appContentLayoutNav = 'vertical'
+  // ℹ️ Sync current theme with initial loader theme
+  initCore()
+  initConfigStore()
+
+  const configStore = useConfigStore()
+  const { isMobile } = useDevice()
+  if (isMobile) configStore.appContentLayoutNav = 'vertical'
 </script>
 
 <template>
   <VLocaleProvider :rtl="configStore.isAppRTL">
-    <!-- ℹ️ This is required to set the background color of active nav link based on currently active global theme's primary -->
     <VApp
       :style="`--v-global-theme-primary: ${hexToRgb(
         global.current.value.colors.primary
@@ -29,6 +31,11 @@ if (isMobile) configStore.appContentLayoutNav = 'vertical'
       </NuxtLayout>
 
       <ScrollToTop />
+
+      <!-- ✨ Notivue toast container -->
+      <Notivue v-slot="item" teleport="body">
+        <Notification :item="item" />
+      </Notivue>
     </VApp>
   </VLocaleProvider>
 </template>

@@ -18,11 +18,13 @@ export default defineNuxtConfig({
       titleTemplate: '%s - NuxtJS Admin Template',
       title: 'Vuexy',
 
-      link: [{
-        rel: 'icon',
-        type: 'image/x-icon',
-        href: `${process.env.NUXT_APP_BASE_URL}/favicon.ico`,
-      }],
+      link: [
+        {
+          rel: 'icon',
+          type: 'image/x-icon',
+          href: `${process.env.NUXT_APP_BASE_URL}/favicon.ico`,
+        },
+      ],
     },
   },
 
@@ -34,19 +36,27 @@ export default defineNuxtConfig({
     '@core/scss/template/index.scss',
     '@styles/styles.scss',
     '@/plugins/iconify/icons.css',
+
+    // → Add Notivue css (optional — remove if you want headless/custom styling)
+    'notivue/notification.css',
+    'notivue/animations.css',
   ],
 
   components: {
-    dirs: [{
-      path: '@/@core/components',
-      pathPrefix: false,
-    }, {
-      path: '~/components/global',
-      global: true,
-    }, {
-      path: '~/components',
-      pathPrefix: false,
-    }],
+    dirs: [
+      {
+        path: '@/@core/components',
+        pathPrefix: false,
+      },
+      {
+        path: '~/components/global',
+        global: true,
+      },
+      {
+        path: '~/components',
+        pathPrefix: false,
+      },
+    ],
   },
 
   plugins: ['@/plugins/vuetify/index.ts', '@/plugins/iconify/index.ts'],
@@ -89,7 +99,8 @@ export default defineNuxtConfig({
 
   vue: {
     compilerOptions: {
-      isCustomElement: tag => tag === 'swiper-container' || tag === 'swiper-slide',
+      isCustomElement: (tag) =>
+        tag === 'swiper-container' || tag === 'swiper-slide',
     },
   },
 
@@ -99,14 +110,20 @@ export default defineNuxtConfig({
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('.', import.meta.url)),
-        '@themeConfig': fileURLToPath(new URL('./themeConfig.ts', import.meta.url)),
+        '@themeConfig': fileURLToPath(
+          new URL('./themeConfig.ts', import.meta.url)
+        ),
         '@core': fileURLToPath(new URL('./@core', import.meta.url)),
         '@layouts': fileURLToPath(new URL('./@layouts', import.meta.url)),
         '@images': fileURLToPath(new URL('./assets/images/', import.meta.url)),
         '@styles': fileURLToPath(new URL('./assets/styles/', import.meta.url)),
-        '@configured-variables': fileURLToPath(new URL('./assets/styles/variables/_template.scss', import.meta.url)),
+        '@configured-variables': fileURLToPath(
+          new URL('./assets/styles/variables/_template.scss', import.meta.url)
+        ),
         '@db': fileURLToPath(new URL('./server/fake-db/', import.meta.url)),
-        '@api-utils': fileURLToPath(new URL('./server/utils/', import.meta.url)),
+        '@api-utils': fileURLToPath(
+          new URL('./server/utils/', import.meta.url)
+        ),
       },
     },
 
@@ -116,9 +133,7 @@ export default defineNuxtConfig({
 
     optimizeDeps: {
       exclude: ['vuetify'],
-      entries: [
-        './**/*.vue',
-      ],
+      entries: ['./**/*.vue'],
     },
 
     plugins: [
@@ -135,6 +150,25 @@ export default defineNuxtConfig({
     transpile: ['vuetify'],
   },
 
-  modules: ['@vueuse/nuxt', '@nuxtjs/i18n', '@nuxtjs/device', '@pinia/nuxt'],
+  // → add the Notivue module here
+  modules: [
+    '@vueuse/nuxt',
+    '@nuxtjs/i18n',
+    '@nuxtjs/device',
+    '@pinia/nuxt',
+    'notivue/nuxt', // ← <- add
+  ],
+
+  // → optional Notivue module options
+  notivue: {
+    position: 'top-right', // 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' ...
+    limit: 4,
+    enqueue: true,
+    avoidDuplicates: true,
+    notifications: {
+      global: { duration: 5000 }, // default toast duration in ms
+    },
+  },
+
   compatibilityDate: '2025-06-20',
 })
