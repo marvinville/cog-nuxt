@@ -668,6 +668,17 @@
       localFormData.value.slot_name = found?.title || ''
     }
   )
+
+  // auto-load the conflicts during on edit view
+  watch(
+    () => localFormData.value.slot_date,
+    async (newVal) => {
+      if (newVal) {
+        await handleConflicts(newVal)
+      }
+    },
+    { immediate: true } // runs right away if pre-filled
+  )
 </script>
 
 <template>
