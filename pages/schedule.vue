@@ -385,7 +385,7 @@
     <VRow v-for="id in [1, 2, 3, 4]" :key="id" cols="12" class="mt-2">
       <VCol cols="12" class="text-center">
         <div class="d-flex flex-wrap align-center gap-2">
-          <h3 class="text-h3">
+          <h3 class="ml-3 text-h3">
             {{ ['Main', 'Jabez', 'Silang', 'Trece'][id - 1] }}
           </h3>
           <VBtn
@@ -427,7 +427,7 @@
 <style scoped>
   .max-4 {
     flex: 1 1 calc(25% - 1rem); /* 4 items per row max */
-    max-width: 25%;
+    max-width: 20%;
     margin: 0.5rem; /* optional gap */
   }
 </style>

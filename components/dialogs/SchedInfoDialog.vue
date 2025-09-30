@@ -464,6 +464,7 @@
   }
 
   const handleConflicts = async (date: string) => {
+    isReady.value = false
     const exactDate = $dayjs(date).format('YYYY-MM-DD')
     try {
       // just attach ?date= param
@@ -471,7 +472,11 @@
         method: 'GET',
       })
 
-      conflicts.value = response
+      const editId = localFormData.value.id
+
+      // exclude the current conflict on edit
+      conflicts.value =
+        editId > 0 ? response.filter((elem) => elem.id !== editId) : response
 
       options.value.pianists = checkWorkerConflicts(
         filterByInstrument(musicians, 'keys'),
@@ -515,6 +520,8 @@
         }),
         conflicts.value
       )
+
+      isReady.value = true
     } catch (err) {
       console.error('Unexpected error while fetching slots:', err)
     }
@@ -671,10 +678,10 @@
 
   // auto-load the conflicts during on edit view
   watch(
-    () => localFormData.value.slot_date,
+    () => localFormData.value.id,
     async (newVal) => {
       if (newVal) {
-        await handleConflicts(newVal)
+        await handleConflicts(localFormData.value.slot_date)
       }
     },
     { immediate: true } // runs right away if pre-filled

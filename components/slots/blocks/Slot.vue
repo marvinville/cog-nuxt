@@ -64,6 +64,7 @@
     ags: toNames(ags, workersPool, band_leader),
     bassists: toNames(bassists, workersPool, band_leader),
     drummers: toNames(drummers, workersPool, band_leader),
+    others: toNames(others, workersPool, band_leader),
     wl: toNames([worship_leader], workersPool),
     th: toNames([tech_head], workersPool),
     md: toNames([md], workersPool),
@@ -125,6 +126,10 @@
       </tr>
       <tr>
         <td v-html="splitNames(slotNames.drummers) || '&nbsp;'"></td>
+      </tr>
+
+      <tr>
+        <td v-html="splitNames(slotNames.others) || '&nbsp;'"></td>
       </tr>
 
       <tr>

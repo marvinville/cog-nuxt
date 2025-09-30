@@ -49,6 +49,9 @@
         <td class="bold italic">Drummer</td>
       </tr>
       <tr>
+        <td class="bold italic">Others</td>
+      </tr>
+      <tr>
         <td class="bold italic">Tech Head</td>
       </tr>
       <tr>
