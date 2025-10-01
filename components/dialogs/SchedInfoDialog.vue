@@ -540,7 +540,6 @@
     }
   }
 
-  const allSingers = ref<Singer[]>(singers)
   const keyVox = ref<Singer[]>(singers)
   const conflictMsg = ref({
     musicians: '' as string,
@@ -1316,18 +1315,16 @@
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <VRow v-if="isReady">
-            <VCol
-              cols="12"
-              class="d-flex flex-wrap justify-center gap-4 mt-6"
-              v-if="!isEditting"
-            >
-              <VBtn color="secondary" variant="tonal" @click="onFormReset">
-                Clear
-              </VBtn>
-              <VBtn type="submit">Submit</VBtn>
-            </VCol>
-          </VRow>
+          <VCol
+            cols="12"
+            class="d-flex flex-wrap justify-center gap-4 mt-6"
+            v-if="!isEditting"
+          >
+            <VBtn color="secondary" variant="tonal" @click="onFormReset">
+              Clear
+            </VBtn>
+            <VBtn type="submit">Submit</VBtn>
+          </VCol>
         </VForm>
       </VCardText>
     </VCard>
