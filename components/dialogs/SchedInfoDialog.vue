@@ -2,6 +2,7 @@
   import fixedBands from '@/database/musicians/fixed-bands.json'
   import satellites from '@/database/satellites.json'
   import type { BasicPerson, Musician, Singer } from '@/types/Person' // adjust path based on your project
+  import { VRow } from 'vuetify/components'
 
   const props = defineProps({
     formData: {
@@ -143,6 +144,8 @@
       if (localFormData.value.id < 1) {
         slotDateOptions.value = []
       }
+
+      isReady.value = false
     }
 
     emit('update:isDialogVisible', val)
@@ -205,8 +208,8 @@
     switch (satelliteId) {
       case 1: // main should have atleast 5
         return 5
-      default: // default atleast 3
-        return 3
+      default: // default atleast 4
+        return 4
     }
   }
 
@@ -231,7 +234,7 @@
   }
 
   const MDTHRules = computed(() =>
-    props.formData?.satellite_id === 1 ? [requiredValidator] : []
+    props.formData?.satellite_id === 1 ? [requiredValidator('MD/TH')] : []
   )
 
   // Flatten each band's members into a Set for easier comparison
@@ -267,7 +270,7 @@
   }
 
   // check whether all musicians selected are fixed band
-  const handleChangeMusicians = (value: string[]) => {
+  const handleChangeMusicians = () => {
     const selectedMusicians = compiledNames.value.filter(
       (person) => person.role === 'musician'
     )
@@ -285,6 +288,13 @@
       selectedMusicianIds.includes(localFormData.value.band_leader) === false
     ) {
       localFormData.value.band_leader = null
+    }
+  }
+
+  const handleChangeKeyVox = (newVal) => {
+    // remove kv leader if not in the list of KV
+    if (newVal.includes(localFormData.value.key_vox_leader) === false) {
+      localFormData.value.key_vox_leader = null
     }
   }
 
@@ -341,10 +351,7 @@
     // return localFormData.value.id > 0
   })
 
-  //
-  const isReady = computed(() => {
-    return localFormData.value.slot_date ? true : false
-  })
+  const isReady = ref(false)
 
   const isEditting = computed(() => {
     return localFormData.value.id > 0
@@ -463,6 +470,8 @@
     return musicians.filter((m) => m.instrument === instrument)
   }
 
+  const keyVoxTruthSource = ref([])
+
   const handleConflicts = async (date: string) => {
     isReady.value = false
     const exactDate = $dayjs(date).format('YYYY-MM-DD')
@@ -513,13 +522,17 @@
         conflicts.value
       )
 
-      options.value.key_vocals = checkWorkerConflicts(
+      const kvs = checkWorkerConflicts(
         prioritizeByPreferredSatelliteId({
           data: sortByName(keyVox.value),
           preferredId: props.formData.satellite_id,
         }),
         conflicts.value
       )
+
+      // assign to options and for source of truth
+      options.value.key_vocals = kvs
+      keyVoxTruthSource.value = kvs
 
       isReady.value = true
     } catch (err) {
@@ -630,7 +643,9 @@
       if (!newVal) return
 
       // Update keyVox list by removing the worship leader
-      keyVox.value = allSingers.value.filter((elem) => elem.id !== newVal)
+      options.value.key_vocals = keyVoxTruthSource.value.filter(
+        (elem) => elem.id !== newVal
+      )
 
       // Remove worship leader from selected key_vox if present (with defensive guard)
       localFormData.value.key_vox = (localFormData.value.key_vox || []).filter(
@@ -680,6 +695,10 @@
   watch(
     () => localFormData.value.id,
     async (newVal) => {
+      conflictMsg.value = {
+        musicians: '',
+      }
+
       if (newVal) {
         await handleConflicts(localFormData.value.slot_date)
       }
@@ -754,10 +773,11 @@
                       item-value="value"
                       :disabled="isEditting"
                       @update:modelValue="handleConflicts"
+                      :rules="[requiredValidator('Slot Date')]"
                     >
                       <template #item="{ item, props }">
                         <VListItem
-                          v-bind="props"
+                          v-bind="{ ...props, id: undefined }"
                           :title="undefined"
                           :disabled="item.raw.disabled"
                         >
@@ -806,7 +826,7 @@
               <VExpansionPanelText>
                 <VRow class="mt-2">
                   <VCol cols="12" md="6">
-                    <AppSelect
+                    <AppAutocomplete
                       v-model="localFormData.worship_leader"
                       id="ac-worship-leader"
                       label="Worship Leader"
@@ -816,26 +836,26 @@
                       item-value="id"
                       :rules="[requiredValidator('Worship Leader')]"
                       :disabled="!isReady"
+                      autocomplete="off"
                     >
                       <template #item="{ item, props }">
                         <VListItem
-                          v-bind="props"
+                          v-bind="{ ...props, id: undefined }"
                           :title="undefined"
                           :disabled="item.raw.disabled"
                         >
                           <VListItemTitle>
                             {{ item.raw.name }}
                             <span v-if="item.raw.disabled">
-                              <!-- join multiple conflicts -->
                               ({{ item.raw.conflictText.join(', ') }})
                             </span>
                           </VListItemTitle>
                         </VListItem>
                       </template>
-                    </AppSelect>
+                    </AppAutocomplete>
                   </VCol>
                   <VCol cols="12" md="6">
-                    <AppSelect
+                    <AppAutocomplete
                       v-model="localFormData.key_vox"
                       id="ac-key-vox"
                       v-model:search="search.key_vox"
@@ -843,6 +863,7 @@
                       name="key_vox"
                       placeholder="Select Item"
                       :disabled="!isReady"
+                      autocomplete="off"
                       :items="options.key_vocals"
                       item-title="name"
                       item-value="id"
@@ -855,27 +876,27 @@
                       chips
                       multiple
                       @update:modelValue="
-                        () => {
+                        (val) => {
+                          handleChangeKeyVox(val)
                           handleSearch('key_vox')
                         }
                       "
                     >
                       <template #item="{ item, props }">
                         <VListItem
-                          v-bind="props"
+                          v-bind="{ ...props, id: undefined }"
                           :title="undefined"
                           :disabled="item.raw.disabled"
                         >
                           <VListItemTitle>
                             {{ item.raw.name }}
                             <span v-if="item.raw.disabled">
-                              <!-- join multiple conflicts -->
                               ({{ item.raw.conflictText.join(', ') }})
                             </span>
                           </VListItemTitle>
                         </VListItem>
                       </template>
-                    </AppSelect>
+                    </AppAutocomplete>
                   </VCol>
 
                   <VCol cols="12" md="6">
@@ -885,6 +906,7 @@
                       label="Key Vocals Leader"
                       name="key_vox_leader"
                       :disabled="!isReady"
+                      autocomplete="off"
                       :items="
                         compiledNames.filter(({ role }: { role: string }) => role === 'singer')
                       "
@@ -936,12 +958,12 @@
                       :items="sortedFixedBands"
                       item-title="name"
                       item-value="id"
+                      autocomplete="off"
                     />
                   </VCol>
 
-                  <VCol cols="12">
+                  <VCol cols="12" v-if="conflictMsg.musicians">
                     <VAlert
-                      v-if="conflictMsg.musicians"
                       variant="tonal"
                       color="error"
                       closable
@@ -952,7 +974,7 @@
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppSelect
+                    <AppAutocomplete
                       v-model="localFormData.pianists"
                       v-model:search="search.pianists"
                       id="ac-pianists"
@@ -962,6 +984,7 @@
                       label="Keyboardist"
                       name="keys"
                       :disabled="!isReady"
+                      autocomplete="off"
                       :items="options.pianists"
                       item-title="name"
                       item-value="id"
@@ -978,24 +1001,23 @@
                     >
                       <template #item="{ item, props }">
                         <VListItem
-                          v-bind="props"
+                          v-bind="{ ...props, id: undefined }"
                           :title="undefined"
                           :disabled="item.raw.disabled"
                         >
                           <VListItemTitle>
                             {{ item.raw.name }}
                             <span v-if="item.raw.disabled">
-                              <!-- join multiple conflicts -->
                               ({{ item.raw.conflictText.join(', ') }})
                             </span>
                           </VListItemTitle>
                         </VListItem>
                       </template>
-                    </AppSelect>
+                    </AppAutocomplete>
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppSelect
+                    <AppAutocomplete
                       v-model="localFormData.egs"
                       v-model:search="search.egs"
                       id="ac-egs"
@@ -1005,6 +1027,7 @@
                       label="EG"
                       name="egs"
                       :disabled="!isReady"
+                      autocomplete="off"
                       :items="options.egs"
                       item-title="name"
                       item-value="id"
@@ -1021,24 +1044,23 @@
                     >
                       <template #item="{ item, props }">
                         <VListItem
-                          v-bind="props"
+                          v-bind="{ ...props, id: undefined }"
                           :title="undefined"
                           :disabled="item.raw.disabled"
                         >
                           <VListItemTitle>
                             {{ item.raw.name }}
                             <span v-if="item.raw.disabled">
-                              <!-- join multiple conflicts -->
                               ({{ item.raw.conflictText.join(', ') }})
                             </span>
                           </VListItemTitle>
                         </VListItem>
                       </template>
-                    </AppSelect>
+                    </AppAutocomplete>
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppSelect
+                    <AppAutocomplete
                       v-model="localFormData.ags"
                       v-model:search="search.ags"
                       id="ac-ags"
@@ -1048,6 +1070,7 @@
                       label="AG"
                       name="ags"
                       :disabled="!isReady"
+                      autocomplete="off"
                       :items="options.ags"
                       item-title="name"
                       item-value="id"
@@ -1064,24 +1087,23 @@
                     >
                       <template #item="{ item, props }">
                         <VListItem
-                          v-bind="props"
+                          v-bind="{ ...props, id: undefined }"
                           :title="undefined"
                           :disabled="item.raw.disabled"
                         >
                           <VListItemTitle>
                             {{ item.raw.name }}
                             <span v-if="item.raw.disabled">
-                              <!-- join multiple conflicts -->
                               ({{ item.raw.conflictText.join(', ') }})
                             </span>
                           </VListItemTitle>
                         </VListItem>
                       </template>
-                    </AppSelect>
+                    </AppAutocomplete>
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppSelect
+                    <AppAutocomplete
                       v-model="localFormData.bassists"
                       v-model:search="search.bassists"
                       id="ac-bassists"
@@ -1091,6 +1113,7 @@
                       label="Bassist"
                       name="bassists"
                       :disabled="!isReady"
+                      autocomplete="off"
                       :items="options.bassists"
                       item-title="name"
                       item-value="id"
@@ -1107,24 +1130,23 @@
                     >
                       <template #item="{ item, props }">
                         <VListItem
-                          v-bind="props"
+                          v-bind="{ ...props, id: undefined }"
                           :title="undefined"
                           :disabled="item.raw.disabled"
                         >
                           <VListItemTitle>
                             {{ item.raw.name }}
                             <span v-if="item.raw.disabled">
-                              <!-- join multiple conflicts -->
                               ({{ item.raw.conflictText.join(', ') }})
                             </span>
                           </VListItemTitle>
                         </VListItem>
                       </template>
-                    </AppSelect>
+                    </AppAutocomplete>
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppSelect
+                    <AppAutocomplete
                       v-model="localFormData.drummers"
                       v-model:search="search.drummers"
                       id="ac-drummers"
@@ -1134,6 +1156,7 @@
                       label="Drummer"
                       name="drummers"
                       :disabled="!isReady"
+                      autocomplete="off"
                       :items="options.drummers"
                       item-title="name"
                       item-value="id"
@@ -1150,24 +1173,23 @@
                     >
                       <template #item="{ item, props }">
                         <VListItem
-                          v-bind="props"
+                          v-bind="{ ...props, id: undefined }"
                           :title="undefined"
                           :disabled="item.raw.disabled"
                         >
                           <VListItemTitle>
                             {{ item.raw.name }}
                             <span v-if="item.raw.disabled">
-                              <!-- join multiple conflicts -->
                               ({{ item.raw.conflictText.join(', ') }})
                             </span>
                           </VListItemTitle>
                         </VListItem>
                       </template>
-                    </AppSelect>
+                    </AppAutocomplete>
                   </VCol>
 
                   <VCol cols="12" md="6">
-                    <AppSelect
+                    <AppAutocomplete
                       v-model="localFormData.others"
                       v-model:search="search.others"
                       id="ac-others"
@@ -1177,6 +1199,7 @@
                       label="Others"
                       name="others"
                       :disabled="!isReady"
+                      autocomplete="off"
                       :items="options.others"
                       item-title="name"
                       item-value="id"
@@ -1190,20 +1213,19 @@
                     >
                       <template #item="{ item, props }">
                         <VListItem
-                          v-bind="props"
+                          v-bind="{ ...props, id: undefined }"
                           :title="undefined"
                           :disabled="item.raw.disabled"
                         >
                           <VListItemTitle>
                             {{ item.raw.name }}
                             <span v-if="item.raw.disabled">
-                              <!-- join multiple conflicts -->
                               ({{ item.raw.conflictText.join(', ') }})
                             </span>
                           </VListItemTitle>
                         </VListItem>
                       </template>
-                    </AppSelect>
+                    </AppAutocomplete>
                   </VCol>
 
                   <VCol cols="12" md="6">
@@ -1245,6 +1267,7 @@
                       label="Tech Head"
                       name="ths"
                       :disabled="!isReady"
+                      autocomplete="off"
                       :items="ths"
                       item-title="name"
                       item-value="id"
@@ -1259,6 +1282,7 @@
                       label="Music Director"
                       name="mds"
                       :disabled="!isReady"
+                      autocomplete="off"
                       :items="mds"
                       item-title="name"
                       item-value="id"
@@ -1276,6 +1300,7 @@
                       label="Devotion"
                       name="devo"
                       :disabled="!isReady"
+                      autocomplete="off"
                       :items="compiledNames"
                       item-title="name"
                       item-value="id"
@@ -1291,16 +1316,18 @@
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <VCol
-            cols="12"
-            class="d-flex flex-wrap justify-center gap-4 mt-6"
-            v-if="!isViewOnly"
-          >
-            <VBtn color="secondary" variant="tonal" @click="onFormReset">
-              Clear
-            </VBtn>
-            <VBtn type="submit">Submit</VBtn>
-          </VCol>
+          <VRow v-if="isReady">
+            <VCol
+              cols="12"
+              class="d-flex flex-wrap justify-center gap-4 mt-6"
+              v-if="!isEditting"
+            >
+              <VBtn color="secondary" variant="tonal" @click="onFormReset">
+                Clear
+              </VBtn>
+              <VBtn type="submit">Submit</VBtn>
+            </VCol>
+          </VRow>
         </VForm>
       </VCardText>
     </VCard>

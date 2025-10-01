@@ -99,5 +99,8 @@
   { "id": 334, "name": "", "instrument": "keys" },
   { "id": 335, "name": "", "instrument": "ag" },
   { "id": 336, "name": "", "instrument": "drums" },
-  { "id": 337, "name": "", "instrument": "bass" }
+  { "id": 337, "name": "", "instrument": "bass" },
+  { "id": 338, "name": "", "instrument": "others" },
+  { "id": 339, "name": "", "instrument": "others" },
+  { "id": 340, "name": "", "instrument": "others" }
 ]
