@@ -144,8 +144,6 @@
       if (localFormData.value.id < 1) {
         slotDateOptions.value = []
       }
-
-      isReady.value = false
     }
 
     emit('update:isDialogVisible', val)
@@ -693,7 +691,12 @@
   // auto-load the conflicts during on edit view
   watch(
     () => localFormData.value.id,
-    async (newVal) => {
+    async (newVal, oldVal) => {
+      // from edit view to add view, reset conflicts
+      if (oldVal > newVal) {
+        isReady.value = false
+      }
+
       conflictMsg.value = {
         musicians: '',
       }
