@@ -807,6 +807,16 @@
     },
     { immediate: true } // runs right away if pre-filled
   )
+
+  watch(
+    () => localFormData.value.slot_date,
+    (newVal) => {
+      if (!newVal) {
+        isReady.value = false
+      }
+    },
+    { immediate: true } // runs right away if pre-filled
+  )
 </script>
 
 <template>
