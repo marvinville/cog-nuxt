@@ -332,11 +332,10 @@
   // }
 
   const openInNewTab = () => {
-    const { origin } = window.location
-    const year = selectedYear.value
-    const month = selectedMonth.value
-    const url = `${origin}/export?year=${year}&month=${month}`
-    window.open(url, '_blank')
+    router.push({
+      path: '/export',
+      query: { year: selectedYear.value, month: selectedMonth.value },
+    })
   }
 
   // Refetch when month or year changes
