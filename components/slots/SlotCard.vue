@@ -83,7 +83,7 @@
         <!-- Action Icons -->
         <div class="d-flex align-center gap-1">
           <VBtn
-            icon="tabler-eye"
+            icon="tabler-edit"
             variant="text"
             color="primary"
             class="text-right"
