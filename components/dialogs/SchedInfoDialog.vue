@@ -789,12 +789,7 @@
   // auto-load the conflicts during on edit view
   watch(
     () => localFormData.value.id,
-    async (newVal, oldVal) => {
-      // from edit view to add view, reset conflicts
-      if (oldVal > 0 && newVal === 0) {
-        isReady.value = false
-      }
-
+    async (newVal) => {
       conflictMsg.value = {
         musicians: '',
       }
