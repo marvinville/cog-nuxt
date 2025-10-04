@@ -1249,7 +1249,7 @@
             <!-- LEADERS -->
             <VExpansionPanel>
               <VExpansionPanelTitle class="bold" disable-icon-rotate>
-                Music Director, Tech Head & Devotion
+                Music Director, Technical Head & Devotion
                 <span v-if="!isReady" class="ml-1 text-subtitle-2"
                   >- Please select a Slot Date first.</span
                 >
@@ -1263,7 +1263,7 @@
                     <AppAutocomplete
                       v-model="localFormData.tech_head"
                       id="ac-th"
-                      label="Tech Head"
+                      label="Technical Head"
                       name="ths"
                       :disabled="!isReady"
                       autocomplete="off"
