@@ -6,6 +6,10 @@
   import jsPDF from 'jspdf'
   import Export from '@/components/slots/Export.vue'
 
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter() // add this at the top
+
   const { mutateData } = useSlotHelpers()
 
   definePageMeta({
@@ -140,6 +144,19 @@
   <div>
     <!-- Download Button -->
     <VCol class="d-flex gap-4">
+      <VBtn
+        color="secondary"
+        variant="outlined"
+        @click="
+          router.push({
+            path: '/schedule',
+          })
+        "
+      >
+        <VIcon start icon="tabler-arrow-left" />
+        Back
+      </VBtn>
+
       <VBtn @click="generatePdf">
         Download PDF
         <VIcon end icon="tabler-file-text" />
