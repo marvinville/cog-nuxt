@@ -791,13 +791,15 @@
     () => localFormData.value.id,
     async (newVal, oldVal) => {
       // from edit view to add view, reset conflicts
-      if (oldVal > newVal) {
+      if (oldVal > 0 && newVal === 0) {
         isReady.value = false
       }
 
       conflictMsg.value = {
         musicians: '',
       }
+
+      conflictSummary.value = []
 
       if (newVal) {
         await handleConflicts(localFormData.value.slot_date)
