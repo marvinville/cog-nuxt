@@ -351,10 +351,6 @@
 
   const isReady = ref(false)
 
-  const isEditting = computed(() => {
-    return localFormData.value.id > 0
-  })
-
   const selectedSat = computed(() => {
     const satelliteId = props.formData.satellite_id
     const selectedSatellite = satellites.find((s) => s.id === satelliteId)
@@ -761,7 +757,7 @@
                       item-title="title"
                       :rules="[requiredValidator('Slot Name')]"
                       @update:modelValue="onSlotChange"
-                      :disabled="isEditting"
+                      :disabled="localFormData.id > 0 ? true : false"
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -773,7 +769,7 @@
                       :items="slotDateOptions"
                       item-title="text"
                       item-value="value"
-                      :disabled="isEditting"
+                      :disabled="localFormData.id > 0 ? true : false"
                       @update:modelValue="handleConflicts"
                       :rules="[requiredValidator('Slot Date')]"
                     >
@@ -1321,7 +1317,7 @@
           <VCol
             cols="12"
             class="d-flex flex-wrap justify-center gap-4 mt-6"
-            v-if="!isEditting"
+            v-if="isReady"
           >
             <VBtn color="secondary" variant="tonal" @click="onFormReset">
               Clear
