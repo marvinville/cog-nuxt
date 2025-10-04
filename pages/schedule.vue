@@ -323,11 +323,19 @@
     isSchedInfoDialogVisible.value = true
   }
 
+  // const openInNewTab = () => {
+  //   const url = router.resolve({
+  //     path: '/export',
+  //     query: { year: selectedYear.value, month: selectedMonth.value },
+  //   }).href
+  //   window.open(url, '_blank')
+  // }
+
   const openInNewTab = () => {
-    const url = router.resolve({
-      path: '/export',
-      query: { year: selectedYear.value, month: selectedMonth.value },
-    }).href
+    const { origin } = window.location
+    const year = selectedYear.value
+    const month = selectedMonth.value
+    const url = `${origin}/export?year=${year}&month=${month}`
     window.open(url, '_blank')
   }
 
