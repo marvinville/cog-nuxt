@@ -4,6 +4,8 @@
   import type { BasicPerson, Musician, Singer } from '@/types/Person' // adjust path based on your project
   import { VRow } from 'vuetify/components'
 
+  import Conflicts from '@/components/slots/Conflicts.vue'
+
   const props = defineProps({
     formData: {
       type: Object,
@@ -63,6 +65,7 @@
     getDaysInMonth,
     prioritizeByPreferredSatelliteId,
     sortByName,
+    compileWorkersWithConflicts,
     checkWorkerConflicts,
   } = useSlotHelpers()
 
@@ -115,6 +118,36 @@
     }
   }
 
+  const conflictSummary = ref<
+    {
+      name: String
+      satelliteName: String
+      slotName: String
+      role: String
+    }[]
+  >([])
+
+  const hehe = [
+    {
+      name: 'Paulo C.',
+      satelliteName: 'Main',
+      slotName: 'Main Slot',
+      role: 'musician',
+    },
+    {
+      name: 'Armie',
+      satelliteName: 'Main',
+      slotName: 'Main Slot',
+      role: 'singer',
+    },
+    {
+      name: 'Angelo',
+      satelliteName: 'Trece',
+      slotName: 'AM',
+      role: 'singer',
+    },
+  ]
+
   const onFormSubmit = async () => {
     const validator = await formRef.value?.validate()
 
@@ -127,6 +160,43 @@
       console.log('Please fill the required fields.')
       return false
     }
+
+    // handle conflicts before submitting
+    const editId = localFormData.value.id
+    const slotDate = localFormData.value.slot_date
+
+    const dbConflicts = await getConflicts(slotDate)
+
+    // exclude the current conflict on edit
+    const currentConflicts =
+      editId > 0
+        ? dbConflicts.filter((elem) => elem.id !== editId)
+        : dbConflicts
+
+    const workerConflicts = compileWorkersWithConflicts(currentConflicts)
+
+    // Make a quick lookup map for faster access
+    const conflictMap = new Map(workerConflicts.map((c) => [c.workerId, c]))
+    const selectedWorkers = compiledNames.value
+
+    // Go through each worker and see if they appear in conflicts
+    conflictSummary.value = selectedWorkers
+      .filter((w) => conflictMap.has(w.id))
+      .map((w) => {
+        const conflict = conflictMap.get(w.id)!
+        return {
+          name: w.name,
+          satelliteName: conflict.satelliteName,
+          slotName: conflict.slotName,
+          role: w.role,
+        }
+      })
+
+    if (conflictSummary.value.length > 0) {
+      setWorkerOptions(currentConflicts) // refresh options based on conflicts
+      return false
+    }
+
     emit('submit', localFormData.value)
     emit('update:isDialogVisible', false)
     resetForm()
@@ -222,10 +292,10 @@
     minSelectionValidator(minKeyVoxBySatellite(satelliteId))
 
   const checkScheduledNames = (ids: number[]) => {
-    // Build a Set of scheduled ids for fast lookup
-    const scheduledIds = new Set(compiledNames.value.map((el) => el.id))
+    // Filter out invalid entries first
+    const validCompiled = compiledNames.value.filter(Boolean)
 
-    // Validate: all provided ids exist in compiledNames
+    const scheduledIds = new Set(validCompiled.map((el) => el.id))
     const isValid = ids.every((id) => scheduledIds.has(id))
 
     return isValid || 'One or more IDs are not scheduled'
@@ -302,11 +372,21 @@
     name: String
   }
 
+  // compiled names of workers in a slot, excluding tech-head, md and WL
   const compiledNames = computed<CompiledName[]>(() => {
-    const { pianists, egs, ags, bassists, drummers, others, key_vox } =
-      localFormData.value
+    const {
+      pianists = [],
+      egs = [],
+      ags = [],
+      bassists = [],
+      drummers = [],
+      others = [],
+      key_vox = [],
+      tech_head,
+      md,
+      worship_leader,
+    } = localFormData.value || {}
 
-    // merge all musician ids in one array
     const selectedMusicians = [
       ...pianists,
       ...egs,
@@ -314,25 +394,35 @@
       ...bassists,
       ...drummers,
       ...others,
-    ]
+    ].filter(Boolean)
 
-    // build lookup maps
-    const musicianMap = Object.fromEntries(musicians.map((m) => [m.id, m]))
-    const singerMap = Object.fromEntries(singers.map((s) => [s.id, s]))
+    const musicianMap = Object.fromEntries(
+      (musicians ?? []).map((m) => [m.id, m])
+    )
+    const singerMap = Object.fromEntries((singers ?? []).map((s) => [s.id, s]))
 
-    // resolve musician details
-    const musicianDetails: CompiledName[] = selectedMusicians.map((id) => ({
-      ...musicianMap[id],
-      role: 'musician',
-    }))
+    const musicianDetails: CompiledName[] = selectedMusicians
+      .map((id) => musicianMap[id])
+      .filter(Boolean)
+      .map((m) => ({ ...m, role: 'musician' }))
 
-    // resolve singer details
-    const singerDetails: CompiledName[] = key_vox.map((id) => ({
-      ...singerMap[id],
-      role: 'singer',
-    }))
+    const singerDetails: CompiledName[] = (key_vox ?? [])
+      .map((id) => singerMap[id])
+      .filter(Boolean)
+      .map((s) => ({ ...s, role: 'singer' }))
 
-    return [...musicianDetails, ...singerDetails]
+    const wlDetails: CompiledName[] = worship_leader
+      ? [{ ...singerMap[worship_leader], role: 'worship_leader' }].filter(
+          Boolean
+        )
+      : []
+
+    const mdDetails = (mds ?? []).find((elem) => elem.id === md)
+    const thDetails = (ths ?? []).find((elem) => elem.id === tech_head)
+
+    const specialRoles = [mdDetails, thDetails].filter(Boolean)
+
+    return [...musicianDetails, ...singerDetails, ...specialRoles, ...wlDetails]
   })
 
   const worshipLeaderOptions = computed(() => {
@@ -466,8 +556,7 @@
 
   const keyVoxTruthSource = ref([])
 
-  const handleConflicts = async (date: string) => {
-    isReady.value = false
+  const getConflicts = async (date: string) => {
     const exactDate = $dayjs(date).format('YYYY-MM-DD')
     try {
       // just attach ?date= param
@@ -475,63 +564,76 @@
         method: 'GET',
       })
 
-      const editId = localFormData.value.id
-
-      // exclude the current conflict on edit
-      conflicts.value =
-        editId > 0 ? response.filter((elem) => elem.id !== editId) : response
-
-      options.value.pianists = checkWorkerConflicts(
-        filterByInstrument(musicians, 'keys'),
-        conflicts.value
-      )
-
-      options.value.egs = checkWorkerConflicts(
-        filterByInstrument(musicians, 'eg'),
-        conflicts.value
-      )
-
-      options.value.ags = checkWorkerConflicts(
-        filterByInstrument(musicians, 'ag'),
-        conflicts.value
-      )
-
-      options.value.bassists = checkWorkerConflicts(
-        filterByInstrument(musicians, 'bass'),
-        conflicts.value
-      )
-
-      options.value.drummers = checkWorkerConflicts(
-        filterByInstrument(musicians, 'drums'),
-        conflicts.value
-      )
-
-      options.value.others = checkWorkerConflicts(
-        filterByInstrument(musicians, 'others'),
-        conflicts.value
-      )
-
-      options.value.wls = checkWorkerConflicts(
-        worshipLeaderOptions.value,
-        conflicts.value
-      )
-
-      const kvs = checkWorkerConflicts(
-        prioritizeByPreferredSatelliteId({
-          data: sortByName(keyVox.value),
-          preferredId: props.formData.satellite_id,
-        }),
-        conflicts.value
-      )
-
-      // assign to options and for source of truth
-      options.value.key_vocals = kvs
-      keyVoxTruthSource.value = kvs
-
-      isReady.value = true
+      return response
     } catch (err) {
       console.error('Unexpected error while fetching slots:', err)
     }
+  }
+
+  const handleConflicts = async (date: string) => {
+    isReady.value = false
+    const exactDate = $dayjs(date).format('YYYY-MM-DD')
+
+    const response = await getConflicts(exactDate)
+
+    const editId = localFormData.value.id
+
+    // exclude the current conflict on edit
+    conflicts.value =
+      editId > 0 ? response.filter((elem) => elem.id !== editId) : response
+
+    setWorkerOptions(conflicts.value)
+
+    isReady.value = true
+  }
+
+  const setWorkerOptions = (conflicts) => {
+    options.value.pianists = checkWorkerConflicts(
+      filterByInstrument(musicians, 'keys'),
+      conflicts
+    )
+
+    options.value.egs = checkWorkerConflicts(
+      filterByInstrument(musicians, 'eg'),
+      conflicts
+    )
+
+    options.value.ags = checkWorkerConflicts(
+      filterByInstrument(musicians, 'ag'),
+      conflicts
+    )
+
+    options.value.bassists = checkWorkerConflicts(
+      filterByInstrument(musicians, 'bass'),
+      conflicts
+    )
+
+    options.value.drummers = checkWorkerConflicts(
+      filterByInstrument(musicians, 'drums'),
+      conflicts
+    )
+
+    options.value.others = checkWorkerConflicts(
+      filterByInstrument(musicians, 'others'),
+      conflicts
+    )
+
+    options.value.wls = checkWorkerConflicts(
+      worshipLeaderOptions.value,
+      conflicts
+    )
+
+    const kvs = checkWorkerConflicts(
+      prioritizeByPreferredSatelliteId({
+        data: sortByName(keyVox.value),
+        preferredId: props.formData.satellite_id,
+      }),
+      conflicts
+    )
+
+    // assign to options and for source of truth
+    options.value.key_vocals = kvs
+    keyVoxTruthSource.value = kvs
   }
 
   const keyVox = ref<Singer[]>(singers)
@@ -1299,7 +1401,7 @@
                       name="devo"
                       :disabled="!isReady"
                       autocomplete="off"
-                      :items="compiledNames"
+                      :items="sortByName(compiledNames)"
                       item-title="name"
                       item-value="id"
                       :rules="[
@@ -1313,6 +1415,11 @@
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
+
+          <VCol v-if="conflictSummary.length > 0">
+            <!-- Conflicts -->
+            <Conflicts :items="conflictSummary" />
+          </VCol>
 
           <VCol
             cols="12"

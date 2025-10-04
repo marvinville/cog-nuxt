@@ -399,14 +399,14 @@
       </VCol>
 
       <VCol lg="12">
-        <div class="d-flex flex-wrap align-start gap-3">
+        <div class="align-start gap-3 flexContainer">
           <VCard
             v-for="item in filterBySatellite({
               satelliteId: id,
               data: sortSlots(schedules),
             })"
             :key="item.index"
-            class="mb-2 flex-fill max-4"
+            class="mb-2 w-100"
           >
             <SlotCard
               :slot-data="item"
@@ -424,10 +424,35 @@
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
   .max-4 {
     flex: 1 1 calc(25% - 1rem); /* 4 items per row max */
     max-width: 20%;
     margin: 0.5rem; /* optional gap */
+  }
+  .flexContainer {
+    display: grid;
+    grid-template-columns: 24% 24% 24% 24%;
+    &.fiveCols {
+      grid-template-columns: 19% 19% 19% 19% 19%;
+      @media (max-width: 1023px) {
+        grid-template-columns: 32% 32% 32%;
+      }
+      @media (max-width: 767px) {
+        grid-template-columns: 49% 49%;
+      }
+      @media (max-width: 400px) {
+        grid-template-columns: 100%;
+      }
+    }
+    @media (max-width: 1023px) {
+      grid-template-columns: 32% 32% 32%;
+    }
+    @media (max-width: 767px) {
+      grid-template-columns: 49% 49%;
+    }
+    @media (max-width: 400px) {
+      grid-template-columns: 100%;
+    }
   }
 </style>

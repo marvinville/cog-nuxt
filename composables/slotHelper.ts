@@ -192,9 +192,8 @@ export const useSlotHelpers = () => {
     })
   }
 
-  const checkWorkerConflicts = (workers, conflicts) => {
-    // flatten out conflicts to an array of { workerId, slot }
-    const conflictEntries = conflicts.flatMap((slot) => {
+  const compileWorkersWithConflicts = (conflicts: []) => {
+    return conflicts.flatMap((slot) => {
       const selectedWorkers = JSON.parse(slot.workers)
 
       const { worship_leader, key_vox, md, tech_head } = selectedWorkers
@@ -222,6 +221,11 @@ export const useSlotHelpers = () => {
         satelliteName: satellite?.name || '',
       }))
     })
+  }
+
+  const checkWorkerConflicts = (workers, conflicts) => {
+    // flatten out conflicts to an array of { workerId, ...slot }
+    const conflictEntries = compileWorkersWithConflicts(conflicts)
 
     return workers.map((elem) => {
       const { id, name, ...rest } = elem
@@ -258,6 +262,7 @@ export const useSlotHelpers = () => {
     toNames,
     getMusiciansByInstrument,
     sortSlots,
+    compileWorkersWithConflicts,
     checkWorkerConflicts,
   }
 }
