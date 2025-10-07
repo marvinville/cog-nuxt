@@ -164,14 +164,42 @@
     // handle conflicts before submitting
     const editId = localFormData.value.id
     const slotDate = localFormData.value.slot_date
+    const formattedSlotDate = $dayjs(slotDate).format('YYYY-MM-DD')
+    const slotUuid = localFormData.value.slot_uuid
 
     const dbConflicts = await getConflicts(slotDate)
 
-    // exclude the current conflict on edit
+    // exclude the current schedule as conflict on edit
     const currentConflicts =
       editId > 0
         ? dbConflicts.filter((elem) => elem.id !== editId)
         : dbConflicts
+
+    // ✅ check if this specific slot already exists
+    const slotExists = currentConflicts.some((conflict) => {
+      const conflictDate = $dayjs(conflict.date_from).format('YYYY-MM-DD')
+      return (
+        conflictDate === formattedSlotDate && conflict.slot_uuid === slotUuid
+      )
+    })
+
+    if (slotExists) {
+      // ✅ mark disabled slot dates before checking slotExists
+      slotDateOptions.value = slotDateOptions.value.map((option) => {
+        const exists = currentConflicts.some(
+          (conflict) =>
+            $dayjs(conflict.date_from).isSame($dayjs(option.value), 'day') &&
+            conflict.slot_uuid === slotUuid
+        )
+
+        return {
+          ...option,
+          disabled: exists,
+        }
+      })
+
+      conflictMsg.value.slot = `Slot ${slotDate} is Already in Draft`
+    }
 
     const workerConflicts = compileWorkersWithConflicts(currentConflicts)
 
@@ -264,6 +292,18 @@
 
     // clear validation state
     formRef.value?.resetValidation()
+  }
+
+  // dynamic validator factory
+  const exactCountValidator = (requiredCount, label = 'Devotion') => {
+    return (value) => {
+      if (!value || value.length !== requiredCount) {
+        return `Please select exactly ${requiredCount} ${label} member${
+          requiredCount > 1 ? 's' : ''
+        }`
+      }
+      return true
+    }
   }
 
   const maxSelectionValidator = (max: number) => {
@@ -639,6 +679,7 @@
   const keyVox = ref<Singer[]>(singers)
   const conflictMsg = ref({
     musicians: '' as string,
+    slot: '' as string,
   })
 
   // make props into a reactive state
@@ -792,6 +833,7 @@
     async (newVal) => {
       conflictMsg.value = {
         musicians: '',
+        slot: '',
       }
 
       conflictSummary.value = []
@@ -855,6 +897,17 @@
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VRow class="mt-2">
+                  <VCol cols="12" v-if="conflictMsg.slot">
+                    <VAlert
+                      variant="tonal"
+                      color="error"
+                      closable
+                      close-label="Close Alert"
+                    >
+                      {{ conflictMsg.slot }}
+                    </VAlert>
+                  </VCol>
+
                   <VCol cols="12" md="6">
                     <AppSelect
                       v-model="localFormData.slot_uuid"
@@ -1413,7 +1466,7 @@
                       item-value="id"
                       :rules="[
                         requiredValidator('Devotion'),
-                        maxSelectionValidator(2),
+                        exactCountValidator(2, 'Devotion'),
                         checkScheduledNames,
                       ]"
                     />
