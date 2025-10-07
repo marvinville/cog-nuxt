@@ -1102,7 +1102,7 @@
                     <VSwitch
                       v-model="localFormData.is_fixed_band"
                       density="compact"
-                      label="Is Fixed Band?"
+                      label="Fixed Band?"
                       name="is_fixed_band"
                       @update:model-value="onFixedBandChange"
                       :disabled="!isReady"
