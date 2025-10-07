@@ -42,7 +42,7 @@
   const { $dayjs } = useNuxtApp()
 
   const rangeTitle = $dayjs(exampleDate).format('MMM YYYY')
-  const timestamp = $dayjs().format('YYYYMMDD_HHmmss') // e.g. '20250922_125704'
+  const timestamp = $dayjs().format('YYYYMMDD_HHmm') // e.g. '20250922_125704'
   const pdfName = `PNW_Schedule_${rangeTitle}_${timestamp}`
 
   // Refs
