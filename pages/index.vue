@@ -20,8 +20,8 @@
   })
 
   const form = ref({
-    email: '',
-    password: '',
+    username: 'super-user',
+    password: 'super123456',
     remember: false,
   })
 
@@ -37,27 +37,54 @@
 
   const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
-  const worker_id = ref('000001')
-  const password = ref('@Demo1234!')
+  // const login = async () => {
+  //   // const user = await loginUser({
+  //   //   worker_id: worker_id.value,
+  //   //   password: password.value,
+  //   // })
+  //   // if (user) {
+  //   //   // success: store user or navigate
+  //   //   router.push({ name: 'home' })
+  //   // } else {
+  //   //   // error: show message
+  //   //   console.error('Invalid login')
+  //   // }
+
+  //   console.log('login')
+  //   router.push({ name: 'home' })
+  // }
+
+  const errorMessage = ref('')
 
   const login = async () => {
-    // const user = await loginUser({
-    //   worker_id: worker_id.value,
-    //   password: password.value,
-    // })
-    // if (user) {
-    //   // success: store user or navigate
-    //   router.push({ name: 'home' })
-    // } else {
-    //   // error: show message
-    //   console.error('Invalid login')
-    // }
+    try {
+      // Fetch the local JSON file
+      const response = await fetch('/temp-login.json')
+      const users = await response.json()
+      const { username, password } = form.value
 
-    console.log('login')
-    router.push({ name: 'home' })
+      // Find the user
+      const user = users.find(
+        (u: any) => u.username === username && u.password === password
+      )
+
+      if (!user) {
+        errorMessage.value = 'Invalid username or password.'
+        return
+      }
+
+      // Save user info in localStorage
+      localStorage.setItem('userData', JSON.stringify(user))
+
+      // Redirect to home
+      router.push({ name: 'home' })
+    } catch (err) {
+      console.error(err)
+      errorMessage.value = 'Invalid username or password.'
+    }
   }
 
-  const requiredValidator = (val: string) => !!val || 'Password is required'
+  const requiredValidator = (val: string) => !!val || 'This field is required'
   const minLengthValidator = (val: string) =>
     val.length >= 6 || 'Password must be at least 6 characters'
 
@@ -117,14 +144,26 @@
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <VRow>
+              <!-- Error Message -->
+              <VCol cols="12" v-if="errorMessage">
+                <VAlert
+                  variant="tonal"
+                  color="error"
+                  closable
+                  close-label="Close Alert"
+                >
+                  {{ errorMessage }}
+                </VAlert>
+              </VCol>
+
               <!-- worker id -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="worker_id"
+                  v-model="form.username"
                   autofocus
-                  label="Worker ID"
+                  label="Username"
                   type="text"
-                  placeholder="0001"
+                  placeholder="Please type your username"
                   :rules="[requiredValidator]"
                 />
               </VCol>
@@ -132,7 +171,7 @@
               <!-- password -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="password"
+                  v-model="form.password"
                   label="Password"
                   placeholder="············"
                   :type="isPasswordVisible ? 'text' : 'password'"
@@ -148,16 +187,16 @@
                   class="d-flex align-center flex-wrap justify-space-between my-6"
                 >
                   <VCheckbox v-model="form.remember" label="Remember me" />
-                  <a class="text-primary" href="javascript:void(0)">
+                  <!-- <a class="text-primary" href="javascript:void(0)">
                     Forgot Password?
-                  </a>
+                  </a> -->
                 </div>
 
                 <VBtn block type="submit" @click="login"> Login </VBtn>
               </VCol>
 
               <!-- create account -->
-              <VCol cols="12" class="text-body-1 text-center">
+              <!-- <VCol cols="12" class="text-body-1 text-center">
                 <span class="d-inline-block"> New on our platform? </span>
                 <a
                   class="text-primary ms-1 d-inline-block text-body-1"
@@ -171,12 +210,12 @@
                 <VDivider />
                 <span class="mx-4">or</span>
                 <VDivider />
-              </VCol>
+              </VCol> -->
 
               <!-- auth providers -->
-              <VCol cols="12" class="text-center">
+              <!-- <VCol cols="12" class="text-center">
                 <AuthProvider />
-              </VCol>
+              </VCol> -->
             </VRow>
           </VForm>
         </VCardText>

@@ -6,6 +6,10 @@
 
   import Conflicts from '@/components/slots/Conflicts.vue'
 
+  import { useUserData } from '@/composables/user'
+
+  const { user } = useUserData()
+
   const props = defineProps({
     formData: {
       type: Object,
@@ -474,10 +478,28 @@
     })
   })
 
-  const isViewOnly = computed(() => {
-    return false
-    // return localFormData.value.id > 0
-  })
+  const isViewOnly = ref(false)
+
+  const handleAccessPrivilege = () => {
+    console.log(`access priv`)
+    const { role, assigned_satellites } = user.value
+
+    if (role === 'super_user') {
+      isViewOnly.value = false
+      return
+    }
+
+    if (role === 'admin') {
+      const satId = localFormData.value.satellite_id
+
+      if (assigned_satellites.includes(satId)) {
+        isViewOnly.value = false
+        return
+      }
+    }
+    isViewOnly.value = true
+    return
+  }
 
   const isReady = ref(false)
 
@@ -831,6 +853,8 @@
   watch(
     () => localFormData.value.id,
     async (newVal) => {
+      handleAccessPrivilege() // determine whether editable or view ONLY
+
       conflictMsg.value = {
         musicians: '',
         slot: '',
@@ -995,7 +1019,7 @@
                       item-title="name"
                       item-value="id"
                       :rules="[requiredValidator('Worship Leader')]"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                     >
                       <template #item="{ item, props }">
@@ -1022,7 +1046,7 @@
                       label="Key Vocals"
                       name="key_vox"
                       placeholder="Select Item"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                       :items="options.key_vocals"
                       item-title="name"
@@ -1065,7 +1089,7 @@
                       id="ac-kvl"
                       label="Key Vocals Leader"
                       name="key_vox_leader"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                       :items="
                         compiledNames.filter(({ role }: { role: string }) => role === 'singer')
@@ -1093,7 +1117,7 @@
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VRow class="mt-2">
-                  <VCol cols="12" v-if="isViewOnly > 0">
+                  <VCol cols="12" v-if="!isViewOnly">
                     Fixed Band
                     {{ localFormData.is_fixed_band ? 'Yes' : 'No' }}
                   </VCol>
@@ -1105,7 +1129,7 @@
                       label="Fixed Band?"
                       name="is_fixed_band"
                       @update:model-value="onFixedBandChange"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                     />
                   </VCol>
 
@@ -1143,7 +1167,7 @@
                       multiple
                       label="Keyboardist"
                       name="keys"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                       :items="options.pianists"
                       item-title="name"
@@ -1186,7 +1210,7 @@
                       multiple
                       label="EG"
                       name="egs"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                       :items="options.egs"
                       item-title="name"
@@ -1229,7 +1253,7 @@
                       multiple
                       label="AG"
                       name="ags"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                       :items="options.ags"
                       item-title="name"
@@ -1272,7 +1296,7 @@
                       multiple
                       label="Bassist"
                       name="bassists"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                       :items="options.bassists"
                       item-title="name"
@@ -1315,7 +1339,7 @@
                       multiple
                       label="Drummer"
                       name="drummers"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                       :items="options.drummers"
                       item-title="name"
@@ -1358,7 +1382,7 @@
                       multiple
                       label="Others"
                       name="others"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                       :items="options.others"
                       item-title="name"
@@ -1393,7 +1417,7 @@
                       v-model="localFormData.band_leader"
                       id="ac-bl"
                       label="Band Leader"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       :items="
                         compiledNames.filter(({ role }: { role: string }) => role === 'musician')
                       "
@@ -1426,7 +1450,7 @@
                       id="ac-th"
                       label="Technical Head"
                       name="ths"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                       :items="ths"
                       item-title="name"
@@ -1441,7 +1465,7 @@
                       id="ac-md"
                       label="Music Director"
                       name="mds"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                       :items="mds"
                       item-title="name"
@@ -1459,7 +1483,7 @@
                       multiple
                       label="Devotion"
                       name="devo"
-                      :disabled="!isReady"
+                      :disabled="!isReady || isViewOnly"
                       autocomplete="off"
                       :items="sortByName(compiledNames)"
                       item-title="name"
@@ -1484,7 +1508,7 @@
           <VCol
             cols="12"
             class="d-flex flex-wrap justify-center gap-4 mt-6"
-            v-if="isReady"
+            v-if="isReady && !isViewOnly"
           >
             <VBtn color="secondary" variant="tonal" @click="onFormReset">
               Clear

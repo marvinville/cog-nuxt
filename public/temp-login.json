@@ -1,0 +1,37 @@
+[
+  {
+    "username": "super-user",
+    "password": "super123456",
+    "name": "Super User",
+    "role": "super_user",
+    "assigned_satellites": []
+  },
+  {
+    "username": "main-admin",
+    "password": "123456",
+    "name": "Main Admin",
+    "role": "admin",
+    "assigned_satellites": [1]
+  },
+  {
+    "username": "jabez-admin",
+    "password": "123456",
+    "name": "Jabez Admin",
+    "role": "admin",
+    "assigned_satellites": [2]
+  },
+  {
+    "username": "silang-admin",
+    "password": "123456",
+    "name": "Silang Admin",
+    "role": "admin",
+    "assigned_satellites": [3]
+  },
+  {
+    "username": "trece-admin",
+    "password": "123456",
+    "name": "Trece Admin",
+    "role": "admin",
+    "assigned_satellites": [4]
+  }
+]

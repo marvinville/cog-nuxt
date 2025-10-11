@@ -1,5 +1,17 @@
 <script setup lang="ts">
-import avatar1 from '@images/avatars/avatar-1.png'
+  import avatar1 from '@images/avatars/user.png'
+  import { useUserData } from '@/composables/user'
+
+  const { user, clearUser } = useUserData()
+
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+
+  const handleLogout = () => {
+    clearUser()
+    router.push('/')
+  }
 </script>
 
 <template>
@@ -11,20 +23,11 @@ import avatar1 from '@images/avatars/avatar-1.png'
     bordered
     color="success"
   >
-    <VAvatar
-      class="cursor-pointer"
-      color="primary"
-      variant="tonal"
-    >
+    <VAvatar class="cursor-pointer" color="primary" variant="tonal">
       <VImg :src="avatar1" />
 
       <!-- SECTION Menu -->
-      <VMenu
-        activator="parent"
-        width="230"
-        location="bottom end"
-        offset="14px"
-      >
+      <VMenu activator="parent" width="230" location="bottom end" offset="14px">
         <VList>
           <!-- 👉 User Avatar & Name -->
           <VListItem>
@@ -37,10 +40,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
                   offset-y="3"
                   color="success"
                 >
-                  <VAvatar
-                    color="primary"
-                    variant="tonal"
-                  >
+                  <VAvatar color="primary" variant="tonal">
                     <VImg :src="avatar1" />
                   </VAvatar>
                 </VBadge>
@@ -48,9 +48,9 @@ import avatar1 from '@images/avatars/avatar-1.png'
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              John Doe
+              {{ user?.name }}
             </VListItemTitle>
-            <VListItemSubtitle>Admin</VListItemSubtitle>
+            <VListItemSubtitle>{{ user?.role }}</VListItemSubtitle>
           </VListItem>
 
           <VDivider class="my-2" />
@@ -58,11 +58,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
           <!-- 👉 Profile -->
           <VListItem link>
             <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="tabler-user"
-                size="22"
-              />
+              <VIcon class="me-2" icon="tabler-user" size="22" />
             </template>
 
             <VListItemTitle>Profile</VListItemTitle>
@@ -71,18 +67,14 @@ import avatar1 from '@images/avatars/avatar-1.png'
           <!-- 👉 Settings -->
           <VListItem link>
             <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="tabler-settings"
-                size="22"
-              />
+              <VIcon class="me-2" icon="tabler-settings" size="22" />
             </template>
 
             <VListItemTitle>Settings</VListItemTitle>
           </VListItem>
 
           <!-- 👉 Pricing -->
-          <VListItem link>
+          <!-- <VListItem link>
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -92,10 +84,10 @@ import avatar1 from '@images/avatars/avatar-1.png'
             </template>
 
             <VListItemTitle>Pricing</VListItemTitle>
-          </VListItem>
+          </VListItem> -->
 
           <!-- 👉 FAQ -->
-          <VListItem link>
+          <!-- <VListItem link>
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -105,19 +97,15 @@ import avatar1 from '@images/avatars/avatar-1.png'
             </template>
 
             <VListItemTitle>FAQ</VListItemTitle>
-          </VListItem>
+          </VListItem> -->
 
           <!-- Divider -->
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem to="/">
+          <VListItem v-if="user" @click="handleLogout">
             <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="tabler-logout"
-                size="22"
-              />
+              <VIcon class="me-2" icon="tabler-logout" size="22" />
             </template>
 
             <VListItemTitle>Logout</VListItemTitle>
