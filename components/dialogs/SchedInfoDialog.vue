@@ -1117,7 +1117,7 @@
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VRow class="mt-2">
-                  <VCol cols="12" v-if="!isViewOnly">
+                  <VCol cols="12" v-if="isViewOnly">
                     Fixed Band
                     {{ localFormData.is_fixed_band ? 'Yes' : 'No' }}
                   </VCol>
