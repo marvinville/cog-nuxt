@@ -853,7 +853,7 @@
   watch(
     () => localFormData.value.id,
     async (newVal) => {
-      handleAccessPrivilege() // determine whether editable or view ONLY
+      // handleAccessPrivilege() // determine whether editable or view ONLY
 
       conflictMsg.value = {
         musicians: '',
