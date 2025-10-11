@@ -19,4 +19,9 @@ export default [
     to: { name: 'schedule' },
     icon: { icon: 'tabler-calendar-month' },
   },
+  {
+    title: 'Workers',
+    to: { name: 'workers' },
+    icon: { icon: 'tabler-users' },
+  },
 ]
