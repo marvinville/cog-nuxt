@@ -1,12 +1,7 @@
 <script setup lang="ts">
   import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
-  import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-  import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
-  import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
-  import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
-  import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustration-light.png'
-  import authV2MaskDark from '@images/pages/misc-mask-dark.png'
-  import authV2MaskLight from '@images/pages/misc-mask-light.png'
+  import authV1BottomShape from '@images/svg/auth-v1-bottom-shape.svg?raw'
+  import authV1TopShape from '@images/svg/auth-v1-top-shape.svg?raw'
   import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
   import { themeConfig } from '@themeConfig'
   import { useRouter } from 'vue-router'
@@ -26,33 +21,6 @@
   })
 
   const isPasswordVisible = ref(false)
-
-  const authThemeImg = useGenerateImageVariant(
-    authV2LoginIllustrationLight,
-    authV2LoginIllustrationDark,
-    authV2LoginIllustrationBorderedLight,
-    authV2LoginIllustrationBorderedDark,
-    true
-  )
-
-  const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
-
-  // const login = async () => {
-  //   // const user = await loginUser({
-  //   //   worker_id: worker_id.value,
-  //   //   password: password.value,
-  //   // })
-  //   // if (user) {
-  //   //   // success: store user or navigate
-  //   //   router.push({ name: 'home' })
-  //   // } else {
-  //   //   // error: show message
-  //   //   console.error('Invalid login')
-  //   // }
-
-  //   console.log('login')
-  //   router.push({ name: 'home' })
-  // }
 
   const errorMessage = ref('')
 
@@ -92,55 +60,49 @@
 </script>
 
 <template>
-  <a href="javascript:void(0)">
-    <div class="auth-logo d-flex align-center gap-x-3">
-      <VNodeRenderer :nodes="themeConfig.app.logo" />
-      <h1 class="auth-title">
-        {{ themeConfig.app.title }}
-      </h1>
-    </div>
-  </a>
+  <div class="auth-wrapper d-flex align-center justify-center pa-4">
+    <div class="position-relative my-sm-16">
+      <!-- 👉 Top shape -->
+      <VNodeRenderer
+        :nodes="h('div', { innerHTML: authV1TopShape })"
+        class="text-primary auth-v1-top-shape d-none d-sm-block"
+      />
 
-  <VRow no-gutters class="auth-wrapper bg-surface">
-    <VCol md="8" class="d-none d-md-flex">
-      <div class="position-relative bg-background w-100 me-0">
-        <div
-          class="d-flex align-center justify-center w-100 h-100"
-          style="padding-inline: 6.25rem"
-        >
-          <VImg
-            max-width="613"
-            :src="authThemeImg"
-            class="auth-illustration mt-16 mb-2"
-          />
-        </div>
+      <!-- 👉 Bottom shape -->
+      <VNodeRenderer
+        :nodes="h('div', { innerHTML: authV1BottomShape })"
+        class="text-primary auth-v1-bottom-shape d-none d-sm-block"
+      />
 
-        <img
-          class="auth-footer-mask flip-in-rtl"
-          :src="authThemeMask"
-          alt="auth-footer-mask"
-          height="280"
-          width="100"
-        />
-      </div>
-    </VCol>
+      <!-- 👉 Auth Card -->
+      <VCard
+        class="auth-card"
+        max-width="460"
+        :class="$vuetify.display.smAndUp ? 'pa-6' : 'pa-0'"
+      >
+        <VCardItem class="justify-center">
+          <VCardTitle>
+            <NuxtLink to="/">
+              <div class="app-logo">
+                <VNodeRenderer :nodes="themeConfig.app.logo" />
+                <h1 class="app-logo-title">
+                  {{ themeConfig.app.title }}
+                </h1>
+              </div>
+            </NuxtLink>
+          </VCardTitle>
+        </VCardItem>
 
-    <VCol
-      cols="12"
-      md="4"
-      class="auth-card-v2 d-flex align-center justify-center"
-    >
-      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-6">
         <VCardText>
           <h4 class="text-h4 mb-1">
-            Welcome to
-            <span class="text-capitalize">{{ themeConfig.app.title }}</span
-            >! 👋🏻
+            Welcome 👋🏻
+            <!-- <span class="text-capitalize">{{ themeConfig.app.title }}</span>! 👋🏻 -->
           </h4>
           <p class="mb-0">
             Please sign-in to your account and start the adventure
           </p>
         </VCardText>
+
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <VRow>
@@ -183,32 +145,42 @@
                   :rules="passwordRules"
                 />
 
+                <!-- remember me checkbox -->
                 <div
-                  class="d-flex align-center flex-wrap justify-space-between my-6"
+                  class="d-flex align-center justify-space-between flex-wrap my-6"
                 >
-                  <VCheckbox v-model="form.remember" label="Remember me" />
-                  <!-- <a class="text-primary" href="javascript:void(0)">
+                  <VCheckbox
+                    :id="useId()"
+                    v-model="form.remember"
+                    label="Remember me"
+                  />
+
+                  <!-- <NuxtLink
+                    class="text-primary"
+                    :to="{ name: 'pages-authentication-forgot-password-v1' }"
+                  >
                     Forgot Password?
-                  </a> -->
+                  </NuxtLink> -->
                 </div>
 
+                <!-- login button -->
                 <VBtn block type="submit" @click="login"> Login </VBtn>
               </VCol>
 
               <!-- create account -->
               <!-- <VCol cols="12" class="text-body-1 text-center">
                 <span class="d-inline-block"> New on our platform? </span>
-                <a
+                <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
-                  href="javascript:void(0)"
+                  :to="{ name: 'pages-authentication-register-v1' }"
                 >
                   Create an account
-                </a>
+                </NuxtLink>
               </VCol>
 
               <VCol cols="12" class="d-flex align-center">
                 <VDivider />
-                <span class="mx-4">or</span>
+                <span class="mx-4 text-high-emphasis">or</span>
                 <VDivider />
               </VCol> -->
 
@@ -220,8 +192,8 @@
           </VForm>
         </VCardText>
       </VCard>
-    </VCol>
-  </VRow>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
