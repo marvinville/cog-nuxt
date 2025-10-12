@@ -12,6 +12,10 @@
   import musicians from '@/database/musicians.json'
   import users from '@/database/users.json'
 
+  definePageMeta({
+    middleware: 'auth',
+  })
+
   import { useRouter } from 'vue-router'
 
   const router = useRouter() // add this at the top

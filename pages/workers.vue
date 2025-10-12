@@ -1,6 +1,12 @@
 <script setup lang="ts">
   import { ref, onMounted } from 'vue'
   import { useUserData } from '@/composables/user'
+  import roles from '@/database/roles.json'
+
+  definePageMeta({
+    middleware: 'auth',
+    role: 'super_user',
+  })
 
   const { user } = useUserData()
 
@@ -14,12 +20,16 @@
     id: number
     first_name: string
     last_name: string
+    worker_id: string
+    password: string
     fullName: string
     email: string
     phone: string
     birthdate: string
     age: string
+    role_id: number
     status: number
+    action?: string
   }
 
   const userList = ref<Data[]>([])
@@ -30,12 +40,16 @@
     id: -1,
     first_name: '',
     last_name: '',
+    worker_id: '',
+    password: '',
     fullName: '',
     email: '',
     phone: '',
     birthdate: '',
     age: '',
+    role_id: 0,
     status: 1,
+    action: '',
   })
 
   const editedItem = ref<Data>({ ...defaultItem.value })
@@ -48,7 +62,7 @@
 
   const headers = [
     { title: 'NAME', key: 'fullName', sortable: true },
-    { title: 'WORKER ID', key: 'worker_id', sortable: false },
+    { title: 'WORKER ID', key: 'worker_id', sortable: true },
     { title: 'PHONE', key: 'phone', sortable: false },
     { title: 'BIRTHDATE', key: 'birthdate', sortable: true },
     { title: 'AGE', key: 'age', sortable: true },
@@ -66,14 +80,23 @@
     try {
       const response = await api('/users') // or '/users' if mounted directly
 
-      userList.value = response.map((user) => ({
-        ...user,
-        fullName: `${user.first_name} ${user.last_name}`,
-        phone: user.phone || '',
-        birthdate: user.birthdate || '',
-        age: user.birthdate ? $dayjs().diff(user.birthdate, 'year') : null,
-        status: user.status,
-      }))
+      userList.value = response.map((user) => {
+        const { password, ...rest } = user // exclude password
+
+        return {
+          ...rest,
+          fullName: `${user.first_name} ${user.last_name}`,
+          worker_id: user.worker_id
+            ? String(user.worker_id).padStart(4, '0')
+            : '',
+          phone: user.phone || '',
+          birthdate: user.birthdate
+            ? $dayjs(user.birthdate).format('YYYY-MM-DD')
+            : '',
+          age: user.birthdate ? $dayjs().diff(user.birthdate, 'year') : null,
+          status: user.status,
+        }
+      })
     } catch (error) {
       console.error('Error fetching users:', error)
     }
@@ -115,23 +138,50 @@
     return value ? true : 'This field is required'
   }
 
+  // Password visibility toggles
+  const showPassword = ref(false)
+  const showConfirmPassword = ref(false)
+
+  const minLengthValidator = (v: string) =>
+    !v || v.length >= 6 || 'Password must be at least 6 characters'
+  const matchPasswordValidator = (v: string) =>
+    v === editedItem.value?.password || 'Passwords do not match'
+
+  // Edit Password
+  const editPassword = (item: Data) => {
+    editedIndex.value = userList.value.indexOf(item)
+    editedItem.value = { ...item, action: 'password' }
+    console.log(editedItem.value)
+    editDialog.value = true
+  }
+
   // Edit / Delete
   const editItem = (item: Data) => {
     editedIndex.value = userList.value.indexOf(item)
-    editedItem.value = { ...item }
+    editedItem.value = { ...item, action: 'edit' }
     editDialog.value = true
   }
 
   const deleteItem = (item: Data) => {
     editedIndex.value = userList.value.indexOf(item)
-    editedItem.value = { ...item }
+    editedItem.value = { ...item, action: 'delete' }
     deleteDialog.value = true
   }
 
   const close = () => {
+    // Restore editedItem to the original data
+    if (editedIndex.value !== -1) {
+      editedItem.value = { ...userList.value[editedIndex.value] }
+    } else {
+      editedItem.value = { ...defaultItem.value } // fallback for new item
+    }
+
+    // Reset the form validation so errors disappear
+    editForm.value?.resetValidation()
+
+    // Close dialog and reset index
     editDialog.value = false
     editedIndex.value = -1
-    editedItem.value = { ...defaultItem.value }
   }
 
   const closeDelete = () => {
@@ -141,7 +191,6 @@
   }
 
   const editForm = ref(null)
-
   const save = async () => {
     const validator = await editForm.value?.validate()
 
@@ -151,7 +200,30 @@
     }
 
     try {
-      if (editedIndex.value > -1) {
+      // Check if we are editing password/role
+      if (editedItem.value.action === 'password') {
+        const trimmedWorkerId = String(Number(editedItem.value.worker_id)) // "0029" -> "29"
+
+        await api('/auth/update', {
+          method: 'PUT',
+          body: {
+            worker_id: trimmedWorkerId,
+            password: editedItem.value.password,
+            role_id: editedItem.value.role_id,
+          },
+        })
+        // Optionally update local user list
+        const index = userList.value.findIndex(
+          (u) => u.worker_id === editedItem.value.worker_id
+        )
+        if (index > -1) {
+          userList.value[index] = {
+            ...userList.value[index],
+            role_id: editedItem.value.role_id,
+          }
+        }
+      } else if (editedItem.value.action === 'edit') {
+        // Regular user info update
         await api(`/users/${editedItem.value.id}`, {
           method: 'PUT',
           body: {
@@ -159,17 +231,23 @@
             last_name: editedItem.value.last_name,
             email: editedItem.value.email,
             birthdate: editedItem.value.birthdate,
+            phone: editedItem.value.phone,
             status: editedItem.value.status,
             updated_by: user.value.id ?? 0,
           },
         })
 
         // Update local list
-        userList.value[editedIndex.value] = { ...editedItem.value }
-        editDialog.value = false
+        userList.value[editedIndex.value] = {
+          ...editedItem.value,
+          fullName: `${editedItem.value.first_name} ${editedItem.value.last_name}`,
+        }
       } else {
+        // New user
         userList.value.push(editedItem.value)
       }
+
+      editDialog.value = false
     } catch (err) {
       console.error('Update failed', err)
     } finally {
@@ -272,6 +350,9 @@
           <IconBtn @click="editItem(item)">
             <VIcon icon="tabler-edit" />
           </IconBtn>
+          <IconBtn @click="editPassword(item)">
+            <VIcon icon="tabler-lock" />
+          </IconBtn>
           <IconBtn @click="deleteItem(item)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
@@ -285,11 +366,10 @@
     <VForm ref="editForm" @submit.prevent="save">
       <VCard>
         <!-- Dynamic Title -->
-        <VCardTitle>
-          Edit User: {{ editedItem?.first_name }} {{ editedItem?.last_name }}
-        </VCardTitle>
+        <VCardTitle> Edit User: {{ editedItem?.worker_id }} </VCardTitle>
         <VCardText>
-          <VRow>
+          <!-- Edit Form -->
+          <VRow v-if="editedItem.action === 'edit'">
             <!-- First Name -->
             <VCol cols="12" sm="6">
               <AppTextField
@@ -351,6 +431,58 @@
                 item-title="text"
                 item-value="value"
                 label="Status"
+              />
+            </VCol>
+          </VRow>
+
+          <!-- Password Form -->
+          <VRow v-else-if="editedItem.action === 'password'">
+            <!-- Worker ID -->
+            <VCol cols="12" sm="6">
+              <AppTextField
+                v-model="editedItem.worker_id"
+                label="Worker ID"
+                disabled
+              />
+            </VCol>
+
+            <!-- Role Dropdown -->
+            <VCol cols="12" sm="6">
+              <AppSelect
+                v-model="editedItem.role_id"
+                label="Role"
+                :items="roles"
+                item-title="label"
+                item-value="id"
+                :rules="[requiredValidator]"
+              />
+            </VCol>
+
+            <!-- Password -->
+            <VCol cols="12" sm="6">
+              <AppTextField
+                v-model="editedItem.password"
+                :type="showPassword ? 'text' : 'password'"
+                label="New Password"
+                :append-inner-icon="
+                  showPassword ? 'tabler-eye' : 'tabler-eye-off'
+                "
+                @click:append-inner="showPassword = !showPassword"
+                :rules="[requiredValidator, minLengthValidator]"
+              />
+            </VCol>
+
+            <!-- Confirm Password -->
+            <VCol cols="12" sm="6">
+              <AppTextField
+                v-model="editedItem.confirmPassword"
+                :type="showConfirmPassword ? 'text' : 'password'"
+                label="Confirm Password"
+                :append-inner-icon="
+                  showConfirmPassword ? 'tabler-eye' : 'tabler-eye-off'
+                "
+                @click:append-inner="showConfirmPassword = !showConfirmPassword"
+                :rules="[requiredValidator, matchPasswordValidator]"
               />
             </VCol>
           </VRow>

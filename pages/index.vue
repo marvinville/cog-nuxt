@@ -5,7 +5,9 @@
   import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
   import { themeConfig } from '@themeConfig'
   import { useRouter } from 'vue-router'
-  import { loginUser } from '@/composables/authHelper'
+  import roles from '@/database/roles.json'
+
+  const { setUser } = useUserData()
 
   const router = useRouter()
 
@@ -15,8 +17,8 @@
   })
 
   const form = ref({
-    username: 'super-user',
-    password: 'super123456',
+    username: '',
+    password: '',
     remember: false,
   })
 
@@ -24,31 +26,49 @@
 
   const errorMessage = ref('')
 
+  const api = useApi()
   const login = async () => {
+    let { username, password } = form.value
+
+    if (!username || !password) {
+      errorMessage.value = 'Please enter username and password.'
+      return
+    }
+
+    // Normalize worker_id
+    username = String(Number(username)) // "0029" -> "29"
+
     try {
-      // Fetch the local JSON file
-      const response = await fetch('/temp-login.json')
-      const users = await response.json()
-      const { username, password } = form.value
+      const response = await api('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ worker_id: username, password }),
+      })
 
-      // Find the user
-      const user = users.find(
-        (u: any) => u.username === username && u.password === password
-      )
+      const { user } = response
 
+      // api() already returns parsed JSON
       if (!user) {
-        errorMessage.value = 'Invalid username or password.'
+        errorMessage.value =
+          response?.message || 'Invalid username or password.'
         return
       }
 
-      // Save user info in localStorage
-      localStorage.setItem('userData', JSON.stringify(user))
+      const foundRole = roles.find((role) => role.id === user.role_id)
+
+      // Save user in composable
+      setUser({
+        ...user,
+        role: foundRole?.role,
+      })
 
       // Redirect to home
       router.push({ name: 'home' })
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      errorMessage.value = 'Invalid username or password.'
+      // If api() throws on non-2xx, err.data might contain backend message
+      errorMessage.value =
+        err?.data?.message || 'Server error, please try again.'
     }
   }
 

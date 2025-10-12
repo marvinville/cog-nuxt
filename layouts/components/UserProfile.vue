@@ -48,7 +48,7 @@
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              {{ user?.name }}
+              {{ user?.first_name }} {{ user?.last_name }}
             </VListItemTitle>
             <VListItemSubtitle>{{ user?.role }}</VListItemSubtitle>
           </VListItem>
