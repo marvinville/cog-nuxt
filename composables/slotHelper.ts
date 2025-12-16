@@ -139,6 +139,9 @@ export const useSlotHelpers = () => {
     return {
       worship_leader: slot.worship_leader,
       key_vox: slot.key_vox,
+      key_vocals: {
+        soprano: slot.soprano,
+      },
       tech_head: slot.tech_head,
       md: slot.md,
       devotion: slot.devotion,

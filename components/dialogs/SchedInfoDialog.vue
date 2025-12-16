@@ -25,6 +25,7 @@
         worship_leader: 0,
         band_leader: 0,
         key_vox_leader: 0,
+        soprano: 0,
         key_vox: [],
         is_fixed_band: false,
         fixed_band_id: null,
@@ -259,6 +260,7 @@
     worship_leader: null,
     band_leader: null,
     key_vox_leader: null,
+    soprano: null,
     key_vox: [] as number[],
     is_fixed_band: false,
     fixed_band_id: null as number | null,
@@ -899,6 +901,8 @@
           {{ `${localFormData.slot_name} - ${localFormData.slot_date ?? ''}` }}
         </p>
 
+        {{ localFormData }}
+
         <VForm
           ref="formRef"
           class="mt-6"
@@ -1098,6 +1102,35 @@
                       item-value="id"
                       :rules="[requiredValidator('Key Vocals Leader')]"
                     />
+                  </VCol>
+
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.soprano"
+                      id="soprano"
+                      label="Soprano"
+                      name="soprano"
+                      :disabled="!isReady || isViewOnly"
+                      autocomplete="off"
+                      :items="options.others"
+                      item-title="name"
+                      item-value="id"
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="{ ...props, id: undefined }"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppAutocomplete>
                   </VCol>
                 </VRow>
               </VExpansionPanelText>

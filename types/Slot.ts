@@ -13,6 +13,7 @@ export type SlotForm = {
   slot_name: string
   slot_uuid: string
   key_vox: number[]
+  soprano: number
   key_vox_leader: number
   tech_head: number
   md: number
@@ -26,6 +27,9 @@ export type SlotForm = {
 export type SlotWorkers = {
   worship_leader: number
   key_vox: number[]
+  key_vocals: {
+    soprano: number
+  }
   tech_head: number
   md: number
   devotion: number[]
