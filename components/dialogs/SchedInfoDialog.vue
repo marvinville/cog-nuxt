@@ -26,7 +26,11 @@
         band_leader: 0,
         key_vox_leader: 0,
         soprano: 0,
-        key_vox: [],
+        alto: 0,
+        tenor: 0,
+        bass: 0,
+        male_melody: 0,
+        female_melody: 0,
         is_fixed_band: false,
         fixed_band_id: null,
         pianists: [],
@@ -100,7 +104,6 @@
     bassists: '',
     drummers: '',
     others: '',
-    key_vox: '',
   })
 
   const handleSearch = (field: keyof typeof search) => {
@@ -131,27 +134,6 @@
       role: String
     }[]
   >([])
-
-  const hehe = [
-    {
-      name: 'Paulo C.',
-      satelliteName: 'Main',
-      slotName: 'Main Slot',
-      role: 'musician',
-    },
-    {
-      name: 'Armie',
-      satelliteName: 'Main',
-      slotName: 'Main Slot',
-      role: 'singer',
-    },
-    {
-      name: 'Angelo',
-      satelliteName: 'Trece',
-      slotName: 'AM',
-      role: 'singer',
-    },
-  ]
 
   const onFormSubmit = async () => {
     const validator = await formRef.value?.validate()
@@ -261,7 +243,11 @@
     band_leader: null,
     key_vox_leader: null,
     soprano: null,
-    key_vox: [] as number[],
+    tenor: null,
+    alto: null,
+    bass: null,
+    male_melody: null,
+    female_melody: null,
     is_fixed_band: false,
     fixed_band_id: null as number | null,
     pianists: [] as number[],
@@ -405,12 +391,83 @@
     }
   }
 
+  const handleChangeWorshipLeader = () => {
+    localFormData.value.key_vox_leader = null
+    localFormData.value.soprano = null
+    localFormData.value.alto = null
+    localFormData.value.tenor = null
+    localFormData.value.bass = null
+    localFormData.value.male_melody = null
+    localFormData.value.female_melody = null
+  }
+
   const handleChangeKeyVox = (newVal) => {
     // remove kv leader if not in the list of KV
     if (newVal.includes(localFormData.value.key_vox_leader) === false) {
       localFormData.value.key_vox_leader = null
     }
   }
+
+  // Key Vocals functions
+
+  const VOICE_FIELDS = [
+    'soprano',
+    'alto',
+    'tenor',
+    'bass',
+    'male_melody',
+    'female_melody',
+  ] as const
+
+  const VOICE_LABELS: Record<string, string> = {
+    soprano: 'Soprano',
+    alto: 'Alto',
+    tenor: 'Tenor',
+    bass: 'Bass',
+    male_melody: 'Male Melody',
+    female_melody: 'Female Melody',
+  }
+
+  const getConflictText = (itemId: number, currentField: string) => {
+    const conflicts: string[] = []
+
+    VOICE_FIELDS.forEach((field) => {
+      if (field === currentField) return
+
+      const selectedId = Number((localFormData.value as any)[field])
+      if (selectedId === itemId) {
+        conflicts.push(`Already selected as ${VOICE_LABELS[field]}`)
+      }
+    })
+
+    return conflicts.length ? conflicts : ['Already selected']
+  }
+
+  const getExcludedIds = (currentField: string) => {
+    return VOICE_FIELDS.filter((field) => field !== currentField)
+      .map((field) => Number((localFormData.value as any)[field]))
+      .filter((id) => id !== 0 && !Number.isNaN(id))
+  }
+  const buildVoiceOptions = (field: string) => {
+    const excludedIds = getExcludedIds(field)
+
+    return options.value.key_vocals.map((item) => {
+      const isDisabled = excludedIds.includes(Number(item.id))
+
+      return {
+        ...item,
+        disabled: isDisabled,
+        conflictText: isDisabled ? getConflictText(Number(item.id), field) : [],
+      }
+    })
+  }
+
+  const sopranoOptions = computed(() => buildVoiceOptions('soprano'))
+  const altoOptions = computed(() => buildVoiceOptions('alto'))
+  const tenorOptions = computed(() => buildVoiceOptions('tenor'))
+  const bassOptions = computed(() => buildVoiceOptions('bass'))
+  const maleMelodyOptions = computed(() => buildVoiceOptions('male_melody'))
+  const femaleMelodyOptions = computed(() => buildVoiceOptions('female_melody'))
 
   type CompiledName = {
     id: Number
@@ -427,7 +484,12 @@
       bassists = [],
       drummers = [],
       others = [],
-      key_vox = [],
+      soprano,
+      alto,
+      tenor,
+      bass,
+      male_melody,
+      female_melody,
       tech_head,
       md,
       worship_leader,
@@ -452,7 +514,9 @@
       .filter(Boolean)
       .map((m) => ({ ...m, role: 'musician' }))
 
-    const singerDetails: CompiledName[] = (key_vox ?? [])
+    const keyVocals = [soprano, alto, tenor, bass, male_melody, female_melody]
+
+    const singerDetails: CompiledName[] = (keyVocals ?? [])
       .map((id) => singerMap[id])
       .filter(Boolean)
       .map((s) => ({ ...s, role: 'singer' }))
@@ -806,11 +870,6 @@
       options.value.key_vocals = keyVoxTruthSource.value.filter(
         (elem) => elem.id !== newVal
       )
-
-      // Remove worship leader from selected key_vox if present (with defensive guard)
-      localFormData.value.key_vox = (localFormData.value.key_vox || []).filter(
-        (id) => id !== newVal
-      )
     }
   )
 
@@ -900,9 +959,6 @@
         <p class="text-body-1 text-center mb-6">
           {{ `${localFormData.slot_name} - ${localFormData.slot_date ?? ''}` }}
         </p>
-
-        {{ localFormData }}
-
         <VForm
           ref="formRef"
           class="mt-6"
@@ -1025,48 +1081,9 @@
                       :rules="[requiredValidator('Worship Leader')]"
                       :disabled="!isReady || isViewOnly"
                       autocomplete="off"
-                    >
-                      <template #item="{ item, props }">
-                        <VListItem
-                          v-bind="{ ...props, id: undefined }"
-                          :title="undefined"
-                          :disabled="item.raw.disabled"
-                        >
-                          <VListItemTitle>
-                            {{ item.raw.name }}
-                            <span v-if="item.raw.disabled">
-                              ({{ item.raw.conflictText.join(', ') }})
-                            </span>
-                          </VListItemTitle>
-                        </VListItem>
-                      </template>
-                    </AppAutocomplete>
-                  </VCol>
-                  <VCol cols="12" md="6">
-                    <AppAutocomplete
-                      v-model="localFormData.key_vox"
-                      id="ac-key-vox"
-                      v-model:search="search.key_vox"
-                      label="Key Vocals"
-                      name="key_vox"
-                      placeholder="Select Item"
-                      :disabled="!isReady || isViewOnly"
-                      autocomplete="off"
-                      :items="options.key_vocals"
-                      item-title="name"
-                      item-value="id"
-                      :rules="[
-                        requiredValidator('Key Vocals'),
-                        maxSelectionValidator(6),
-                        minKeyVoxRule(props.formData.satellite_id),
-                      ]"
-                      closable-chips
-                      chips
-                      multiple
                       @update:modelValue="
-                        (val) => {
-                          handleChangeKeyVox(val)
-                          handleSearch('key_vox')
+                        () => {
+                          handleChangeWorshipLeader()
                         }
                       "
                     >
@@ -1086,7 +1103,6 @@
                       </template>
                     </AppAutocomplete>
                   </VCol>
-
                   <VCol cols="12" md="6">
                     <AppAutocomplete
                       v-model="localFormData.key_vox_leader"
@@ -1112,7 +1128,152 @@
                       name="soprano"
                       :disabled="!isReady || isViewOnly"
                       autocomplete="off"
-                      :items="options.others"
+                      :items="sopranoOptions"
+                      item-title="name"
+                      item-value="id"
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="{ ...props, id: undefined }"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppAutocomplete>
+                  </VCol>
+
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.alto"
+                      id="alto"
+                      label="Alto"
+                      name="alto"
+                      :disabled="!isReady || isViewOnly"
+                      autocomplete="off"
+                      :items="altoOptions"
+                      item-title="name"
+                      item-value="id"
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="{ ...props, id: undefined }"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppAutocomplete>
+                  </VCol>
+
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.tenor"
+                      id="tenor"
+                      label="Tenor"
+                      name="tenor"
+                      :disabled="!isReady || isViewOnly"
+                      autocomplete="off"
+                      :items="tenorOptions"
+                      item-title="name"
+                      item-value="id"
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="{ ...props, id: undefined }"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppAutocomplete>
+                  </VCol>
+
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.bass"
+                      id="bass"
+                      label="Bass"
+                      name="bass"
+                      :disabled="!isReady || isViewOnly"
+                      autocomplete="off"
+                      :items="bassOptions"
+                      item-title="name"
+                      item-value="id"
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="{ ...props, id: undefined }"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppAutocomplete>
+                  </VCol>
+
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.male_melody"
+                      id="male_melody"
+                      label="Male Melody"
+                      name="male_melody"
+                      :disabled="!isReady || isViewOnly"
+                      autocomplete="off"
+                      :items="maleMelodyOptions"
+                      item-title="name"
+                      item-value="id"
+                    >
+                      <template #item="{ item, props }">
+                        <VListItem
+                          v-bind="{ ...props, id: undefined }"
+                          :title="undefined"
+                          :disabled="item.raw.disabled"
+                        >
+                          <VListItemTitle>
+                            {{ item.raw.name }}
+                            <span v-if="item.raw.disabled">
+                              ({{ item.raw.conflictText.join(', ') }})
+                            </span>
+                          </VListItemTitle>
+                        </VListItem>
+                      </template>
+                    </AppAutocomplete>
+                  </VCol>
+
+                  <VCol cols="12" md="6">
+                    <AppAutocomplete
+                      v-model="localFormData.female_melody"
+                      id="female_melody"
+                      label="Female Melody"
+                      name="female_melody"
+                      :disabled="!isReady || isViewOnly"
+                      autocomplete="off"
+                      :items="femaleMelodyOptions"
                       item-title="name"
                       item-value="id"
                     >

@@ -5,16 +5,17 @@
     (e: 'update:modelValue', value: number): void
   }>()
 
-  const currentYear = new Date().getFullYear()
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const isDecember = now.getMonth() === 11
 
   const years = [
     { label: `${currentYear}`, value: currentYear },
     { label: `${currentYear + 1}`, value: currentYear + 1 },
   ]
 
-  const selectedYear = ref(years[0])
+  const selectedYear = ref(isDecember ? years[1] : years[0])
 
-  // Emit the value (number) immediately on mount
   watch(
     selectedYear,
     (newVal) => {

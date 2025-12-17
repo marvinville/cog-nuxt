@@ -135,27 +135,56 @@ export const useSlotHelpers = () => {
     return data.filter((elem) => elem.is_worship_leader)
   }
 
+  const keyVocalFields = [
+    'soprano',
+    'alto',
+    'tenor',
+    'bass',
+    'male_melody',
+    'female_melody',
+  ] as const
+  const musicianFields = [
+    'pianists',
+    'egs',
+    'ags',
+    'bassists',
+    'drummers',
+    'others',
+  ] as const
+
   const buildWorkers = (slot: SlotForm): SlotWorkers => {
+    const {
+      worship_leader,
+      soprano,
+      alto,
+      tenor,
+      bass,
+      male_melody,
+      female_melody,
+      tech_head,
+      md,
+      devotion,
+      pianists,
+      egs,
+      ags,
+      bassists,
+      drummers,
+      others,
+      band_leader,
+      key_vox_leader,
+      fixed_band_id,
+    } = slot
+
     return {
-      worship_leader: slot.worship_leader,
-      key_vox: slot.key_vox,
-      key_vocals: {
-        soprano: slot.soprano,
-      },
-      tech_head: slot.tech_head,
-      md: slot.md,
-      devotion: slot.devotion,
-      musicians: {
-        pianists: slot.pianists,
-        egs: slot.egs,
-        ags: slot.ags,
-        bassists: slot.bassists,
-        drummers: slot.drummers,
-        others: slot.others,
-      },
-      band_leader: slot.band_leader,
-      key_vox_leader: slot.key_vox_leader,
-      fixed_band_id: slot.fixed_band_id,
+      worship_leader,
+      key_vocals: { soprano, alto, tenor, bass, male_melody, female_melody },
+      tech_head,
+      md,
+      devotion,
+      musicians: { pianists, egs, ags, bassists, drummers, others },
+      band_leader,
+      key_vox_leader,
+      fixed_band_id,
     }
   }
 
@@ -199,9 +228,12 @@ export const useSlotHelpers = () => {
     return conflicts.flatMap((slot) => {
       const selectedWorkers = JSON.parse(slot.workers)
 
-      const { worship_leader, key_vox, md, tech_head } = selectedWorkers
+      const { worship_leader, md, tech_head } = selectedWorkers
       const { ags, bassists, drummers, egs, others, pianists } =
         selectedWorkers.musicians
+
+      const { soprano, alto, tenor, bass, male_melody, female_melody } =
+        selectedWorkers.key_vocals
 
       const allIds = [
         ...ags,
@@ -210,7 +242,7 @@ export const useSlotHelpers = () => {
         ...egs,
         ...others,
         ...pianists,
-        ...(Array.isArray(key_vox) ? key_vox : [key_vox]),
+        ...[soprano, alto, tenor, bass, male_melody, female_melody],
         worship_leader,
         md,
         tech_head,

@@ -12,8 +12,12 @@ export type SlotForm = {
   slot_date: string
   slot_name: string
   slot_uuid: string
-  key_vox: number[]
   soprano: number
+  alto: number
+  tenor: number
+  bass: number
+  male_melody: number
+  female_melody: number
   key_vox_leader: number
   tech_head: number
   md: number
@@ -26,9 +30,13 @@ export type SlotForm = {
 // 👥 Workers inside the slot
 export type SlotWorkers = {
   worship_leader: number
-  key_vox: number[]
   key_vocals: {
     soprano: number
+    alto: number
+    tenor: number
+    bass: number
+    male_melody: number
+    female_melody: number
   }
   tech_head: number
   md: number
