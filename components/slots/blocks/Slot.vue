@@ -3,7 +3,14 @@
 
   interface Slot {
     worship_leader: number
-    key_vox: number[]
+    key_vocals: {
+      soprano: number
+      alto: number
+      tenor: number
+      bass: number
+      male_melody: number
+      female_melody: number
+    }
     pianists: number[]
     egs: number[]
     ags: number[]
@@ -32,11 +39,13 @@
     tech_head,
     md,
     worship_leader,
-    key_vox,
+    key_vocals,
     band_leader,
     key_vox_leader,
     devotion,
   } = slot
+
+  const { soprano, alto, tenor, bass, male_melody, female_melody } = key_vocals
 
   const { splitNames, toNames } = useSlotHelpers()
 
@@ -47,7 +56,7 @@
     ...bassists,
     ...drummers,
     ...others,
-    ...key_vox,
+    ...[soprano, alto, tenor, bass, male_melody, female_melody],
     ...[worship_leader],
     ...[tech_head],
     ...[md],
@@ -68,7 +77,11 @@
     wl: toNames([worship_leader], workersPool),
     th: toNames([tech_head], workersPool),
     md: toNames([md], workersPool),
-    keyVox: toNames(key_vox, workersPool, key_vox_leader),
+    keyVox: toNames(
+      [soprano, alto, tenor, bass, male_melody, female_melody],
+      workersPool,
+      key_vox_leader
+    ),
     devotion: toNames(devotion, workersPool),
   }
 

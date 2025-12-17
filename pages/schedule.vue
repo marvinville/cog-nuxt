@@ -90,7 +90,12 @@
     date_from: '',
     date_to: '',
     worship_leader: '',
-    key_vox: [],
+    soprano: '',
+    alto: '',
+    tenor: '',
+    bass: '',
+    male_melody: '',
+    female_melody: '',
     is_fixed_band: false,
     fixed_band_id: null,
     pianists: [],
@@ -246,7 +251,7 @@
     }
   }
 
-  const handleEditSlot = async (slot: any) => {
+  const handleEditSlot = (slot: any) => {
     const {
       id,
       satellite_id,
@@ -260,8 +265,8 @@
 
     const {
       worship_leader,
-      key_vox,
       musicians,
+      key_vocals,
       md,
       tech_head,
       devotion,
@@ -279,6 +284,9 @@
       others = [],
     } = musicians
 
+    const { soprano, alto, tenor, bass, male_melody, female_melody } =
+      key_vocals
+
     formData = {
       id,
       satellite_id,
@@ -288,7 +296,12 @@
       date_from,
       date_to,
       worship_leader,
-      key_vox,
+      soprano,
+      alto,
+      tenor,
+      bass,
+      male_melody,
+      female_melody,
       is_fixed_band: fixed_band_id > 0,
       pianists,
       egs,
