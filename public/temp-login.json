@@ -1,5 +1,6 @@
 [
   {
+    "id": 1,
     "username": "super-user",
     "password": "super123456",
     "name": "Super User",
@@ -7,6 +8,7 @@
     "assigned_satellites": []
   },
   {
+    "id": 99,
     "username": "main-admin",
     "password": "123456",
     "name": "Main Admin",
@@ -14,6 +16,7 @@
     "assigned_satellites": [1]
   },
   {
+    "id": 99,
     "username": "jabez-admin",
     "password": "123456",
     "name": "Jabez Admin",
@@ -21,6 +24,7 @@
     "assigned_satellites": [2]
   },
   {
+    "id": 99,
     "username": "silang-admin",
     "password": "123456",
     "name": "Silang Admin",
@@ -28,6 +32,7 @@
     "assigned_satellites": [3]
   },
   {
+    "id": 99,
     "username": "trece-admin",
     "password": "123456",
     "name": "Trece Admin",

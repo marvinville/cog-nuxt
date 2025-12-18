@@ -1,7 +1,6 @@
 export const useUserData = () => {
   const user = ref<any>(null)
 
-  // Load user from localStorage (client-side)
   if (process.client) {
     const storedUser = localStorage.getItem('userData')
     if (storedUser) user.value = JSON.parse(storedUser)
@@ -21,5 +20,26 @@ export const useUserData = () => {
     }
   }
 
-  return { user, setUser, clearUser }
+  const isLoggedIn = () => !!user.value
+
+  const hasRole = (role: string) => user.value?.role === role
+
+  // ✅ Ability check based on role
+  const can = (action?: string, subject?: string) => {
+    if (!user.value) return false
+
+    // super_user can do everything
+    if (user.value.role === 'super_user') return true
+
+    // admin can do everything except manage Workers
+    if (user.value.role === 'admin') {
+      if (action === 'manage' && subject === 'Workers') return false
+      return true
+    }
+
+    // default deny
+    return false
+  }
+
+  return { user, setUser, clearUser, isLoggedIn, hasRole, can }
 }

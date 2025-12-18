@@ -1,18 +1,24 @@
 <script lang="ts" setup>
-import { NuxtLink } from '#components'
+  import { NuxtLink } from '#components'
+  import { layoutConfig } from '@layouts'
+  import { useLayoutConfigStore } from '@layouts/stores/config'
+  import type { NavLink } from '@layouts/types'
+  import {
+    getComputedNavLinkToProp,
+    getDynamicI18nProps,
+    isNavLinkActive,
+  } from '@layouts/utils'
+  import { useUserData } from '~/composables/user' // ✅ use your composable
 
-import { layoutConfig } from '@layouts'
-import { can } from '@layouts/plugins/casl'
-import { useLayoutConfigStore } from '@layouts/stores/config'
-import type { NavLink } from '@layouts/types'
-import { getComputedNavLinkToProp, getDynamicI18nProps, isNavLinkActive } from '@layouts/utils'
+  defineProps<{
+    item: NavLink
+  }>()
 
-defineProps<{
-  item: NavLink
-}>()
+  const configStore = useLayoutConfigStore()
+  const hideTitleAndBadge = configStore.isVerticalNavMini()
 
-const configStore = useLayoutConfigStore()
-const hideTitleAndBadge = configStore.isVerticalNavMini()
+  // ✅ get can() from composable
+  const { can } = useUserData()
 </script>
 
 <template>
@@ -24,7 +30,12 @@ const hideTitleAndBadge = configStore.isVerticalNavMini()
     <Component
       :is="item.to ? NuxtLink : 'a'"
       v-bind="getComputedNavLinkToProp(item)"
-      :class="{ 'router-link-active router-link-exact-active': isNavLinkActive(item, $router) }"
+      :class="{
+        'router-link-active router-link-exact-active': isNavLinkActive(
+          item,
+          $router
+        ),
+      }"
     >
       <Component
         :is="layoutConfig.app.iconRenderer || 'div'"
@@ -61,10 +72,10 @@ const hideTitleAndBadge = configStore.isVerticalNavMini()
 </template>
 
 <style lang="scss">
-.layout-vertical-nav {
-  .nav-link a {
-    display: flex;
-    align-items: center;
+  .layout-vertical-nav {
+    .nav-link a {
+      display: flex;
+      align-items: center;
+    }
   }
-}
 </style>
